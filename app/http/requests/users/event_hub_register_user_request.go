@@ -37,7 +37,7 @@ type EventHubUsersGetsRequest struct {
 }
 
 type EventHubResendOTPRequest struct {
-	PhoneNumber string `json:"phone_no" validate:"required,unique=event_hub_users.phone_number,min=3,max=20,country_code=TZ"`
+	PhoneNumber string `json:"phone_number" validate:"required,country_code=TZ"`
 	AppID       string `json:"app_id" validate:"max=12"`
 }
 
