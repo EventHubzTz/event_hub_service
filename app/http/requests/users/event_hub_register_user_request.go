@@ -29,11 +29,14 @@ func (request EventHubRegisterUserRequest) ToModel() models.EventHubUser {
 }
 
 type EventHubUsersGetsRequest struct {
-	Role string `json:"role" validate:"required"`
+	Role  string `json:"role"`
+	Query string `json:"query"`
+	Limit int    `json:"limit,omitempty;query:limit" `
+	Page  int    `json:"page,omitempty;query:page"`
+	Sort  string `json:"sort,omitempty;query:sort"`
 }
 
 type EventHubResendOTPRequest struct {
-	UserID      int64  `json:"user_id" validate:"required"`
 	PhoneNumber string `json:"phone_no" validate:"required,unique=event_hub_users.phone_number,min=3,max=20,country_code=TZ"`
 	AppID       string `json:"app_id" validate:"max=12"`
 }
@@ -46,12 +49,10 @@ type EventHubGenerateForgotPasswordOtpRequest struct {
 type EventHubVerifyOTPResetPasswordRequest struct {
 	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=20,country_code=TZ"`
 	OTP         string `json:"otp" validate:"required,max=6"`
-	UserID      uint64 `json:"user_id" validate:"required"`
 }
 
 type EventHubUpdatePasswordRequest struct {
 	OTP      string `json:"otp_code" validate:"required,max=6"`
-	UserID   uint64 `json:"user_id" validate:"required"`
 	Password string `json:"password" validate:"required,min=6"`
 }
 

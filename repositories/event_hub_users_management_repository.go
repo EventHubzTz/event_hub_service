@@ -23,9 +23,9 @@ func (_ eventHubUsersManagementRepository) RegisterUser(user *models.EventHubUse
 	return user, urDB
 }
 
-func (_ eventHubUsersManagementRepository) FindOneByPhone(phone string) (*models.EventHubUser, *gorm.DB) {
+func (_ eventHubUsersManagementRepository) FindOneByEmailPhone(emailPhone string) (*models.EventHubUser, *gorm.DB) {
 	var user *models.EventHubUser
-	urDB := db.Model(models.EventHubUser{}).Where("phone_number = ?", phone).Find(&user)
+	urDB := db.Model(models.EventHubUser{}).Where("phone_number = ?", emailPhone).Or("email = ?", emailPhone).Find(&user)
 	return user, urDB
 }
 
@@ -35,10 +35,11 @@ func (_ eventHubUsersManagementRepository) FindUserUsingPhoneNumber(phoneNumber 
 	return user, urDB
 }
 
-func (r eventHubUsersManagementRepository) GetUsers(role string) ([]models.EventHubUserDTO, *gorm.DB) {
-	var renting []models.EventHubUserDTO
-	sRDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetUsers(role), role).Find(&renting)
-	return renting, sRDB
+func (r_ eventHubUsersManagementRepository) GetUsers(pagination models.Pagination, role, query string) (models.Pagination, *gorm.DB) {
+
+	users, urDB := helpers.EventHubQueryBuilder.QueryGetUsers(pagination, role, query)
+
+	return users, urDB
 }
 
 func (_ eventHubUsersManagementRepository) FindUserById(userId uint64) *models.EventHubUser {

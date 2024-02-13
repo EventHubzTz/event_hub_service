@@ -37,11 +37,11 @@ func (_ eventHubUsersManagementService) RegisterUser(user models.EventHubUser) (
 	return createdUser, EventHubUserTokenService.CreateUserTokenInDB(&user)
 }
 
-func (_ eventHubUsersManagementService) GetUserByPhone(phone string) (*models.EventHubUser, error) {
-	user, dbResponse := repositories.EventHubUsersManagementRepository.FindOneByPhone(phone)
+func (_ eventHubUsersManagementService) GetUserByEmailPhone(emailPhone string) (*models.EventHubUser, error) {
+	user, dbResponse := repositories.EventHubUsersManagementRepository.FindOneByEmailPhone(emailPhone)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
-		return user, errors.New("User with " + phone + " not found! ")
+		return user, errors.New("User with " + emailPhone + " not found! ")
 	}
 	return user, nil
 }
@@ -62,13 +62,14 @@ func (_ eventHubUsersManagementService) GetSpecificUser(id uint64) *models.Event
 	return user
 }
 
-func (_ eventHubUsersManagementService) GetUsers(role string) ([]models.EventHubUserDTO, error) {
-	car, dbResponse := repositories.EventHubUsersManagementRepository.GetUsers(role)
+func (_ eventHubUsersManagementService) GetUsers(pagination models.Pagination, role, query string) (models.Pagination, error) {
+	var newQuery = "%" + query + "%"
+	users, dbResponse := repositories.EventHubUsersManagementRepository.GetUsers(pagination, role, newQuery)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
-		return nil, errors.New("No Users found!")
+		return models.Pagination{}, errors.New("Users not found! ")
 	}
-	return car, nil
+	return users, nil
 }
 
 func (_ eventHubUsersManagementService) ChangePassword(user models.EventHubUser, userID uint64) (string, error) {
@@ -92,7 +93,7 @@ func (_ eventHubUsersManagementService) ChangePassword(user models.EventHubUser,
 	return "Password updated successful", nil
 }
 
-func (_ eventHubUsersManagementService) SendOtpToUser(userID int64, appID, phone string) {
+func (_ eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phone string) {
 	successCounter := 0
 	errorCounter := 0
 	/*---------------------------------------------------------

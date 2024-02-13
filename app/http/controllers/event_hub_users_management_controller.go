@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/EventHubzTz/event_hub_service/app/http/requests/users"
+	"github.com/EventHubzTz/event_hub_service/app/models"
 	"github.com/EventHubzTz/event_hub_service/repositories"
 	"github.com/EventHubzTz/event_hub_service/service"
 	"github.com/EventHubzTz/event_hub_service/utils/date_utils"
@@ -20,6 +21,13 @@ type eventHubUsersManagementController struct {
 
 func newEventHubUsersManagementController() eventHubUsersManagementController {
 	return eventHubUsersManagementController{}
+}
+
+type RegisterData struct {
+	Id       int64  `json:"id"`
+	Token    string `json:"token"`
+	FullName string `json:"full_name"`
+	Role     string `json:"role"`
 }
 
 func (_ eventHubUsersManagementController) RegisterUser(ctx *fiber.Ctx) error {
@@ -59,12 +67,19 @@ func (_ eventHubUsersManagementController) RegisterUser(ctx *fiber.Ctx) error {
 		return response.ErrorResponse(error.Error(), fiber.StatusBadRequest, ctx)
 	}
 	go func() {
-		service.EventHubUsersManagementService.SendOtpToUser(int64(user.Id), request.AppID, request.PhoneNumber)
+		service.EventHubUsersManagementService.SendOtpToUser(user.Id, request.AppID, request.PhoneNumber)
 	}()
 	/*---------------------------------------------------------
 	 07. IF ALL THIS WENT WELL THEN RETURN SUCCESS
 	----------------------------------------------------------*/
-	return response.SuccessResponse("User registered successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
+	regData := RegisterData{
+		Id:       int64(user.Id),
+		Token:    repositories.EventHubUserTokenRepository.GetUserTokenByUserId(user.Id).Token,
+		FullName: user.FirstName + " " + user.LastName,
+		Role:     user.Role,
+	}
+
+	return response.DataListSuccessResponse(regData, fiber.StatusOK, ctx)
 }
 
 func (_ eventHubUsersManagementController) ResendOTPCode(ctx *fiber.Ctx) error {
@@ -90,8 +105,10 @@ func (_ eventHubUsersManagementController) ResendOTPCode(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
+	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
+
 	go func() {
-		service.EventHubUsersManagementService.SendOtpToUser(request.UserID, request.AppID, request.PhoneNumber)
+		service.EventHubUsersManagementService.SendOtpToUser(user.Id, request.AppID, request.PhoneNumber)
 	}()
 
 	return response.SuccessResponse("OTP code sent successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
@@ -151,17 +168,9 @@ func (_ eventHubUsersManagementController) VerifyPhoneNumberUsingOTP(ctx *fiber.
 }
 
 func (_ eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
-
-	type RegisterData struct {
-		Id       int64  `json:"id"`
-		Token    string `json:"token"`
-		FullName string `json:"full_name"`
-		Role     string `json:"role"`
-	}
-
 	type LoginRequest struct {
-		Phone    string `json:"phone" validate:"required"`
-		Password string `json:"password" validate:"required"`
+		EmailPhone string `json:"email_phone" validate:"required"`
+		Password   string `json:"password" validate:"required"`
 	}
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF CREATING
@@ -187,7 +196,7 @@ func (_ eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
 	/*-----------------------------------------------------------------
 	 04. AUTHENTICATE USER AND GET ERROR IF IS AVAILABLE AND SUCCESS MESSAGE
 	-------------------------------------------------------------------*/
-	user, err := service.EventHubUsersManagementService.GetUserByPhone(request.Phone)
+	user, err := service.EventHubUsersManagementService.GetUserByEmailPhone(request.EmailPhone)
 
 	if err != nil || user.Active == false {
 		return response.ErrorResponse("Bad credentials", fiber.StatusBadRequest, ctx)
@@ -226,16 +235,22 @@ func (_ eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
 
 func (_ eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
-	 01. INITIATING VARIABLE FOR THE REQUEST OF CREATING
-	     CAR
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
 	---------------------------------------------------------*/
 	var request users.EventHubUsersGetsRequest
 	/*---------------------------------------------------------
 	 02. PARSING THE BODY OF THE INCOMING REQUEST
 	----------------------------------------------------------*/
 	err := ctx.BodyParser(&request)
+
+	var pagination models.Pagination
+	pagination.Limit = request.Limit
+	pagination.Sort = request.Sort
+	pagination.Page = request.Page
+
 	if err != nil {
-		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
 	}
 	/*---------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
@@ -246,16 +261,16 @@ func (_ eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 	/*-----------------------------------------------------------------
-	 04. GET ALL USERS
+	 04. GET USER AND GET ERROR IF IS AVAILABLE
 	-------------------------------------------------------------------*/
-	users, err := service.EventHubUsersManagementService.GetUsers(request.Role)
+	doctorData, err := service.EventHubUsersManagementService.GetUsers(pagination, request.Role, request.Query)
 	/*---------------------------------------------------------
 	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/
 	if err != nil {
-		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
 	}
-	return response.DataListSuccessResponse(users, fiber.StatusOK, ctx)
+	return response.InternalServiceDataResponse(doctorData, fiber.StatusOK, ctx)
 }
 
 func (_ eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error {
@@ -282,7 +297,8 @@ func (_ eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error 
 	/*--------------------------------------------------------------------
 	 04. CHECK IF USER EXIST
 	-----------------------------------------------------------------------*/
-	user := repositories.EventHubUsersManagementRepository.FindUserById(uint64(request.UserID))
+	userFromLocal := service.EventHubUserTokenService.GetUserFromLocal(ctx)
+	user := repositories.EventHubUsersManagementRepository.FindUserById(userFromLocal.Id)
 	if user == nil {
 		return response.ErrorResponse("User does not exist in the system", fiber.StatusInternalServerError, ctx)
 	}
@@ -379,6 +395,7 @@ func (_ eventHubUsersManagementController) VerifyOTPResetPassword(ctx *fiber.Ctx
 	/*---------------------------------------------------------
 	 04. GET THE USER FROM THE DATABASE USING THE PHONE NUMBER
 	----------------------------------------------------------*/
+	userFromLocal := service.EventHubUserTokenService.GetUserFromLocal(ctx)
 	userFromDB := service.EventHubUsersManagementService.GetSpecificUserDetailsUsingPhoneNumber(request.PhoneNumber)
 	if userFromDB == nil {
 		return response.ErrorResponse("Invalid status. User details not found in the system with a particular phone number", fiber.StatusBadRequest, ctx)
@@ -386,7 +403,7 @@ func (_ eventHubUsersManagementController) VerifyOTPResetPassword(ctx *fiber.Ctx
 	/*-----------------------------------------------
 	 05. VERIFY OTP FOR RESETTING PASSWORD
 	------------------------------------------------*/
-	_err := service.EventHubUsersManagementService.VerifyOTPResetPassword(request.UserID, request.OTP, request.PhoneNumber)
+	_err := service.EventHubUsersManagementService.VerifyOTPResetPassword(userFromLocal.Id, request.OTP, request.PhoneNumber)
 	/*---------------------------------------------------------
 	 06. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/
@@ -420,14 +437,15 @@ func (_ eventHubUsersManagementController) UpdatePassword(ctx *fiber.Ctx) error 
 	/*---------------------------------------------------------
 	 04. GET THE USER FROM THE DATABASE USING USER ID
 	----------------------------------------------------------*/
-	userFromDB := service.EventHubUsersManagementService.GetSpecificUser(request.UserID)
+	userFromLocal := service.EventHubUserTokenService.GetUserFromLocal(ctx)
+	userFromDB := service.EventHubUsersManagementService.GetSpecificUser(userFromLocal.Id)
 	if userFromDB == nil {
 		return response.ErrorResponse("Invalid status. User details not found in the system", fiber.StatusBadRequest, ctx)
 	}
 	/*-----------------------------------------------
 	 05. VERIFY OTP FOR RESETTING PASSWORD
 	------------------------------------------------*/
-	_err := service.EventHubUsersManagementService.VerifyOTPResetPassword(request.UserID, request.OTP, userFromDB.PhoneNumber)
+	_err := service.EventHubUsersManagementService.VerifyOTPResetPassword(userFromLocal.Id, request.OTP, userFromDB.PhoneNumber)
 	/*---------------------------------------------------------
 	 06. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/
