@@ -13,6 +13,6 @@ func RouteProvider(app *fiber.App) {
 	api.EventHubRequestIDRoutes(apiRoute)
 	apiExternalOperationRoute := app.Group("/api/v1", middlewares.ApiRequestID)
 	api.EventHubUsersManagementRoutes(apiExternalOperationRoute)
-	apiAuthenticatedRoute := app.Group("/api", middlewares.ApiAuth)
+	apiAuthenticatedRoute := app.Group("/api/v1", middlewares.ApiAuth)
 	api.AuthenticatedEventHubUsersManagementRoutes(apiAuthenticatedRoute)
 }
