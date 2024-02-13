@@ -6,6 +6,7 @@ import (
 	"github.com/EventHubzTz/event_hub_service/app/provider"
 	"github.com/EventHubzTz/event_hub_service/database"
 	"github.com/EventHubzTz/event_hub_service/database/migrations"
+	"github.com/EventHubzTz/event_hub_service/database/seeders"
 	"github.com/EventHubzTz/event_hub_service/repositories"
 	"github.com/EventHubzTz/event_hub_service/utils"
 	"github.com/gofiber/fiber/v2"
@@ -28,7 +29,7 @@ func StartApp() {
 	utils.SuccessPrint("We about to connect Database")
 	database.DatabaseConnection()
 	migrations.Migrate()
-	// seeders.Seed()
+	seeders.Seed()
 	defer database.CloseDB()
 
 	repositories.Init()

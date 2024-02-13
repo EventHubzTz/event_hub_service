@@ -1,10 +1,16 @@
 package service
 
 import (
+	"crypto/rand"
 	"errors"
+	"io"
 
+	"github.com/EventHubzTz/event_hub_service/app/helpers"
 	"github.com/EventHubzTz/event_hub_service/app/models"
 	"github.com/EventHubzTz/event_hub_service/repositories"
+	"github.com/ggwhite/go-masker"
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 var EventHubUsersManagementService = newEventHubUsersManagementService()
@@ -40,7 +46,23 @@ func (_ eventHubUsersManagementService) GetUserByPhone(phone string) (*models.Ev
 	return user, nil
 }
 
-func (_ eventHubUsersManagementService) GetUsers(role string) ([]models.KataTiketiUserDTO, error) {
+func (_ eventHubUsersManagementService) GetSpecificUserDetailsUsingPhoneNumber(phoneNumber string) *models.EventHubUserDTO {
+	user, usDB := repositories.EventHubUsersManagementRepository.FindUserUsingPhoneNumber(phoneNumber)
+	if usDB.RowsAffected == 0 {
+		return nil
+	}
+	return user
+}
+
+func (_ eventHubUsersManagementService) GetSpecificUser(id uint64) *models.EventHubUser {
+	user, usDB := repositories.EventHubUsersManagementRepository.FindOne(id)
+	if usDB.RowsAffected == 0 {
+		return nil
+	}
+	return user
+}
+
+func (_ eventHubUsersManagementService) GetUsers(role string) ([]models.EventHubUserDTO, error) {
 	car, dbResponse := repositories.EventHubUsersManagementRepository.GetUsers(role)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
@@ -68,4 +90,237 @@ func (_ eventHubUsersManagementService) ChangePassword(user models.EventHubUser,
 	}
 
 	return "Password updated successful", nil
+}
+
+func (_ eventHubUsersManagementService) SendOtpToUser(userID int64, appID, phone string) {
+	successCounter := 0
+	errorCounter := 0
+	/*---------------------------------------------------------
+	 01. SAVE THE OTP CODE FOR VERIFICATION OF THE MOBILE
+	     APPLICATION
+	----------------------------------------------------------*/
+	_, dbErr, body := SaveOTPCode(phone, appID, int(userID))
+	if dbErr.RowsAffected == 0 {
+		return
+	}
+
+	senderID, errSenderID := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(2)
+	if errSenderID == nil {
+		messageUrl, errMessageUrl := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(3)
+		if errMessageUrl == nil {
+			authorizationToken, errAuthorizationToken := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(4)
+			if errAuthorizationToken == nil {
+
+				// response, err := helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
+				response, err := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
+				if err != nil {
+
+				}
+				/*--------------------------------------------
+					04. SAVING RETURNED RESPONSE INTO A TABLE
+				----------------------------------------------*/
+				otpCodeMessageResponse := models.EventHubOTPMessageResponse{Value: string(response)}
+				_, usrDB := repositories.EventHubUsersManagementRepository.SaveUserOTPCodeMessageResponse(&otpCodeMessageResponse)
+				if usrDB.RowsAffected == 0 {
+					errorCounter++
+				} else {
+					successCounter++
+				}
+			} else {
+				errorCounter++
+			}
+		} else {
+			errorCounter++
+		}
+	} else {
+		errorCounter++
+	}
+}
+
+func (_ eventHubUsersManagementService) VerifyMobileNumberOTPCOde(otpCode models.EventHubUserOTPCode, user *models.EventHubUser, ctx *fiber.Ctx) error {
+	/*---------------------------------------------------------
+	 01. CHECK IF THE OTP CODE DETAILS ARE CORRECT IN THE
+	     DATABASE
+	----------------------------------------------------------*/
+	phoneAndCodeStatus := repositories.EventHubUsersManagementRepository.VerifyPhoneNumberAndOTPCode(otpCode)
+	if !phoneAndCodeStatus {
+		return errors.New("Invalid Phone number OTP Code")
+	}
+	/*---------------------------------------------------------
+	 02. CHECK IF THE PHONE NUMBER IS THE CORRECT ONE FOR THE
+	     PARTICULAR USER IN THE DATABASE
+	----------------------------------------------------------*/
+	phoneStatus := repositories.EventHubUsersManagementRepository.VerifyUserPhoneNumber(otpCode.Phone, user.Id)
+	if !phoneStatus {
+		return errors.New("Invalid Phone number")
+	}
+	/*---------------------------------------------------------
+	 03. CHECK IF THE PHONE NUMBER IS INVALID PARTICULAR USER
+	     IN THE DATABASE
+	----------------------------------------------------------*/
+	phoneInvalidStatus := repositories.EventHubUsersManagementRepository.VerifyUserPhoneNumberInvalidStatus(otpCode.Phone, user.Id)
+	if !phoneInvalidStatus {
+		type verificationResponse struct {
+			Message     string `json:"message"`
+			Role        string `json:"role"`
+			Username    string `json:"username"`
+			Error       bool   `json:"error"`
+			PhoneNumber string `json:"phone_number"`
+		}
+
+		verificationRes := verificationResponse{
+			Message:     "Phone number " + masker.String(masker.MID, otpCode.Phone) + " already verified!",
+			PhoneNumber: otpCode.Phone,
+			Error:       false,
+			Role:        "normal user",
+		}
+
+		return ctx.Status(fiber.StatusOK).JSON(verificationRes)
+		// resp :=
+	}
+	/*---------------------------------------------------------
+	 03. UPDATE THE STATUS OF THE 'is_valid_phone_number' FOR
+	     THE PARTICULAR USER
+	----------------------------------------------------------*/
+	err := repositories.EventHubUsersManagementRepository.UpdateUserPhoneNumberValidStatus(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (_ eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, appSignature string, user *models.EventHubUserDTO) interface{} {
+	userForgetPasswordOTPDetails := repositories.EventHubUsersManagementRepository.FindForgetPasswordOTPDetails(user.Id)
+	/*----------------------------------------------------------
+	 01 FETCHING THE MOBILE APPLICATION ID FROM THE DATABASE
+	------------------------------------------------------------*/
+	type ResponseStatus struct {
+		Error   bool   `json:"ERROR"`
+		Message string `json:"MESSAGE"`
+		UserID  uint64 `json:"USER_ID"`
+	}
+	otpCode := generateOTPCode()
+	message := "Hello " + user.FirstName + " " + user.LastName + ", OTP Code " + otpCode + ".\nUse it within 5 minutes.\n" + appSignature
+	if userForgetPasswordOTPDetails == nil {
+		otpCodeForgotPassword := models.AFYAAPPForgotPasswordOTP{
+			UserID:    user.Id,
+			OTP:       otpCode,
+			Phone:     phoneNumber,
+			Message:   message,
+			IsOTPSent: "NO",
+		}
+		_, usrDB := repositories.EventHubUsersManagementRepository.CreateOTPCodeForForgotPassword(&otpCodeForgotPassword)
+		if usrDB.RowsAffected == 0 {
+			return ResponseStatus{
+				Error:   true,
+				Message: "Failed to create OTP Code for resetting password!",
+				UserID:  user.Id,
+			}
+		}
+		return ResponseStatus{
+			Error:   false,
+			Message: message,
+			UserID:  user.Id,
+		}
+	} else {
+		if userForgetPasswordOTPDetails.IsOTPSent == "YES" {
+			userForgetPasswordOTPDetails.OTP = otpCode
+			userForgetPasswordOTPDetails.Message = message
+			userForgetPasswordOTPDetails.IsOTPSent = "NO"
+			_, usDB := repositories.EventHubUsersManagementRepository.UpdateOTPCodeForForgotPassword(userForgetPasswordOTPDetails)
+			if usDB.RowsAffected == 0 {
+				return ResponseStatus{
+					Error:   true,
+					Message: "Failed to update OTP Code for resetting password!",
+					UserID:  user.Id,
+				}
+			}
+			return ResponseStatus{
+				Error:   false,
+				Message: "OTP code is sent",
+				UserID:  user.Id,
+			}
+		} else {
+			return ResponseStatus{
+				Error:   false,
+				Message: "Please, Wait for incoming OTP",
+				UserID:  user.Id,
+			}
+		}
+	}
+}
+
+func (_ eventHubUsersManagementService) VerifyOTPResetPassword(userID uint64, otp string, phoneNumber string) error {
+	userForgetPasswordOTPDetails := repositories.EventHubUsersManagementRepository.FindForgetPasswordOTPDetails(userID)
+	if userForgetPasswordOTPDetails == nil {
+		return errors.New("Reset Password OTP Verification failed!")
+	} else {
+		if userForgetPasswordOTPDetails.OTP == otp && userForgetPasswordOTPDetails.Phone == phoneNumber {
+			return nil
+		} else {
+			return errors.New("Reset Password OTP Verification failed!")
+		}
+	}
+}
+
+func (_ eventHubUsersManagementService) UpdateProfile(user models.EventHubUser, userID uint64) (string, error) {
+	updateMessage := "Password updated sucessful"
+	/*---------------------------------------------------------
+	 01. UPDATING USER DETAILS TO THE DATABASE
+	----------------------------------------------------------*/
+	_, usrDB := repositories.EventHubUsersManagementRepository.UpdateWithID(userID, &user)
+	if usrDB.RowsAffected == 0 {
+		return "", errors.New("Internal server error")
+	}
+
+	return updateMessage, nil
+}
+
+func SaveOTPCode(phoneNumber, appID string, userId int) (*models.EventHubUserOTPCode, *gorm.DB, string) {
+	otp := generateOTPCode()
+
+	otpCode := models.EventHubUserOTPCode{
+		OTP:   otp,
+		Phone: phoneNumber,
+	}
+	otpRes, urDB := repositories.EventHubUsersManagementRepository.SaveUserOTPCode(&otpCode)
+	if urDB.RowsAffected == 0 {
+		return otpRes, urDB, ""
+	}
+
+	sms, Dbres := createUserOTPCodeMessage(uint64(userId), appID, otp)
+	if Dbres.RowsAffected == 0 {
+		return nil, Dbres, ""
+	}
+
+	// commands.AFYAAPPSendOtpMessageToUsersWhoHaveNoOtpMessage.SendOtpToUser(int64(userId),sm,request.PhoneNumber)
+
+	return nil, Dbres, sms.Body
+}
+
+func generateOTPCode() string {
+	var codeLength = 6
+	var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
+	b := make([]byte, codeLength)
+	n, err := io.ReadAtLeast(rand.Reader, b, codeLength)
+	if n != codeLength {
+		panic(err)
+	}
+	for i := 0; i < len(b); i++ {
+		b[i] = table[int(b[i])%len(table)]
+	}
+	return string(b)
+}
+
+func createUserOTPCodeMessage(userID uint64, appId string, otpCode string) (*models.EventHubOTPCodeMessage, *gorm.DB) {
+	/*----------------------------------------------------------
+	 01 FETCHING THE MOBILE APPLICATION ID FROM THE DATABASE
+	------------------------------------------------------------*/
+	// appSignature := repositories.EventHubExternalOperationsRepository.GetApplicationSignature()
+	message := "Your Event Hub OTP Code is: " + otpCode + " " + appId
+	otpCodeMessage := models.EventHubOTPCodeMessage{
+		UserID: userID,
+		Body:   message,
+	}
+	return repositories.EventHubUsersManagementRepository.SaveUserOTPCodeMessage(&otpCodeMessage)
 }
