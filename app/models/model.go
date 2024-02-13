@@ -8,9 +8,10 @@ import (
 
 const tablePrefix = "event_hub_"
 
-var Tables = []interface{}{&EventHubExternalOperationsSetup{},
-	&EventHubRequestID{}, &EventHubMessageResponse{},
-	&EventHubUser{}, &EventHubUserToken{},
+var Tables = []interface{}{
+	&EventHubExternalOperationsSetup{}, &EventHubRequestID{}, &EventHubUser{},
+	&EventHubUserToken{}, &EventHubUserOTPCode{}, &EventHubOTPCodeMessage{},
+	&EventHubOTPMessageResponse{}, &AFYAAPPForgotPasswordOTP{},
 }
 
 type Timestamp struct {

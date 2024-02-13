@@ -22,8 +22,3 @@ func (_ eventHubExternalOperationsRepository) GetMicroServiceExternalOperationSe
 	}
 	return externalOperationsSetup.Value, nil
 }
-
-func (_ eventHubExternalOperationsRepository) SaveUserOTPCodeMessageResponse(response *models.EventHubMessageResponse) (*models.EventHubMessageResponse, *gorm.DB) {
-	urDB := db.Create(&response)
-	return response, urDB
-}
