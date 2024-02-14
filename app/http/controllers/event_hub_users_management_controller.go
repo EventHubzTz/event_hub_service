@@ -274,7 +274,7 @@ func (_ eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
 }
 
 func (_ eventHubUsersManagementController) GetUser(ctx *fiber.Ctx) error {
-	return response.DataListResponse(service.EventHubUserTokenService.GetUserFromLocal(ctx), fiber.StatusOK, ctx)
+	return response.InternalServiceDataResponse(service.EventHubUserTokenService.GetUserFromLocal(ctx), fiber.StatusOK, ctx)
 }
 
 func (_ eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error {
