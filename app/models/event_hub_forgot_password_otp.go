@@ -1,6 +1,6 @@
 package models
 
-type AFYAAPPForgotPasswordOTP struct {
+type EventHubForgotPasswordOTP struct {
 	ID
 	UserID    uint64 `json:"user_id" gorm:"not null;index:forgot_password_otp_user_id_index"` //FOREIGN KEY
 	OTP       string `json:"otp" gorm:"not null;size:4"`
@@ -29,6 +29,6 @@ type AFYAAPPForgotPasswordOTPDTO struct {
 	CreatedAt string `json:"CREATED_AT"`
 }
 
-func (AFYAAPPForgotPasswordOTP) TableName() string {
+func (EventHubForgotPasswordOTP) TableName() string {
 	return tablePrefix + "forgot_password_otp"
 }

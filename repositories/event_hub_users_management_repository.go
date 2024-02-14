@@ -115,8 +115,8 @@ func (_ eventHubUsersManagementRepository) UpdateUserPhoneNumberValidStatus(user
 	return nil
 }
 
-func (_ eventHubUsersManagementRepository) FindForgetPasswordOTPDetails(userID uint64) *models.AFYAAPPForgotPasswordOTP {
-	var userForgotPasswordDetails *models.AFYAAPPForgotPasswordOTP
+func (_ eventHubUsersManagementRepository) FindForgetPasswordOTPDetails(userID uint64) *models.EventHubForgotPasswordOTP {
+	var userForgotPasswordDetails *models.EventHubForgotPasswordOTP
 	urDB := db.Where("user_id = ?", userID).Find(&userForgotPasswordDetails)
 	if urDB.RowsAffected == 0 {
 		return nil
@@ -124,12 +124,12 @@ func (_ eventHubUsersManagementRepository) FindForgetPasswordOTPDetails(userID u
 	return userForgotPasswordDetails
 }
 
-func (_ eventHubUsersManagementRepository) CreateOTPCodeForForgotPassword(userForgotPasswordOTP *models.AFYAAPPForgotPasswordOTP) (*models.AFYAAPPForgotPasswordOTP, *gorm.DB) {
+func (_ eventHubUsersManagementRepository) CreateOTPCodeForForgotPassword(userForgotPasswordOTP *models.EventHubForgotPasswordOTP) (*models.EventHubForgotPasswordOTP, *gorm.DB) {
 	urDB := db.Create(&userForgotPasswordOTP)
 	return userForgotPasswordOTP, urDB
 }
 
-func (_ eventHubUsersManagementRepository) UpdateOTPCodeForForgotPassword(userForgotPasswordOTP *models.AFYAAPPForgotPasswordOTP) (*models.AFYAAPPForgotPasswordOTP, *gorm.DB) {
+func (_ eventHubUsersManagementRepository) UpdateOTPCodeForForgotPassword(userForgotPasswordOTP *models.EventHubForgotPasswordOTP) (*models.EventHubForgotPasswordOTP, *gorm.DB) {
 	urDB := db.Save(&userForgotPasswordOTP)
 	return userForgotPasswordOTP, urDB
 }

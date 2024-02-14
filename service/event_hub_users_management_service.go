@@ -203,7 +203,7 @@ func (_ eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, a
 	otpCode := generateOTPCode()
 	message := "Hello " + user.FirstName + " " + user.LastName + ", OTP Code " + otpCode + ".\nUse it within 5 minutes.\n" + appSignature
 	if userForgetPasswordOTPDetails == nil {
-		otpCodeForgotPassword := models.AFYAAPPForgotPasswordOTP{
+		otpCodeForgotPassword := models.EventHubForgotPasswordOTP{
 			UserID:    user.Id,
 			OTP:       otpCode,
 			Phone:     phoneNumber,
@@ -214,7 +214,7 @@ func (_ eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, a
 		if usrDB.RowsAffected == 0 {
 			return ResponseStatus{
 				Error:   true,
-				Message: "Failed to create OTP Code for resetting password!",
+				Message: usrDB.Error.Error(),
 				UserID:  user.Id,
 			}
 		}
