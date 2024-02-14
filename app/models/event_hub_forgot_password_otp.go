@@ -3,7 +3,7 @@ package models
 type EventHubForgotPasswordOTP struct {
 	ID
 	UserID    uint64 `json:"user_id" gorm:"not null;index:forgot_password_otp_user_id_index"` //FOREIGN KEY
-	OTP       string `json:"otp" gorm:"not null;size:4"`
+	OTP       string `json:"otp" gorm:"not null;size:6"`
 	Message   string `json:"message" gorm:"not null;size:250"`
 	Phone     string `json:"phone" gorm:"not null;size:20" validate:"required,min=9"`
 	IsOTPSent string `json:"is_otp_sent" gorm:"not null;type:enum('YES','NO');default:'NO'"`
