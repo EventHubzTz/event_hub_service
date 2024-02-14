@@ -46,6 +46,7 @@ func (_ eventHubQueryBuilder) QueryMicroServiceRequestIDActiveKey() string {
 }
 
 func (_ eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, query string) (models.Pagination, *gorm.DB) {
+	baseUrl := os.Getenv("APP_URL")
 
 	var users []models.EventHubUserDTO
 
@@ -53,7 +54,8 @@ func (_ eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 		Table("event_hub_users as t1").
 		Select(
 			"t1.*",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"CASE t1.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',t1.profile_image) ELSE t1.profile_image END as profile_image,"+
+				"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		).
 		Where("t1.role = ?", role)
