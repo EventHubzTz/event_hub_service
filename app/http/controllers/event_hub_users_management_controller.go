@@ -273,6 +273,10 @@ func (_ eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
 	return response.InternalServiceDataResponse(doctorData, fiber.StatusOK, ctx)
 }
 
+func (_ eventHubUsersManagementController) GetUser(ctx *fiber.Ctx) error {
+	return response.DataListResponse(service.EventHubUserTokenService.GetUserFromLocal(ctx), fiber.StatusOK, ctx)
+}
+
 func (_ eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF UPDATING USER

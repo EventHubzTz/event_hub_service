@@ -190,7 +190,7 @@ func (_ eventHubUsersManagementService) VerifyMobileNumberOTPCOde(otpCode models
 	return nil
 }
 
-func (_ eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, appSignature string, user *models.EventHubUserDTO) interface{} {
+func (s eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, appSignature string, user *models.EventHubUserDTO) interface{} {
 	userForgetPasswordOTPDetails := repositories.EventHubUsersManagementRepository.FindForgetPasswordOTPDetails(user.Id)
 	/*----------------------------------------------------------
 	 01 FETCHING THE MOBILE APPLICATION ID FROM THE DATABASE
@@ -198,7 +198,6 @@ func (_ eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, a
 	type ResponseStatus struct {
 		Error   bool   `json:"ERROR"`
 		Message string `json:"MESSAGE"`
-		UserID  uint64 `json:"USER_ID"`
 	}
 	otpCode := generateOTPCode()
 	message := "Hello " + user.FirstName + " " + user.LastName + ", OTP Code " + otpCode + ".\nUse it within 5 minutes.\n" + appSignature
@@ -208,45 +207,39 @@ func (_ eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, a
 			OTP:       otpCode,
 			Phone:     phoneNumber,
 			Message:   message,
-			IsOTPSent: "NO",
+			IsOTPSent: "YES",
 		}
 		_, usrDB := repositories.EventHubUsersManagementRepository.CreateOTPCodeForForgotPassword(&otpCodeForgotPassword)
 		if usrDB.RowsAffected == 0 {
 			return ResponseStatus{
 				Error:   true,
 				Message: usrDB.Error.Error(),
-				UserID:  user.Id,
 			}
 		}
+		go func() {
+			s.SendOtpToUser(user.Id, appSignature, phoneNumber)
+		}()
 		return ResponseStatus{
 			Error:   false,
-			Message: message,
-			UserID:  user.Id,
+			Message: "OTP code is sent",
 		}
 	} else {
-		if userForgetPasswordOTPDetails.IsOTPSent == "YES" {
-			userForgetPasswordOTPDetails.OTP = otpCode
-			userForgetPasswordOTPDetails.Message = message
-			userForgetPasswordOTPDetails.IsOTPSent = "NO"
-			_, usDB := repositories.EventHubUsersManagementRepository.UpdateOTPCodeForForgotPassword(userForgetPasswordOTPDetails)
-			if usDB.RowsAffected == 0 {
-				return ResponseStatus{
-					Error:   true,
-					Message: "Failed to update OTP Code for resetting password!",
-					UserID:  user.Id,
-				}
-			}
+		userForgetPasswordOTPDetails.OTP = otpCode
+		userForgetPasswordOTPDetails.Message = message
+		userForgetPasswordOTPDetails.IsOTPSent = "YES"
+		_, usDB := repositories.EventHubUsersManagementRepository.UpdateOTPCodeForForgotPassword(userForgetPasswordOTPDetails)
+		if usDB.RowsAffected == 0 {
 			return ResponseStatus{
-				Error:   false,
-				Message: "OTP code is sent",
-				UserID:  user.Id,
+				Error:   true,
+				Message: "Failed to update OTP Code for resetting password!",
 			}
-		} else {
-			return ResponseStatus{
-				Error:   false,
-				Message: "Please, Wait for incoming OTP",
-				UserID:  user.Id,
-			}
+		}
+		go func() {
+			s.SendOtpToUser(user.Id, appSignature, phoneNumber)
+		}()
+		return ResponseStatus{
+			Error:   false,
+			Message: "OTP code is sent",
 		}
 	}
 }
