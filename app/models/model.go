@@ -33,6 +33,6 @@ type IDRequest struct {
 }
 
 type TimestampString struct {
-	CreatedAt string `json:"CREATED_AT"`
-	UpdatedAt string `json:"UPDATED_AT"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
