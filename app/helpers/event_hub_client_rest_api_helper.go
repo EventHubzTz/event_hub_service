@@ -16,7 +16,7 @@ func newEventHubClientRESTAPIHelper() eventHubClientRESTAPIHelper {
 	return eventHubClientRESTAPIHelper{}
 }
 
-func (_ eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string, messageUrl string,
+func (q eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string, messageUrl string,
 	authorizationToken string, phoneNo string, message string) ([]byte, error) {
 	type RequestBody struct {
 		From string `json:"from"`
@@ -49,12 +49,12 @@ func (_ eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string,
 			if _, exist := responseMap["messages"].([]interface{})[0].(map[string]interface{})["messageId"]; exist {
 				return json.Marshal(responseMap)
 			}
-			return nil, errors.New("Message not sent something went wrong")
+			return nil, errors.New("message not sent something went wrong")
 		} else {
-			return nil, errors.New("Invalid response from the server")
+			return nil, errors.New("invalid response from the server")
 		}
 
 	} else {
-		return nil, errors.New("Invalid request from the server")
+		return nil, errors.New("invalid request from the server")
 	}
 }

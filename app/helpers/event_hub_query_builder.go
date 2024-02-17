@@ -40,12 +40,12 @@ func paginate(value interface{}, pagination *models.Pagination, db *gorm.DB) fun
 	}
 }
 
-func (_ eventHubQueryBuilder) QueryMicroServiceRequestIDActiveKey() string {
+func (q eventHubQueryBuilder) QueryMicroServiceRequestIDActiveKey() string {
 	return "SELECT t1.id,t1.request_id FROM event_hub_request_ids t1 " +
 		"ORDER BY t1.id DESC LIMIT 1"
 }
 
-func (_ eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, query string) (models.Pagination, *gorm.DB) {
+func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, query string) (models.Pagination, *gorm.DB) {
 	baseUrl := os.Getenv("APP_URL")
 
 	var users []models.EventHubUserDTO
@@ -57,8 +57,10 @@ func (_ eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 			"CASE t1.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',t1.profile_image) ELSE t1.profile_image END as profile_image,"+
 				"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
-		).
-		Where("t1.role = ?", role)
+		)
+	if role != "" {
+		clDB = clDB.Where("t1.role = ?", role)
+	}
 	if query != "%%" {
 		clDB = clDB.Where(
 			"concat(t1.first_name,' ',t1.last_name,' ',t1.email,' ',t1.phone_number,' ',t1.gender,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
@@ -71,7 +73,7 @@ func (_ eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 
 }
 
-func (_ eventHubQueryBuilder) QueryUserDetails() string {
+func (q eventHubQueryBuilder) QueryUserDetails() string {
 	baseUrl := os.Getenv("APP_URL")
 
 	return "SELECT t1.*," +
@@ -81,7 +83,7 @@ func (_ eventHubQueryBuilder) QueryUserDetails() string {
 		"WHERE t1.active = true and t1.id = ?"
 }
 
-func (_ eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string {
+func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string {
 	baseUrl := os.Getenv("APP_URL")
 	return "SELECT DISTINCT t1.*," +
 		"CASE t1.image_storage WHEN 'LOCAL' THEN CONCAT('" + baseUrl + "',t1.profile_image) ELSE t1.profile_image END as profile_image," +
