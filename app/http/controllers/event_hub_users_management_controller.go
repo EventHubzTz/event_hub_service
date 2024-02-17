@@ -30,7 +30,7 @@ type RegisterData struct {
 	Role     string `json:"role"`
 }
 
-func (_ eventHubUsersManagementController) RegisterUser(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) RegisterUser(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF REGISTERING
 	     USER
@@ -82,7 +82,7 @@ func (_ eventHubUsersManagementController) RegisterUser(ctx *fiber.Ctx) error {
 	return response.DataListSuccessResponse(regData, fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) ResendOTPCode(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) ResendOTPCode(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF REGISTERING
 	     USER
@@ -114,7 +114,7 @@ func (_ eventHubUsersManagementController) ResendOTPCode(ctx *fiber.Ctx) error {
 	return response.SuccessResponse("OTP code sent successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) VerifyPhoneNumberUsingOTP(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) VerifyPhoneNumberUsingOTP(ctx *fiber.Ctx) error {
 	type verificationResponse struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
@@ -167,7 +167,7 @@ func (_ eventHubUsersManagementController) VerifyPhoneNumberUsingOTP(ctx *fiber.
 	return ctx.Status(fiber.StatusOK).JSON(verificationRes)
 }
 
-func (_ eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
 	type LoginRequest struct {
 		EmailPhone string `json:"email_phone" validate:"required"`
 		Password   string `json:"password" validate:"required"`
@@ -198,7 +198,7 @@ func (_ eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
 	-------------------------------------------------------------------*/
 	user, err := service.EventHubUsersManagementService.GetUserByEmailPhone(request.EmailPhone)
 
-	if err != nil || user.Active == false {
+	if err != nil || !user.Active {
 		return response.ErrorResponse("Bad credentials", fiber.StatusBadRequest, ctx)
 	}
 	/*-----------------------------------------------------------z
@@ -233,7 +233,7 @@ func (_ eventHubUsersManagementController) LoginUser(ctx *fiber.Ctx) error {
 	return response.DataListSuccessResponse(regData, fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
 	     CONTENTS
@@ -273,11 +273,11 @@ func (_ eventHubUsersManagementController) GetUsers(ctx *fiber.Ctx) error {
 	return response.InternalServiceDataResponse(doctorData, fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) GetUser(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) GetUser(ctx *fiber.Ctx) error {
 	return response.InternalServiceDataResponse(service.EventHubUserTokenService.GetUserFromLocal(ctx), fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF UPDATING USER
 	     PROFILE IMAGE
@@ -341,7 +341,7 @@ func (_ eventHubUsersManagementController) ChangePassword(ctx *fiber.Ctx) error 
 	return response.SuccessResponse(message, fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) GenerateForgotPasswordOtp(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) GenerateForgotPasswordOtp(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST FOR GENERATING
 	     OTP CODE
@@ -375,7 +375,7 @@ func (_ eventHubUsersManagementController) GenerateForgotPasswordOtp(ctx *fiber.
 	return response.MapDataResponse(service.EventHubUsersManagementService.GenerateForgotPasswordOtp(request.PhoneNumber, request.AppID, userFromDB), fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) VerifyOTPResetPassword(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) VerifyOTPResetPassword(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST VERIFY OTP
 	     REST PASSWORD
@@ -418,7 +418,7 @@ func (_ eventHubUsersManagementController) VerifyOTPResetPassword(ctx *fiber.Ctx
 	return response.SuccessResponse(message, fiber.StatusOK, ctx)
 }
 
-func (_ eventHubUsersManagementController) UpdatePassword(ctx *fiber.Ctx) error {
+func (c eventHubUsersManagementController) UpdatePassword(ctx *fiber.Ctx) error {
 	/*--------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST UPDATING PASSWORD
 	---------------------------------------------------------*/

@@ -43,7 +43,7 @@ func (uts eventHubUserTokenService) GenerateToken(user *models.EventHubUser) (ui
 func (uts eventHubUserTokenService) UpdateUserTokenInDB(userID uint64, time time.Time, token string) error {
 	userToken := repositories.EventHubUserTokenRepository.GetUserTokenByUserId(userID)
 	if userToken == nil {
-		return errors.New("No user does not have user_token")
+		return errors.New("no user does not have user_token")
 	}
 	userToken.Token = token
 	userToken.ExpiredAt = time

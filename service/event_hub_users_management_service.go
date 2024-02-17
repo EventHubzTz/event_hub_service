@@ -22,13 +22,13 @@ func newEventHubUsersManagementService() eventHubUsersManagementService {
 	return eventHubUsersManagementService{}
 }
 
-func (_ eventHubUsersManagementService) RegisterUser(user models.EventHubUser) (*models.EventHubUser, error) {
+func (s eventHubUsersManagementService) RegisterUser(user models.EventHubUser) (*models.EventHubUser, error) {
 	/*---------------------------------------------------------
 	 01. CREATE USER AND GET DB RESPONSE AND CHECK AFFECTED ROWS
 	----------------------------------------------------------*/
 	createdUser, dbResponse := repositories.EventHubUsersManagementRepository.RegisterUser(&user)
 	if dbResponse.RowsAffected == 0 {
-		return nil, errors.New("Failed to register user!")
+		return nil, errors.New("failed to register user! ")
 	}
 
 	/*---------------------------------------------------------
@@ -37,7 +37,7 @@ func (_ eventHubUsersManagementService) RegisterUser(user models.EventHubUser) (
 	return createdUser, EventHubUserTokenService.CreateUserTokenInDB(&user)
 }
 
-func (_ eventHubUsersManagementService) GetUserByEmailPhone(emailPhone string) (*models.EventHubUser, error) {
+func (s eventHubUsersManagementService) GetUserByEmailPhone(emailPhone string) (*models.EventHubUser, error) {
 	user, dbResponse := repositories.EventHubUsersManagementRepository.FindOneByEmailPhone(emailPhone)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
@@ -46,7 +46,7 @@ func (_ eventHubUsersManagementService) GetUserByEmailPhone(emailPhone string) (
 	return user, nil
 }
 
-func (_ eventHubUsersManagementService) GetSpecificUserDetailsUsingPhoneNumber(phoneNumber string) *models.EventHubUserDTO {
+func (s eventHubUsersManagementService) GetSpecificUserDetailsUsingPhoneNumber(phoneNumber string) *models.EventHubUserDTO {
 	user, usDB := repositories.EventHubUsersManagementRepository.FindUserUsingPhoneNumber(phoneNumber)
 	if usDB.RowsAffected == 0 {
 		return nil
@@ -54,7 +54,7 @@ func (_ eventHubUsersManagementService) GetSpecificUserDetailsUsingPhoneNumber(p
 	return user
 }
 
-func (_ eventHubUsersManagementService) GetSpecificUser(id uint64) *models.EventHubUser {
+func (s eventHubUsersManagementService) GetSpecificUser(id uint64) *models.EventHubUser {
 	user, usDB := repositories.EventHubUsersManagementRepository.FindOne(id)
 	if usDB.RowsAffected == 0 {
 		return nil
@@ -62,24 +62,24 @@ func (_ eventHubUsersManagementService) GetSpecificUser(id uint64) *models.Event
 	return user
 }
 
-func (_ eventHubUsersManagementService) GetUsers(pagination models.Pagination, role, query string) (models.Pagination, error) {
+func (s eventHubUsersManagementService) GetUsers(pagination models.Pagination, role, query string) (models.Pagination, error) {
 	var newQuery = "%" + query + "%"
 	users, dbResponse := repositories.EventHubUsersManagementRepository.GetUsers(pagination, role, newQuery)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
-		return models.Pagination{}, errors.New("Users not found! ")
+		return models.Pagination{}, errors.New("users not found! ")
 	}
 	return users, nil
 }
 
-func (_ eventHubUsersManagementService) ChangePassword(user models.EventHubUser, userID uint64) (string, error) {
+func (s eventHubUsersManagementService) ChangePassword(user models.EventHubUser, userID uint64) (string, error) {
 	/*---------------------------------------------------------
 	 01. INITIATING VALUES HOLDING MODEL VALUES BEFORE THE
 	     UPDATES
 	----------------------------------------------------------*/
 	userFromDatabase, usDB := repositories.EventHubUsersManagementRepository.FindOne(userID)
 	if usDB.RowsAffected == 0 {
-		return "", errors.New("Internal server error")
+		return "", errors.New("internal server error")
 	}
 	userFromDatabase.Password = user.Password
 	/*---------------------------------------------------------
@@ -87,13 +87,13 @@ func (_ eventHubUsersManagementService) ChangePassword(user models.EventHubUser,
 	----------------------------------------------------------*/
 	_, usrDB := repositories.EventHubUsersManagementRepository.UpdateWithID(userID, userFromDatabase)
 	if usrDB.RowsAffected == 0 {
-		return "", errors.New("Internal server error")
+		return "", errors.New("internal server error")
 	}
 
 	return "Password updated successful", nil
 }
 
-func (_ eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phone string) {
+func (s eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phone string) {
 	successCounter := 0
 	errorCounter := 0
 	/*---------------------------------------------------------
@@ -112,11 +112,8 @@ func (_ eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phon
 			authorizationToken, errAuthorizationToken := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(4)
 			if errAuthorizationToken == nil {
 
-				// response, err := helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
-				response, err := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
-				if err != nil {
+				response, _ := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
 
-				}
 				/*--------------------------------------------
 					04. SAVING RETURNED RESPONSE INTO A TABLE
 				----------------------------------------------*/
@@ -138,14 +135,14 @@ func (_ eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phon
 	}
 }
 
-func (_ eventHubUsersManagementService) VerifyMobileNumberOTPCOde(otpCode models.EventHubUserOTPCode, user *models.EventHubUser, ctx *fiber.Ctx) error {
+func (s eventHubUsersManagementService) VerifyMobileNumberOTPCOde(otpCode models.EventHubUserOTPCode, user *models.EventHubUser, ctx *fiber.Ctx) error {
 	/*---------------------------------------------------------
 	 01. CHECK IF THE OTP CODE DETAILS ARE CORRECT IN THE
 	     DATABASE
 	----------------------------------------------------------*/
 	phoneAndCodeStatus := repositories.EventHubUsersManagementRepository.VerifyPhoneNumberAndOTPCode(otpCode)
 	if !phoneAndCodeStatus {
-		return errors.New("Invalid Phone number OTP Code")
+		return errors.New("invalid Phone number OTP Code")
 	}
 	/*---------------------------------------------------------
 	 02. CHECK IF THE PHONE NUMBER IS THE CORRECT ONE FOR THE
@@ -153,7 +150,7 @@ func (_ eventHubUsersManagementService) VerifyMobileNumberOTPCOde(otpCode models
 	----------------------------------------------------------*/
 	phoneStatus := repositories.EventHubUsersManagementRepository.VerifyUserPhoneNumber(otpCode.Phone, user.Id)
 	if !phoneStatus {
-		return errors.New("Invalid Phone number")
+		return errors.New("invalid Phone number")
 	}
 	/*---------------------------------------------------------
 	 03. CHECK IF THE PHONE NUMBER IS INVALID PARTICULAR USER
@@ -231,7 +228,7 @@ func (s eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, a
 		if usDB.RowsAffected == 0 {
 			return ResponseStatus{
 				Error:   true,
-				Message: "Failed to update OTP Code for resetting password!",
+				Message: "failed to update OTP Code for resetting password!",
 			}
 		}
 		go func() {
@@ -244,27 +241,27 @@ func (s eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, a
 	}
 }
 
-func (_ eventHubUsersManagementService) VerifyOTPResetPassword(userID uint64, otp string, phoneNumber string) error {
+func (s eventHubUsersManagementService) VerifyOTPResetPassword(userID uint64, otp string, phoneNumber string) error {
 	userForgetPasswordOTPDetails := repositories.EventHubUsersManagementRepository.FindForgetPasswordOTPDetails(userID)
 	if userForgetPasswordOTPDetails == nil {
-		return errors.New("Reset Password OTP Verification failed!")
+		return errors.New("reset Password OTP Verification failed! ")
 	} else {
 		if userForgetPasswordOTPDetails.OTP == otp && userForgetPasswordOTPDetails.Phone == phoneNumber {
 			return nil
 		} else {
-			return errors.New("Reset Password OTP Verification failed!")
+			return errors.New("reset Password OTP Verification failed! ")
 		}
 	}
 }
 
-func (_ eventHubUsersManagementService) UpdateProfile(user models.EventHubUser, userID uint64) (string, error) {
+func (s eventHubUsersManagementService) UpdateProfile(user models.EventHubUser, userID uint64) (string, error) {
 	updateMessage := "Password updated sucessful"
 	/*---------------------------------------------------------
 	 01. UPDATING USER DETAILS TO THE DATABASE
 	----------------------------------------------------------*/
 	_, usrDB := repositories.EventHubUsersManagementRepository.UpdateWithID(userID, &user)
 	if usrDB.RowsAffected == 0 {
-		return "", errors.New("Internal server error")
+		return "", errors.New("internal server error")
 	}
 
 	return updateMessage, nil

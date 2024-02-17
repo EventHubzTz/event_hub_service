@@ -17,7 +17,7 @@ func newEventHubRequestIDService() eventHubRequestIDService {
 	return eventHubRequestIDService{}
 }
 
-func (_ eventHubRequestIDService) GetRequestID() *models.EventHubRequestIDDTO {
+func (s eventHubRequestIDService) GetRequestID() *models.EventHubRequestIDDTO {
 	requestID, usDB := repositories.EventHubRequestIDRepository.GetRequestID()
 	if usDB.RowsAffected == 0 {
 		return nil
@@ -25,10 +25,10 @@ func (_ eventHubRequestIDService) GetRequestID() *models.EventHubRequestIDDTO {
 	return requestID
 }
 
-func (_ eventHubRequestIDService) VerifyRequestID(requestID string) (bool, error) {
+func (s eventHubRequestIDService) VerifyRequestID(requestID string) (bool, error) {
 	request, usDB := repositories.EventHubRequestIDRepository.GetRequestID()
 	if usDB.RowsAffected == 0 {
-		return false, errors.New("Request ID not found!")
+		return false, errors.New("request ID not found! ")
 	}
 	if request.RequestID == requestID {
 		utils.SuccessPrint("OK")

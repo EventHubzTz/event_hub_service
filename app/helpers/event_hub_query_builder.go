@@ -73,6 +73,28 @@ func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 
 }
 
+func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+	var users []models.EventHubEventDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
+		Table("event_hub_events as t1").
+		Select(
+			"t1.*",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		)
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.event_name,' ',t1.event_location,' ',t1.event_description,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&users)
+	pagination.Results = users
+	return pagination, clDB
+
+}
+
 func (q eventHubQueryBuilder) QueryUserDetails() string {
 	baseUrl := os.Getenv("APP_URL")
 
@@ -81,6 +103,14 @@ func (q eventHubQueryBuilder) QueryUserDetails() string {
 		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at " +
 		"FROM event_hub_users t1 " +
 		"WHERE t1.active = true and t1.id = ?"
+}
+
+func (q eventHubQueryBuilder) QueryEventDetails() string {
+
+	return "SELECT t1.*," +
+		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at " +
+		"FROM event_hub_events t1 " +
+		"WHERE t1.id = ?"
 }
 
 func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string {

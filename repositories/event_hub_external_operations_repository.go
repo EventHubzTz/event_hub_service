@@ -14,7 +14,7 @@ func newEventHubExternalOperationsRepository() eventHubExternalOperationsReposit
 	return eventHubExternalOperationsRepository{}
 }
 
-func (_ eventHubExternalOperationsRepository) GetMicroServiceExternalOperationSetup(parameterID uint64) (string, *gorm.DB) {
+func (s eventHubExternalOperationsRepository) GetMicroServiceExternalOperationSetup(parameterID uint64) (string, *gorm.DB) {
 	var externalOperationsSetup *models.EventHubExternalOperationsSetup
 	userBD := db.Where("id = ?", parameterID).Find(&externalOperationsSetup)
 	if userBD.RowsAffected == 0 {

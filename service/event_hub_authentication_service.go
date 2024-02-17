@@ -13,7 +13,7 @@ func newEventHubAuthenticationService() eventHubAuthenticationService {
 	return eventHubAuthenticationService{}
 }
 
-func (_ eventHubAuthenticationService) HashPassword(password string) string {
+func (s eventHubAuthenticationService) HashPassword(password string) string {
 	byt, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)
@@ -21,7 +21,7 @@ func (_ eventHubAuthenticationService) HashPassword(password string) string {
 	return string(byt)
 }
 
-func (_ eventHubAuthenticationService) CheckPasswordHash(password string, hash string) bool {
+func (s eventHubAuthenticationService) CheckPasswordHash(password string, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }

@@ -11,7 +11,7 @@ const tablePrefix = "event_hub_"
 var Tables = []interface{}{
 	&EventHubExternalOperationsSetup{}, &EventHubRequestID{}, &EventHubUser{},
 	&EventHubUserToken{}, &EventHubUserOTPCode{}, &EventHubOTPCodeMessage{},
-	&EventHubOTPMessageResponse{}, &EventHubForgotPasswordOTP{},
+	&EventHubOTPMessageResponse{}, &EventHubForgotPasswordOTP{}, &EventHubEvent{},
 }
 
 type Timestamp struct {

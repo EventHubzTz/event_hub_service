@@ -15,7 +15,7 @@ func newEventHubRequestIDManagementController() eventHubRequestIDController {
 	return eventHubRequestIDController{}
 }
 
-func (_ eventHubRequestIDController) GetRequestID(ctx *fiber.Ctx) error {
+func (s eventHubRequestIDController) GetRequestID(ctx *fiber.Ctx) error {
 	/*--------------------------------------------------------
 	 01. RETURNING THE RESPONSE WITH MICRO SERVICE REQUEST ID
 	----------x------------------------------------------------*/
