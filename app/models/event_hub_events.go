@@ -20,16 +20,16 @@ type EventHubEvent struct {
 
 type EventHubEventDTO struct {
 	ID
-	EventName              string                   `json:"event_name"`
-	EventLocation          string                   `json:"event_location"`
-	EventTime              string                   `json:"event_time"`
-	EventCapacity          int                      `json:"event_capacity"`
-	EventDescription       string                   `json:"event_description"`
-	EventCategoryID        uint64                   `json:"event_category_id"`
-	EventSubCategoryID     uint64                   `json:"event_sub_category_id"`
-	ProductCategoryName    string                   `json:"event_category_name"`
-	ProductSubCategoryName string                   `json:"event_sub_category_name"`
-	EventFiles             []EventHubEventImagesDTO `json:"event_files" gorm:"foreignKey:event_id"`
+	EventName            string                   `json:"event_name"`
+	EventLocation        string                   `json:"event_location"`
+	EventTime            string                   `json:"event_time"`
+	EventCapacity        int                      `json:"event_capacity"`
+	EventDescription     string                   `json:"event_description"`
+	EventCategoryID      uint64                   `json:"event_category_id"`
+	EventSubCategoryID   uint64                   `json:"event_sub_category_id"`
+	EventCategoryName    string                   `json:"event_category_name"`
+	EventSubCategoryName string                   `json:"event_sub_category_name"`
+	EventFiles           []EventHubEventImagesDTO `json:"event_files" gorm:"foreignKey:event_id"`
 	TimestampString
 }
 
