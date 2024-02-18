@@ -27,9 +27,17 @@ func (s eventHubEventsManagementService) AddEvent(event models.EventHubEvent) er
 	return nil
 }
 
-func (s eventHubEventsManagementService) GetEvents(pagination models.Pagination, query string) (models.Pagination, error) {
+func (s eventHubEventsManagementService) AddEventImage(eventImage models.EventHubEventImages) error {
+	_, dbResp := repositories.EventHubEventsManagementRepository.AddEventImage(eventImage)
+	if dbResp.RowsAffected == 0 {
+		return errors.New("fail to add event image! ")
+	}
+	return nil
+}
+
+func (s eventHubEventsManagementService) GetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, error) {
 	var newQuery = "%" + query + "%"
-	events, dbResponse := repositories.EventHubEventsManagementRepository.GetEvents(pagination, newQuery)
+	events, dbResponse := repositories.EventHubEventsManagementRepository.GetEvents(pagination, newQuery, eventCategoryId, eventSubCategoryId)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
 		return models.Pagination{}, errors.New("events not found! ")
@@ -67,5 +75,16 @@ func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventH
 		return errors.New("failed to update event! ")
 	}
 
+	return nil
+}
+
+func (s eventHubEventsManagementService) CheckIfEventReachMaxCoverImageLimit(eventID uint64) error {
+	/*---------------------------------------------------
+	 01.  CHECKING IF PRODUCT REACH MAX IMAGE LIMIT (5)
+	----------------------------------------------------*/
+	coverImageFromDB, _ := repositories.EventHubEventsManagementRepository.FindProductImagesByProductID(eventID)
+	if len(coverImageFromDB) >= 5 {
+		return errors.New("you have reach  maximum number of 5 photo per event")
+	}
 	return nil
 }

@@ -12,6 +12,7 @@ var Tables = []interface{}{
 	&EventHubExternalOperationsSetup{}, &EventHubRequestID{}, &EventHubUser{},
 	&EventHubUserToken{}, &EventHubUserOTPCode{}, &EventHubOTPCodeMessage{},
 	&EventHubOTPMessageResponse{}, &EventHubForgotPasswordOTP{}, &EventHubEvent{},
+	&EventHubEventCategories{}, &EventHubEventSubCategories{}, &EventHubEventImages{},
 }
 
 type Timestamp struct {
@@ -35,4 +36,9 @@ type IDRequest struct {
 type TimestampString struct {
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type ImageDimension struct {
+	Width  int
+	Height int
 }

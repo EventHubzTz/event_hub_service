@@ -73,7 +73,7 @@ func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 
 }
 
-func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
 	var users []models.EventHubEventDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
@@ -83,6 +83,12 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		)
+	if eventCategoryId != 0 {
+		clDB = clDB.Where("t1.event_category_id = ?", eventCategoryId)
+	}
+	if eventSubCategoryId != 0 {
+		clDB = clDB.Where("t1.event_sub_category_id = ?", eventSubCategoryId)
+	}
 	if query != "%%" {
 		clDB = clDB.Where(
 			"concat(t1.event_name,' ',t1.event_location,' ',t1.event_description,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
@@ -103,6 +109,56 @@ func (q eventHubQueryBuilder) QueryUserDetails() string {
 		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at " +
 		"FROM event_hub_users t1 " +
 		"WHERE t1.active = true and t1.id = ?"
+}
+
+func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+	var productsCategories []models.EventHubEventCategoriesDTO
+	baseUrl := os.Getenv("APP_URL")
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubEventCategories{}, &pagination, database.DB())).
+		Table("afya_app_event_categories as t1").
+		Select(
+			"t1.*",
+			"CONCAT(CASE t1.image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, t1.icon_url) as icon_url",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		)
+	if query != "%%" {
+		clDB = clDB.Where("t1.id LIKE ? OR "+
+			"t1.event_category_name LIKE ? ",
+			query,
+			query,
+		)
+	}
+	clDB = clDB.Find(&productsCategories)
+	pagination.Results = productsCategories
+	return pagination, clDB
+
+}
+
+func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagination, eventCategoryId uint64, query string) (models.Pagination, *gorm.DB) {
+	var productsCategories []models.EventHubEventSubCategoriesDTO
+	baseUrl := os.Getenv("APP_URL")
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubEventSubCategories{}, &pagination, database.DB())).
+		Table("afya_app_event_subcategories as t1").
+		Select(
+			"t1.*",
+			"CONCAT(CASE t1.image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, t1.icon_url) as icon_url",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		).Where("t1.event_category_id = ?", eventCategoryId)
+	if query != "%%" {
+		clDB = clDB.Where("t1.id LIKE ? OR "+
+			"t1.event_sub_category_name LIKE ? ",
+			query,
+			query,
+		)
+	}
+	clDB = clDB.Find(&productsCategories)
+	pagination.Results = productsCategories
+	return pagination, clDB
+
 }
 
 func (q eventHubQueryBuilder) QueryEventDetails() string {

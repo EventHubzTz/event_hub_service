@@ -7,8 +7,10 @@ import (
 
 func EventHubEventsManagementRoutes(route fiber.Router) {
 	route.Post("/add/event", controllers.EventHubEventsManagementController.AddEvent)
+	route.Post("/add/event/image", controllers.EventHubEventsManagementController.AddEventImage)
 	route.Post("/get/events", controllers.EventHubEventsManagementController.GetEvents)
 	route.Post("/get/event", controllers.EventHubEventsManagementController.GetEvent)
 	route.Get("/update/event", controllers.EventHubEventsManagementController.UpdateEvent)
+	route.Post("/delete/event/image", controllers.EventHubEventsManagementController.DeleteEventImage)
 	route.Post("/delete/event", controllers.EventHubEventsManagementController.DeleteEvent)
 }

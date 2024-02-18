@@ -18,6 +18,8 @@ require (
 	gorm.io/gorm v1.25.7
 )
 
+require golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+
 require (
 	cloud.google.com/go v0.111.0 // indirect
 	cloud.google.com/go/compute v1.23.3 // indirect
@@ -27,6 +29,7 @@ require (
 	cloud.google.com/go/storage v1.30.1 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/disintegration/imaging v1.6.2
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/ggwhite/go-masker v1.1.0

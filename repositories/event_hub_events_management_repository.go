@@ -20,9 +20,14 @@ func (r eventHubEventsManagementRepository) AddEvent(event *models.EventHubEvent
 	return event, urDB
 }
 
-func (r_ eventHubEventsManagementRepository) GetEvents(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+func (r eventHubEventsManagementRepository) AddEventImage(eventImage models.EventHubEventImages) (models.EventHubEventImages, *gorm.DB) {
+	chR := db.Create(&eventImage)
+	return eventImage, chR
+}
 
-	events, urDB := helpers.EventHubQueryBuilder.QueryGetEvents(pagination, query)
+func (r_ eventHubEventsManagementRepository) GetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
+
+	events, urDB := helpers.EventHubQueryBuilder.QueryGetEvents(pagination, query, eventCategoryId, eventSubCategoryId)
 
 	return events, urDB
 }
@@ -44,7 +49,18 @@ func (r eventHubEventsManagementRepository) UpdateEventWithId(event *models.Even
 	return sRDB
 }
 
+func (r eventHubEventsManagementRepository) DeleteEventImage(eventImageId uint64) *gorm.DB {
+	sRDB := db.Where("id = ? ", eventImageId).Delete(models.EventHubEventImages{})
+	return sRDB
+}
+
 func (r eventHubEventsManagementRepository) DeleteEvent(regionId uint64) *gorm.DB {
 	sRDB := db.Where("id = ? ", regionId).Delete(models.EventHubEvent{})
 	return sRDB
+}
+
+func (r eventHubEventsManagementRepository) FindProductImagesByProductID(productID uint64) ([]models.EventHubEventImagesDTO, *gorm.DB) {
+	var contentCoverImage []models.EventHubEventImagesDTO
+	ccDB := db.Where("event_id = ?", productID).Find(&contentCoverImage)
+	return contentCoverImage, ccDB
 }
