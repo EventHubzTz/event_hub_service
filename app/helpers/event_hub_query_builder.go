@@ -116,7 +116,7 @@ func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Paginati
 	baseUrl := os.Getenv("APP_URL")
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEventCategories{}, &pagination, database.DB())).
-		Table("afya_app_event_categories as t1").
+		Table("event_hub_event_categories as t1").
 		Select(
 			"t1.*",
 			"CONCAT(CASE t1.image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, t1.icon_url) as icon_url",
@@ -141,7 +141,7 @@ func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagin
 	baseUrl := os.Getenv("APP_URL")
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEventSubCategories{}, &pagination, database.DB())).
-		Table("afya_app_event_subcategories as t1").
+		Table("event_hub_event_subcategories as t1").
 		Select(
 			"t1.*",
 			"CONCAT(CASE t1.image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, t1.icon_url) as icon_url",

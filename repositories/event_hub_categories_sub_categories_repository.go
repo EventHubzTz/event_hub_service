@@ -27,7 +27,7 @@ func (r eventHubCategoriesSubCategoriesRepository) GetAllEventCategories() ([]mo
 
 	var eventCategories []models.EventHubEventCategoriesDTO
 	cmDB := db.Raw("select id,event_category_name,CONCAT(CASE image_storage WHEN 'LOCAL' THEN '" + baseUrl + "' ELSE '' END, icon_url) as icon_url," +
-		"event_category_color FROM afya_app_products_categories").Find(&eventCategories)
+		"event_category_color FROM event_hub_event_categories").Find(&eventCategories)
 	return eventCategories, cmDB
 }
 
@@ -63,7 +63,7 @@ func (r eventHubCategoriesSubCategoriesRepository) GetAllEventSubCategories(even
 	baseUrl := os.Getenv("APP_URL")
 
 	var productsSubCategories []models.EventHubEventSubCategoriesDTO
-	cmDB := db.Table("afya_app_event_subcategories as sub").
+	cmDB := db.Table("event_hub_event_subcategories as sub").
 		Select("sub.*", "CONCAT(CASE image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, icon_url) as icon_url").
 		Where("event_category_id = ?", eventCategoryId).
 		Find(&productsSubCategories)
