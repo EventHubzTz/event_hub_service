@@ -41,7 +41,7 @@ func (c eventHubEventsManagementController) AddEvent(ctx *fiber.Ctx) error {
 	err := ctx.BodyParser(&request)
 
 	if err != nil {
-		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 	}
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
