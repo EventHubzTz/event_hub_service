@@ -75,6 +75,7 @@ func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 
 func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
 	var users []models.EventHubEventDTO
+	baseUrl := os.Getenv("APP_URL")
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
 		Table("event_hub_events as t1").
@@ -82,7 +83,16 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 			"t1.*",
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
-		)
+		).
+		Preload("EventFiles", func(db *gorm.DB) *gorm.DB {
+			return db.Table("event_hub_event_images").
+				Select(
+					"event_hub_event_images.*",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.image_url) ELSE event_hub_event_images.image_url END image_url",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.video_url) ELSE event_hub_event_images.video_url END video_url",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
+				)
+		})
 	if eventCategoryId != 0 {
 		clDB = clDB.Where("t1.event_category_id = ?", eventCategoryId)
 	}
