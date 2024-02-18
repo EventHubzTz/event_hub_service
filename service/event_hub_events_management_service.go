@@ -69,6 +69,9 @@ func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventH
 	event.EventLocation = regionRequest.EventLocation
 	event.EventTime = regionRequest.EventTime
 	event.EventDescription = regionRequest.EventDescription
+	event.EventCapacity = regionRequest.EventCapacity
+	event.EventCategoryID = regionRequest.EventCategoryID
+	event.EventSubCategoryID = regionRequest.EventSubCategoryID
 	dbResponse = repositories.EventHubEventsManagementRepository.UpdateEventWithId(event)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED

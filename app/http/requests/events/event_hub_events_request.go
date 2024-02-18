@@ -33,10 +33,13 @@ func (request EventHubEventRequest) ToModel() models.EventHubEvent {
 
 type EventHubUpdateEventRequest struct {
 	models.IDRequest
-	EventName        string    `json:"event_name" validate:"required"`
-	EventLocation    string    `json:"event_location" validate:"required"`
-	EventTime        time.Time `json:"event_time" validate:"required"`
-	EventDescription string    `json:"event_description" validate:"required"`
+	EventName          string    `json:"event_name" validate:"required"`
+	EventLocation      string    `json:"event_location" validate:"required"`
+	EventTime          time.Time `json:"event_time" validate:"required"`
+	EventDescription   string    `json:"event_description" validate:"required"`
+	EventCapacity      int       `json:"event_capacity" validate:"required"`
+	EventCategoryID    uint64    `json:"event_category_id" validate:"required"`
+	EventSubCategoryID uint64    `json:"event_sub_category_id" validate:"required"`
 }
 
 func (request EventHubUpdateEventRequest) ToModel() models.EventHubEvent {
@@ -44,10 +47,13 @@ func (request EventHubUpdateEventRequest) ToModel() models.EventHubEvent {
 	 01. ASSIGN REQUEST TO EVENT MODEL
 	----------------------------------------------------------*/
 	return models.EventHubEvent{
-		EventName:        request.EventName,
-		EventLocation:    request.EventLocation,
-		EventTime:        request.EventTime,
-		EventDescription: request.EventDescription,
+		EventName:          request.EventName,
+		EventLocation:      request.EventLocation,
+		EventTime:          request.EventTime,
+		EventDescription:   request.EventDescription,
+		EventCapacity:      request.EventCapacity,
+		EventCategoryID:    request.EventCategoryID,
+		EventSubCategoryID: request.EventSubCategoryID,
 	}
 }
 
