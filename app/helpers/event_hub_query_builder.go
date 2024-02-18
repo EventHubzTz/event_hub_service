@@ -79,8 +79,8 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
 		Table("event_hub_events as t1").
-		Joins("LEFT JOIN event_hub_event_categories t2 on t2.id = t1.event_category_id").
-		Joins("LEFT JOIN event_hub_event_subcategories t3 on t3.id = t1.event_category_id").
+		Joins("LEFT JOIN event_hub_event_categories t2 on t1.event_category_id = t2.id").
+		Joins("LEFT JOIN event_hub_event_subcategories t3 on t1.event_category_id = t3.id").
 		Select(
 			"t1.*",
 			"t2.event_category_name",
