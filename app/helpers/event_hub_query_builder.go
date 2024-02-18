@@ -79,8 +79,12 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
 		Table("event_hub_events as t1").
+		Joins("LEFT JOIN event_hub_event_categories t2 on t2.id = t1.event_category_id").
+		Joins("LEFT JOIN event_hub_event_subcategories t3 on t3.id = t1.event_category_id").
 		Select(
 			"t1.*",
+			"t2.event_category_name",
+			"t3.event_sub_category_name",
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		).
