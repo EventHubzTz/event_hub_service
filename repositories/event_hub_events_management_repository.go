@@ -58,7 +58,7 @@ func (r eventHubEventsManagementRepository) GetEvent(eventID uint64) (models.Eve
 				)
 		})
 	if eventID != 0 {
-		clDB = clDB.Where("id = ?", eventID)
+		clDB = clDB.Where("t1.id = ?", eventID)
 	}
 	clDB = clDB.Find(&event)
 	return event, clDB
