@@ -45,12 +45,13 @@ func (s eventHubEventsManagementService) GetEvents(pagination models.Pagination,
 	return events, nil
 }
 
-func (s eventHubEventsManagementService) GetEvent(id uint64) *models.EventHubEventDTO {
-	event, usDB := repositories.EventHubEventsManagementRepository.GetEvent(id)
-	if usDB.RowsAffected == 0 {
-		return nil
+func (s eventHubEventsManagementService) GetEvent(id uint64) (*models.EventHubEventDTO, error) {
+	event, dbResponse := repositories.EventHubEventsManagementRepository.GetEvent(id)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return nil, dbResponse.Error
 	}
-	return event
+	return &event, nil
 }
 
 func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventHubEvent, id uint64) error {

@@ -108,9 +108,9 @@ func (c eventHubEventsManagementController) AddEventImage(ctx *fiber.Ctx) error 
 	/*----------------------------------------
 	 05. CHECK IF EVENT EXIST IN THE SYSTEM
 	------------------------------------------*/
-	event := service.EventHubEventsManagementService.GetEvent(request.EventID)
-	if event == nil {
-		return response.ErrorResponse("Event does not exist in the system!", fiber.StatusBadRequest, ctx)
+	_, eventError := service.EventHubEventsManagementService.GetEvent(request.EventID)
+	if eventError != nil {
+		return response.ErrorResponse(eventError.Error(), fiber.StatusBadRequest, ctx)
 	}
 
 	/*---------------------------------------------------
@@ -248,9 +248,9 @@ func (c eventHubEventsManagementController) GetEvent(ctx *fiber.Ctx) error {
 	/*---------------------------------------------------------
 	 04. GET THE EVENT FROM THE DATABASE USING EVENT ID
 	----------------------------------------------------------*/
-	event := service.EventHubEventsManagementService.GetEvent(request.EventID)
-	if event == nil {
-		return response.ErrorResponse("Event details not found in the system", fiber.StatusBadRequest, ctx)
+	event, eventError := service.EventHubEventsManagementService.GetEvent(request.EventID)
+	if eventError != nil {
+		return response.ErrorResponse(eventError.Error(), fiber.StatusBadRequest, ctx)
 	}
 	/*---------------------------------------------------------
 	 09. IF ALL THIS WENT WELL THEN RETURN SUCCESS

@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"os"
+
 	"github.com/EventHubzTz/event_hub_service/app/helpers"
 	"github.com/EventHubzTz/event_hub_service/app/models"
 	"gorm.io/gorm"
@@ -32,10 +34,34 @@ func (r_ eventHubEventsManagementRepository) GetEvents(pagination models.Paginat
 	return events, urDB
 }
 
-func (r eventHubEventsManagementRepository) GetEvent(id uint64) (*models.EventHubEventDTO, *gorm.DB) {
-	var event *models.EventHubEventDTO
-	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryEventDetails(), id).Find(&event)
-	return event, urDB
+func (r eventHubEventsManagementRepository) GetEvent(eventID uint64) (models.EventHubEventDTO, *gorm.DB) {
+	baseUrl := os.Getenv("APP_URL")
+
+	var event models.EventHubEventDTO
+	clDB := db.Table("event_hub_events as t1").
+		Joins("LEFT JOIN event_hub_event_categories t2 on t1.event_category_id = t2.id").
+		Joins("LEFT JOIN event_hub_event_subcategories t3 on t1.event_sub_category_id = t3.id").
+		Select(
+			"t1.*",
+			"t2.event_category_name",
+			"t3.event_sub_category_name",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		).
+		Preload("EventFiles", func(db *gorm.DB) *gorm.DB {
+			return db.Table("event_hub_event_images").
+				Select(
+					"event_hub_event_images.*",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.image_url) ELSE event_hub_event_images.image_url END image_url",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.video_url) ELSE event_hub_event_images.video_url END video_url",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
+				)
+		})
+	if eventID != 0 {
+		clDB = clDB.Where("id = ?", eventID)
+	}
+	clDB = clDB.Find(&event)
+	return event, clDB
 }
 
 func (r eventHubEventsManagementRepository) GetEventWithId(id uint64) (*models.EventHubEvent, *gorm.DB) {
@@ -59,8 +85,8 @@ func (r eventHubEventsManagementRepository) DeleteEvent(regionId uint64) *gorm.D
 	return sRDB
 }
 
-func (r eventHubEventsManagementRepository) FindProductImagesByProductID(productID uint64) ([]models.EventHubEventImagesDTO, *gorm.DB) {
+func (r eventHubEventsManagementRepository) FindProductImagesByProductID(eventID uint64) ([]models.EventHubEventImagesDTO, *gorm.DB) {
 	var contentCoverImage []models.EventHubEventImagesDTO
-	ccDB := db.Where("event_id = ?", productID).Find(&contentCoverImage)
+	ccDB := db.Where("event_id = ?", eventID).Find(&contentCoverImage)
 	return contentCoverImage, ccDB
 }

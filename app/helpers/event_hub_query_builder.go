@@ -48,7 +48,7 @@ func (q eventHubQueryBuilder) QueryMicroServiceRequestIDActiveKey() string {
 func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, query string) (models.Pagination, *gorm.DB) {
 	baseUrl := os.Getenv("APP_URL")
 
-	var users []models.EventHubUserDTO
+	var events []models.EventHubUserDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubUser{}, &pagination, database.DB())).
 		Table("event_hub_users as t1").
@@ -67,14 +67,14 @@ func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 			query,
 		)
 	}
-	clDB = clDB.Find(&users)
-	pagination.Results = users
+	clDB = clDB.Find(&events)
+	pagination.Results = events
 	return pagination, clDB
 
 }
 
 func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
-	var users []models.EventHubEventDTO
+	var events []models.EventHubEventDTO
 	baseUrl := os.Getenv("APP_URL")
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
@@ -109,8 +109,8 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 			query,
 		)
 	}
-	clDB = clDB.Find(&users)
-	pagination.Results = users
+	clDB = clDB.Find(&events)
+	pagination.Results = events
 	return pagination, clDB
 
 }
