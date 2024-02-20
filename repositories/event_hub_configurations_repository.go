@@ -1,0 +1,41 @@
+package repositories
+
+import (
+	"time"
+
+	"github.com/EventHubzTz/event_hub_service/app/helpers"
+	"github.com/EventHubzTz/event_hub_service/app/models"
+	"gorm.io/gorm"
+)
+
+var EventHubConfigurationsRepository = newEventHubConfigurationsRepository()
+
+type eventHubConfigurationsRepository struct {
+}
+
+func newEventHubConfigurationsRepository() eventHubConfigurationsRepository {
+	return eventHubConfigurationsRepository{}
+}
+
+func (r eventHubConfigurationsRepository) AddConfiguration(configuration *models.EventHubConfigurations) (*models.EventHubConfigurations, *gorm.DB) {
+	urDB := db.Create(&configuration)
+	return configuration, urDB
+}
+
+func (r eventHubConfigurationsRepository) GetConfigurations() (*models.EventHubConfigurationsDTO, *gorm.DB) {
+	var configurations *models.EventHubConfigurationsDTO
+	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryConfigurations()).Find(&configurations)
+	return configurations, urDB
+}
+
+func (r eventHubConfigurationsRepository) UpdateToken(id uint64, token string) *gorm.DB {
+
+	urDB := db.Model(models.EventHubConfigurations{}).Where("id = ? ", id).Update("azampay_token", token)
+	return urDB
+}
+
+func (r eventHubConfigurationsRepository) UpdateTokenTime(id uint64, tokenTime time.Time) *gorm.DB {
+
+	urDB := db.Model(models.EventHubConfigurations{}).Where("id = ? ", id).Update("azampay_token_generated_time", tokenTime)
+	return urDB
+}

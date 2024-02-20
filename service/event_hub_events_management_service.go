@@ -18,7 +18,7 @@ func newEventHubEventsManagementService() eventHubEventsManagementService {
 
 func (s eventHubEventsManagementService) AddEvent(event models.EventHubEvent) error {
 	/*---------------------------------------------------------
-	 01. CREATE USER AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	 01. CREATE EVENT AND GET DB RESPONSE AND CHECK AFFECTED ROWS
 	----------------------------------------------------------*/
 	_, dbResponse := repositories.EventHubEventsManagementRepository.AddEvent(&event)
 	if dbResponse.RowsAffected == 0 {
@@ -71,6 +71,7 @@ func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventH
 	event.EventTime = regionRequest.EventTime
 	event.EventDescription = regionRequest.EventDescription
 	event.EventCapacity = regionRequest.EventCapacity
+	event.EventEntrance = regionRequest.EventEntrance
 	event.EventCategoryID = regionRequest.EventCategoryID
 	event.EventSubCategoryID = regionRequest.EventSubCategoryID
 	dbResponse = repositories.EventHubEventsManagementRepository.UpdateEventWithId(event)

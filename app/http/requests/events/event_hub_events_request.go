@@ -12,6 +12,7 @@ type EventHubEventRequest struct {
 	EventTime          time.Time `json:"event_time" validate:"required"`
 	EventDescription   string    `json:"event_description" validate:"required"`
 	EventCapacity      int       `json:"event_capacity" validate:"required"`
+	EventEntrance      float32   `json:"event_entrance" validate:"required"`
 	EventCategoryID    uint64    `json:"event_category_id" validate:"required"`
 	EventSubCategoryID uint64    `json:"event_sub_category_id" validate:"required"`
 }
@@ -26,6 +27,7 @@ func (request EventHubEventRequest) ToModel() models.EventHubEvent {
 		EventTime:          request.EventTime,
 		EventDescription:   request.EventDescription,
 		EventCapacity:      request.EventCapacity,
+		EventEntrance:      request.EventEntrance,
 		EventCategoryID:    request.EventCategoryID,
 		EventSubCategoryID: request.EventSubCategoryID,
 	}
@@ -38,6 +40,7 @@ type EventHubUpdateEventRequest struct {
 	EventTime          time.Time `json:"event_time" validate:"required"`
 	EventDescription   string    `json:"event_description" validate:"required"`
 	EventCapacity      int       `json:"event_capacity" validate:"required"`
+	EventEntrance      float32   `json:"event_entrance" validate:"required"`
 	EventCategoryID    uint64    `json:"event_category_id" validate:"required"`
 	EventSubCategoryID uint64    `json:"event_sub_category_id" validate:"required"`
 }
@@ -52,6 +55,7 @@ func (request EventHubUpdateEventRequest) ToModel() models.EventHubEvent {
 		EventTime:          request.EventTime,
 		EventDescription:   request.EventDescription,
 		EventCapacity:      request.EventCapacity,
+		EventEntrance:      request.EventEntrance,
 		EventCategoryID:    request.EventCategoryID,
 		EventSubCategoryID: request.EventSubCategoryID,
 	}

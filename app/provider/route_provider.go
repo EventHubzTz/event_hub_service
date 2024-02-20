@@ -17,4 +17,6 @@ func RouteProvider(app *fiber.App) {
 	api.AuthenticatedEventHubUsersManagementRoutes(apiAuthenticatedRoute)
 	api.EventHubEventsManagementRoutes(apiAuthenticatedRoute)
 	api.EventHubCategoriesSubCategoriesRoutes(apiAuthenticatedRoute)
+	api.EventHubPaymentRoutes(apiAuthenticatedRoute)
+	api.EventHubConfigurationsRoutes(apiAuthenticatedRoute)
 }

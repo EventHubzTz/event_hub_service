@@ -1,0 +1,34 @@
+package repositories
+
+import (
+	"github.com/EventHubzTz/event_hub_service/app/helpers"
+	"github.com/EventHubzTz/event_hub_service/app/models"
+	"gorm.io/gorm"
+)
+
+var EventHubPaymentRepository = newEventHubPaymentRepository()
+
+type eventHubPaymentRepository struct {
+}
+
+func newEventHubPaymentRepository() eventHubPaymentRepository {
+	return eventHubPaymentRepository{}
+}
+
+func (r eventHubPaymentRepository) AddPaymentTransaction(paymentTransation *models.EventHubPaymentTransactions) (*models.EventHubPaymentTransactions, *gorm.DB) {
+	urDB := db.Create(&paymentTransation)
+	return paymentTransation, urDB
+}
+
+func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+
+	events, urDB := helpers.EventHubQueryBuilder.QueryPaymentTransactions(pagination, query)
+
+	return events, urDB
+}
+
+func (r eventHubConfigurationsRepository) UpdatePaymentStatus(transactionID uint64, status string) *gorm.DB {
+
+	urDB := db.Model(models.EventHubPaymentTransactions{}).Where("transaction_id = ? ", transactionID).Update("payment_status", status)
+	return urDB
+}

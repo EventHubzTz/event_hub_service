@@ -8,6 +8,7 @@ type EventHubEvent struct {
 	EventLocation      string    `json:"event_location" gorm:"not null"`
 	EventTime          time.Time `json:"event_time" gorm:"not null"`
 	EventCapacity      int       `json:"event_capacity" gorm:"default:0;not null"`
+	EventEntrance      float32   `json:"event_entrance" gorm:"default:0;not null"`
 	EventDescription   string    `json:"event_description" gorm:"not null"`
 	EventCategoryID    uint64    `json:"event_category_id" gorm:"not null;index:event_category_id_index"`
 	EventSubCategoryID uint64    `json:"event_sub_category_id" gorm:"not null;index:event_sub_category_id_index"`
@@ -24,6 +25,7 @@ type EventHubEventDTO struct {
 	EventLocation        string                   `json:"event_location"`
 	EventTime            string                   `json:"event_time"`
 	EventCapacity        int                      `json:"event_capacity"`
+	EventEntrance        float32                  `json:"event_entrance"`
 	EventDescription     string                   `json:"event_description"`
 	EventCategoryID      uint64                   `json:"event_category_id"`
 	EventSubCategoryID   uint64                   `json:"event_sub_category_id"`

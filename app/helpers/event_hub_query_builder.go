@@ -45,6 +45,11 @@ func (q eventHubQueryBuilder) QueryMicroServiceRequestIDActiveKey() string {
 		"ORDER BY t1.id DESC LIMIT 1"
 }
 
+func (q eventHubQueryBuilder) QueryConfigurations() string {
+	return "SELECT t1.*," +
+		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at FROM event_hub_configurations t1 "
+}
+
 func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, query string) (models.Pagination, *gorm.DB) {
 	baseUrl := os.Getenv("APP_URL")
 
@@ -106,6 +111,32 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 	if query != "%%" {
 		clDB = clDB.Where(
 			"concat(t1.event_name,' ',t1.event_location,' ',t1.event_description,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&events)
+	pagination.Results = events
+	return pagination, clDB
+
+}
+
+func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+	var events []models.EventHubPaymentTransactionsDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
+		Table("event_hub_payment_transactions as t1").
+		Joins("LEFT JOIN event_hub_users t2 on t1.user_id = t2.id").
+		Joins("LEFT JOIN event_hub_events t3 on t1.event_id = t3.id").
+		Select(
+			"t1.*",
+			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
+			"t3.event_name",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		)
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t2.first_name,' ',t2.last_name,' ',t3.event_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
 			query,
 		)
 	}

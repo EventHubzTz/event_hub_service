@@ -26,6 +26,4 @@ func Seed() {
 		//  return
 	}
 	utils.SuccessPrint("Seed External Setup Successfully!")
-
-	return
 }
