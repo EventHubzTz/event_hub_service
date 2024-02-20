@@ -365,3 +365,7 @@ func (c eventHubEventsManagementController) DeleteEvent(ctx *fiber.Ctx) error {
 
 	return response.SuccessResponse("Event deleted successfully!", fiber.StatusOK, ctx)
 }
+
+func (c eventHubEventsManagementController) GetDashboardStatistics(ctx *fiber.Ctx) error {
+	return response.MapDataResponse(service.EventHubEventsManagementService.GetDashboardStatistics(), fiber.StatusOK, ctx)
+}

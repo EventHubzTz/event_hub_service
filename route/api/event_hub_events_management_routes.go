@@ -13,4 +13,6 @@ func EventHubEventsManagementRoutes(route fiber.Router) {
 	route.Post("/update/event", controllers.EventHubEventsManagementController.UpdateEvent)
 	route.Post("/delete/event/image", controllers.EventHubEventsManagementController.DeleteEventImage)
 	route.Post("/delete/event", controllers.EventHubEventsManagementController.DeleteEvent)
+
+	route.Get("/get/dashboard/statistics", controllers.EventHubEventsManagementController.GetDashboardStatistics)
 }

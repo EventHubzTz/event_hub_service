@@ -92,3 +92,8 @@ func (s eventHubEventsManagementService) CheckIfEventReachMaxCoverImageLimit(eve
 	}
 	return nil
 }
+
+func (s eventHubEventsManagementService) GetDashboardStatistics() *models.EventHubDashboardStatisticsDTO {
+	statistics, _ := repositories.EventHubEventsManagementRepository.GetDashboardStatistics()
+	return statistics
+}

@@ -191,3 +191,9 @@ func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string 
 		"FROM event_hub_users t1 " +
 		"WHERE t1.phone_number =  ? "
 }
+
+func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {
+	return "SELECT " +
+		"(SELECT COUNT(*) FROM event_hub_users) AS total_users," +
+		"(SELECT COUNT(*) FROM event_hub_events) AS total_events"
+}

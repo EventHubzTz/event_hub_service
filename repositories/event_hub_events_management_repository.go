@@ -90,3 +90,9 @@ func (r eventHubEventsManagementRepository) FindProductImagesByProductID(eventID
 	ccDB := db.Where("event_id = ?", eventID).Find(&contentCoverImage)
 	return contentCoverImage, ccDB
 }
+
+func (r eventHubEventsManagementRepository) GetDashboardStatistics() (*models.EventHubDashboardStatisticsDTO, *gorm.DB) {
+	var statistics *models.EventHubDashboardStatisticsDTO
+	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatistics()).Find(&statistics)
+	return statistics, urDB
+}
