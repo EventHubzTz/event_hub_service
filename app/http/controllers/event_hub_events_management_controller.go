@@ -43,6 +43,8 @@ func (c eventHubEventsManagementController) AddEvent(ctx *fiber.Ctx) error {
 	if err != nil {
 		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 	}
+	userFromLocal := service.EventHubUserTokenService.GetUserFromLocal(ctx)
+	request.UserID = userFromLocal.Id
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
 	     IN A REQUEST

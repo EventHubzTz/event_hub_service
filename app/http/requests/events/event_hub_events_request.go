@@ -7,6 +7,7 @@ import (
 )
 
 type EventHubEventRequest struct {
+	UserID             uint64    `json:"user_id" validate:"required"`
 	EventName          string    `json:"event_name" validate:"required"`
 	EventLocation      string    `json:"event_location" validate:"required"`
 	EventTime          time.Time `json:"event_time" validate:"required"`
@@ -22,6 +23,7 @@ func (request EventHubEventRequest) ToModel() models.EventHubEvent {
 	 01. ASSIGN REQUEST TO EVENT MODEL
 	----------------------------------------------------------*/
 	return models.EventHubEvent{
+		UserID:             request.UserID,
 		EventName:          request.EventName,
 		EventLocation:      request.EventLocation,
 		EventTime:          request.EventTime,
