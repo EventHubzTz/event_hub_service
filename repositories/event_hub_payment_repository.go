@@ -27,7 +27,7 @@ func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagi
 	return events, urDB
 }
 
-func (r eventHubConfigurationsRepository) UpdatePaymentStatus(transactionID uint64, status string) *gorm.DB {
+func (r eventHubPaymentRepository) UpdatePaymentStatus(transactionID string, status string) *gorm.DB {
 
 	urDB := db.Model(models.EventHubPaymentTransactions{}).Where("transaction_id = ? ", transactionID).Update("payment_status", status)
 	return urDB

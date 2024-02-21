@@ -30,3 +30,19 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 		Provider:      request.Provider,
 	}
 }
+
+type EventHubUpdatePaymentStatusRequest struct {
+	AdditionalProperties struct {
+		Property1 interface{} `json:"property1"`
+		Property2 interface{} `json:"property2"`
+	} `json:"additionalProperties"`
+	Msisdn            string `json:"msisdn" validate:"required"`
+	Amount            string `json:"amount" validate:"required"`
+	Message           string `json:"message" validate:"required"`
+	Utilityref        string `json:"utilityref" validate:"required"`
+	Operator          string `json:"operator" validate:"required"`
+	Reference         string `json:"reference" validate:"required"`
+	Transactionstatus string `json:"transactionstatus" validate:"required"`
+	SubmerchantAcc    string `json:"submerchantAcc" validate:"required"`
+	FspReferenceId    string `json:"fspReferenceId"`
+}

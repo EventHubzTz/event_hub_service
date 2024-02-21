@@ -8,6 +8,7 @@ import (
 	"github.com/EventHubzTz/event_hub_service/app/models"
 	"github.com/EventHubzTz/event_hub_service/repositories"
 	"github.com/EventHubzTz/event_hub_service/service"
+	"github.com/EventHubzTz/event_hub_service/utils/constants"
 	"github.com/EventHubzTz/event_hub_service/utils/date_utils"
 	"github.com/EventHubzTz/event_hub_service/utils/response"
 	"github.com/EventHubzTz/event_hub_service/utils/validation"
@@ -110,4 +111,40 @@ func (c eventHubPaymentController) GetPaymentTransactions(ctx *fiber.Ctx) error 
 		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
 	}
 	return response.InternalServiceDataResponse(events, fiber.StatusOK, ctx)
+}
+
+func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request payments.EventHubUpdatePaymentStatusRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*---------------------------------------------------------
+	 04. UPDATE PAYMENT STATUS
+	----------------------------------------------------------*/
+	if request.Transactionstatus == constants.Failure {
+		return response.ErrorResponse(request.Message, fiber.StatusBadRequest, ctx)
+	}
+	dbResponse := repositories.EventHubPaymentRepository.UpdatePaymentStatus(request.Reference, constants.Completed)
+	if dbResponse.RowsAffected == 0 {
+		return response.ErrorResponse("Failed to update payment status!", fiber.StatusBadRequest, ctx)
+	}
+
+	return response.SuccessResponse(request.Message, fiber.StatusOK, ctx)
 }
