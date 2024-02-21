@@ -36,6 +36,7 @@ type EventHubEventDTO struct {
 	EventSubCategoryID   uint64                   `json:"event_sub_category_id"`
 	EventCategoryName    string                   `json:"event_category_name"`
 	EventSubCategoryName string                   `json:"event_sub_category_name"`
+	Paid                 bool                     `json:"paid"`
 	EventFiles           []EventHubEventImagesDTO `json:"event_files" gorm:"foreignKey:event_id"`
 	TimestampString
 }
