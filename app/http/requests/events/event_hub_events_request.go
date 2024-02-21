@@ -90,6 +90,7 @@ type EventHubEventGetRequest struct {
 
 type EventHubEventsGetsRequest struct {
 	Query                string `json:"query"`
+	Status               string `json:"status"`
 	ProductCategoryID    uint64 `json:"event_category_id"`
 	ProductSubCategoryID uint64 `json:"event_sub_category_id"`
 	Limit                int    `json:"limit,omitempty"`

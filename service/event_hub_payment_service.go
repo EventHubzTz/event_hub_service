@@ -27,9 +27,9 @@ func (s eventHubPaymentService) AddPaymentTransaction(configuration models.Event
 	return nil
 }
 
-func (s eventHubPaymentService) GetPaymentTransactions(pagination models.Pagination, query string) (models.Pagination, error) {
+func (s eventHubPaymentService) GetPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, error) {
 	var newQuery = "%" + query + "%"
-	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetPaymentTransactions(pagination, newQuery)
+	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetPaymentTransactions(pagination, newQuery, status)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
 		return models.Pagination{}, errors.New("payment transaction not found! ")

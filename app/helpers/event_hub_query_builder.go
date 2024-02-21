@@ -120,7 +120,7 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 
 }
 
-func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
 	var events []models.EventHubPaymentTransactionsDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
@@ -134,6 +134,9 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		)
+	if status != "" {
+		clDB = clDB.Where("t1.payment_status = ?", status)
+	}
 	if query != "%%" {
 		clDB = clDB.Where(
 			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t2.first_name,' ',t2.last_name,' ',t3.event_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",

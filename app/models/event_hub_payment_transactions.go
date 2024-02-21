@@ -10,7 +10,7 @@ type EventHubPaymentTransactions struct {
 	Amount        float32 `json:"amount" gorm:"default:0;not null"`
 	Currency      string  `json:"currency" gorm:"not null"`
 	Provider      string  `json:"provider"  gorm:"not null"`
-	PaymentStatus string  `json:"payment_status" gorm:"not null;type:enum('PENDING','COMPLETED');default:'PENDING'"`
+	PaymentStatus string  `json:"payment_status" gorm:"not null;type:enum('PENDING','COMPLETED','CANCELLED');default:'PENDING'"`
 	Timestamp
 
 	EventHubUser  EventHubUser  `gorm:"foreignKey:UserID;constraint:OnDelete:NO ACTION"`
