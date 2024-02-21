@@ -78,79 +78,6 @@ func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 
 }
 
-func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
-	var events []models.EventHubEventDTO
-	baseUrl := os.Getenv("APP_URL")
-
-	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
-		Table("event_hub_events as t1").
-		Joins("LEFT JOIN event_hub_event_categories t2 on t1.event_category_id = t2.id").
-		Joins("LEFT JOIN event_hub_event_subcategories t3 on t1.event_sub_category_id = t3.id").
-		Joins("LEFT JOIN event_hub_users t4 on t1.user_id = t4.id").
-		Select(
-			"t1.*",
-			"t2.event_category_name",
-			"t3.event_sub_category_name",
-			"CONCAT(t4.first_name, ' ', t4.last_name) as event_owner",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
-		).
-		Preload("EventFiles", func(db *gorm.DB) *gorm.DB {
-			return db.Table("event_hub_event_images").
-				Select(
-					"event_hub_event_images.*",
-					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.image_url) ELSE event_hub_event_images.image_url END image_url",
-					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.video_url) ELSE event_hub_event_images.video_url END video_url",
-					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
-				)
-		})
-	if eventCategoryId != 0 {
-		clDB = clDB.Where("t1.event_category_id = ?", eventCategoryId)
-	}
-	if eventSubCategoryId != 0 {
-		clDB = clDB.Where("t1.event_sub_category_id = ?", eventSubCategoryId)
-	}
-	if query != "%%" {
-		clDB = clDB.Where(
-			"concat(t1.event_name,' ',t1.event_location,' ',t1.event_description,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
-			query,
-		)
-	}
-	clDB = clDB.Find(&events)
-	pagination.Results = events
-	return pagination, clDB
-
-}
-
-func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
-	var events []models.EventHubPaymentTransactionsDTO
-
-	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
-		Table("event_hub_payment_transactions as t1").
-		Joins("LEFT JOIN event_hub_users t2 on t1.user_id = t2.id").
-		Joins("LEFT JOIN event_hub_events t3 on t1.event_id = t3.id").
-		Select(
-			"t1.*",
-			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
-			"t3.event_name",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
-		)
-	if status != "" {
-		clDB = clDB.Where("t1.payment_status = ?", status)
-	}
-	if query != "%%" {
-		clDB = clDB.Where(
-			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t2.first_name,' ',t2.last_name,' ',t3.event_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
-			query,
-		)
-	}
-	clDB = clDB.Find(&events)
-	pagination.Results = events
-	return pagination, clDB
-
-}
-
 func (q eventHubQueryBuilder) QueryUserDetails() string {
 	baseUrl := os.Getenv("APP_URL")
 
@@ -159,6 +86,15 @@ func (q eventHubQueryBuilder) QueryUserDetails() string {
 		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at " +
 		"FROM event_hub_users t1 " +
 		"WHERE t1.active = true and t1.id = ?"
+}
+
+func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string {
+	baseUrl := os.Getenv("APP_URL")
+	return "SELECT DISTINCT t1.*," +
+		"CASE t1.image_storage WHEN 'LOCAL' THEN CONCAT('" + baseUrl + "',t1.profile_image) ELSE t1.profile_image END as profile_image," +
+		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at " +
+		"FROM event_hub_users t1 " +
+		"WHERE t1.phone_number =  ? "
 }
 
 func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
@@ -211,6 +147,51 @@ func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagin
 
 }
 
+func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
+	var events []models.EventHubEventDTO
+	baseUrl := os.Getenv("APP_URL")
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubEvent{}, &pagination, database.DB())).
+		Table("event_hub_events as t1").
+		Joins("LEFT JOIN event_hub_event_categories t2 on t1.event_category_id = t2.id").
+		Joins("LEFT JOIN event_hub_event_subcategories t3 on t1.event_sub_category_id = t3.id").
+		Joins("LEFT JOIN event_hub_users t4 on t1.user_id = t4.id").
+		Select(
+			"t1.*",
+			"t2.event_category_name",
+			"t3.event_sub_category_name",
+			"CONCAT(t4.first_name, ' ', t4.last_name) as event_owner",
+			"CASE t4.image_storage WHEN 'LOCAL' THEN CONCAT('" + baseUrl + "',t4.profile_image) ELSE t4.profile_image END as event_owner_profile," +
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		).
+		Preload("EventFiles", func(db *gorm.DB) *gorm.DB {
+			return db.Table("event_hub_event_images").
+				Select(
+					"event_hub_event_images.*",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.image_url) ELSE event_hub_event_images.image_url END image_url",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.video_url) ELSE event_hub_event_images.video_url END video_url",
+					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
+				)
+		})
+	if eventCategoryId != 0 {
+		clDB = clDB.Where("t1.event_category_id = ?", eventCategoryId)
+	}
+	if eventSubCategoryId != 0 {
+		clDB = clDB.Where("t1.event_sub_category_id = ?", eventSubCategoryId)
+	}
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.event_name,' ',t1.event_location,' ',t1.event_description,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&events)
+	pagination.Results = events
+	return pagination, clDB
+
+}
+
 func (q eventHubQueryBuilder) QueryEventDetails() string {
 
 	return "SELECT t1.*," +
@@ -219,13 +200,33 @@ func (q eventHubQueryBuilder) QueryEventDetails() string {
 		"WHERE t1.id = ?"
 }
 
-func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string {
-	baseUrl := os.Getenv("APP_URL")
-	return "SELECT DISTINCT t1.*," +
-		"CASE t1.image_storage WHEN 'LOCAL' THEN CONCAT('" + baseUrl + "',t1.profile_image) ELSE t1.profile_image END as profile_image," +
-		"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at " +
-		"FROM event_hub_users t1 " +
-		"WHERE t1.phone_number =  ? "
+func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
+	var events []models.EventHubPaymentTransactionsDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
+		Table("event_hub_payment_transactions as t1").
+		Joins("LEFT JOIN event_hub_users t2 on t1.user_id = t2.id").
+		Joins("LEFT JOIN event_hub_events t3 on t1.event_id = t3.id").
+		Select(
+			"t1.*",
+			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
+			"t3.event_name",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		)
+	if status != "" {
+		clDB = clDB.Where("t1.payment_status = ?", status)
+	}
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t2.first_name,' ',t2.last_name,' ',t3.event_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&events)
+	pagination.Results = events
+	return pagination, clDB
+
 }
 
 func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {

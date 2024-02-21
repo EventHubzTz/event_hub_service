@@ -25,6 +25,7 @@ type EventHubEventDTO struct {
 	ID
 	UserID               uint64                   `json:"user_id"`
 	EventOwner           string                   `json:"event_owner"`
+	EventOwnerProfile    string                   `json:"event_owner_profile"`
 	EventName            string                   `json:"event_name"`
 	EventLocation        string                   `json:"event_location"`
 	EventTime            string                   `json:"event_time"`
