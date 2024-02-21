@@ -23,6 +23,8 @@ type EventHubPaymentTransactionsDTO struct {
 	TransactionID string  `json:"transaction_id"`
 	EventID       uint64  `json:"event_id"`
 	UserID        uint64  `json:"user_id"`
+	EventName     string  `json:"event_name"`
+	FullName      string  `json:"full_name"`
 	PhoneNumber   string  `json:"phone_number"`
 	Amount        float32 `json:"amount"`
 	Currency      string  `json:"currency"`
