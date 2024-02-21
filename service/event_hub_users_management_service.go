@@ -28,7 +28,7 @@ func (s eventHubUsersManagementService) RegisterUser(user models.EventHubUser) (
 	----------------------------------------------------------*/
 	createdUser, dbResponse := repositories.EventHubUsersManagementRepository.RegisterUser(&user)
 	if dbResponse.RowsAffected == 0 {
-		return nil, errors.New("failed to register user! ")
+		return nil, errors.New(dbResponse.Error.Error())
 	}
 
 	/*---------------------------------------------------------
