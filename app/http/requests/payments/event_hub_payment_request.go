@@ -12,7 +12,7 @@ type EventHubPaymentRequest struct {
 	PhoneNumber   string  `json:"phone_number" validate:"required"`
 	Amount        float32 `json:"amount"`
 	Currency      string  `json:"currency"`
-	Provider      string  `json:"provider"`
+	Provider      string  `json:"provider" validate:"required"`
 }
 
 func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactions {

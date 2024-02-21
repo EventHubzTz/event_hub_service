@@ -8,6 +8,7 @@ const (
 	Completed     string = "COMPLETED"
 	Success       string = "success"
 	Failure       string = "failure"
+	Currency      string = "TZS"
 )
 
 const (

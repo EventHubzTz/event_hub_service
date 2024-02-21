@@ -71,7 +71,7 @@ type GenerateAzamPayTokenResponse struct {
 	StatusCode int    `json:"statusCode"`
 }
 
-func GenerateAzamPayToken(url, appName, clientId, clientSecret string) (*GenerateAzamPayTokenResponse, error) {
+func GenerateAzamPayToken(url, appName, clientId, clientSecret, apiKey string) (*GenerateAzamPayTokenResponse, error) {
 
 	type Request struct {
 		AppName      string `json:"appName"`
@@ -97,6 +97,7 @@ func GenerateAzamPayToken(url, appName, clientId, clientSecret string) (*Generat
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("X-API-Key", apiKey)
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -123,7 +124,7 @@ type AzamPayPushUSSDResponse struct {
 	Success       bool   `json:"success"`
 }
 
-func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider, bearerToken string) (*AzamPayPushUSSDResponse, error) {
+func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider, bearerToken, apiKey string) (*AzamPayPushUSSDResponse, error) {
 
 	type Request struct {
 		AccountNumber string `json:"accountNumber"`
@@ -154,6 +155,7 @@ func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider,
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+bearerToken)
+	req.Header.Add("X-API-Key", apiKey)
 
 	res, err := client.Do(req)
 	if err != nil {
