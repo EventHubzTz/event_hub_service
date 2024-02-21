@@ -4,6 +4,7 @@ import "time"
 
 type EventHubEvent struct {
 	ID
+	UserID             uint64    `json:"user_id" gorm:"not null;index:users_events_user_id_index"`
 	EventName          string    `json:"event_name" gorm:"not null"`
 	EventLocation      string    `json:"event_location" gorm:"not null"`
 	EventTime          time.Time `json:"event_time" gorm:"not null"`
@@ -15,12 +16,15 @@ type EventHubEvent struct {
 	Timestamp
 
 	//FOREIGN KEY
+	EventHubUser               EventHubUser               `gorm:"foreignKey:UserID;constraint:OnDelete:NO ACTION"`
 	EventHubEventCategories    EventHubEventCategories    `gorm:"foreignKey:EventCategoryID;constraint:OnDelete:CASCADE"`
 	EventHubEventSubCategories EventHubEventSubCategories `gorm:"foreignKey:EventSubCategoryID;constraint:OnDelete:CASCADE"`
 }
 
 type EventHubEventDTO struct {
 	ID
+	UserID               uint64                   `json:"user_id"`
+	EventOwner           string                   `json:"event_owner"`
 	EventName            string                   `json:"event_name"`
 	EventLocation        string                   `json:"event_location"`
 	EventTime            string                   `json:"event_time"`

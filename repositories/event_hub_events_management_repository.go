@@ -41,10 +41,12 @@ func (r eventHubEventsManagementRepository) GetEvent(eventID uint64) (models.Eve
 	clDB := db.Table("event_hub_events as t1").
 		Joins("LEFT JOIN event_hub_event_categories t2 on t1.event_category_id = t2.id").
 		Joins("LEFT JOIN event_hub_event_subcategories t3 on t1.event_sub_category_id = t3.id").
+		Joins("LEFT JOIN event_hub_users t4 on t1.user_id = t4.id").
 		Select(
 			"t1.*",
 			"t2.event_category_name",
 			"t3.event_sub_category_name",
+			"CONCAT(t4.first_name, ' ', t4.last_name) as event_owner",
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		).
