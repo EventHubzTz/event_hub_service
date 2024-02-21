@@ -231,5 +231,6 @@ func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string 
 func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {
 	return "SELECT " +
 		"(SELECT COUNT(*) FROM event_hub_users) AS total_users," +
-		"(SELECT COUNT(*) FROM event_hub_events) AS total_events"
+		"(SELECT COUNT(*) FROM event_hub_events) AS total_events," +
+		"(SELECT SUM(amount) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS total_amount"
 }
