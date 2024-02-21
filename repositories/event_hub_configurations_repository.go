@@ -28,14 +28,11 @@ func (r eventHubConfigurationsRepository) GetConfigurations() (*models.EventHubC
 	return configurations, urDB
 }
 
-func (r eventHubConfigurationsRepository) UpdateToken(id uint64, token string) *gorm.DB {
+func (r eventHubConfigurationsRepository) UpdateTokenAndTokenTime(id uint64, token string, tokenTime time.Time) *gorm.DB {
 
-	urDB := db.Model(models.EventHubConfigurations{}).Where("id = ? ", id).Update("azampay_token", token)
-	return urDB
-}
-
-func (r eventHubConfigurationsRepository) UpdateTokenTime(id uint64, tokenTime time.Time) *gorm.DB {
-
-	urDB := db.Model(models.EventHubConfigurations{}).Where("id = ? ", id).Update("azampay_token_generated_time", tokenTime)
+	urDB := db.Model(models.EventHubConfigurations{}).Where("id = ? ", id).Updates(map[string]interface{}{
+		"azampay_token":                token,
+		"azampay_token_generated_time": tokenTime,
+	})
 	return urDB
 }

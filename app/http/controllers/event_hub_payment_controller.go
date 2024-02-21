@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/EventHubzTz/event_hub_service/app/http/requests/events"
 	"github.com/EventHubzTz/event_hub_service/app/http/requests/payments"
 	"github.com/EventHubzTz/event_hub_service/app/models"
+	"github.com/EventHubzTz/event_hub_service/repositories"
 	"github.com/EventHubzTz/event_hub_service/service"
 	"github.com/EventHubzTz/event_hub_service/utils/date_utils"
 	"github.com/EventHubzTz/event_hub_service/utils/response"
@@ -42,8 +45,31 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	if errors != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
+	/*---------------------------------------------------------
+	 04. GET CONFIGURATIONS
+	----------------------------------------------------------*/
+	configurations := service.EventHubConfigurationsService.GetConfigurations()
+	if configurations == nil {
+		return response.ErrorResponseStr("No records found !", fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 05. CHECK IF TOKEN TIME HAS EXPIRED
+	----------------------------------------------------------*/
+	generatedTime, err := time.Parse(time.RFC3339, configurations.AzampayTokenGeneratedTime)
+	if err != nil {
+		return response.ErrorResponseStr(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+	if time.Now().After(generatedTime) {
+		/*-----------------------------------------------------------------
+		 06. UPDATE TOKEN AND TOKEN TIME AND GET RESPONSE IF IS AVAILABLE
+		-------------------------------------------------------------------*/
+		dbResponse := repositories.EventHubConfigurationsRepository.UpdateTokenAndTokenTime(1, "Hello", time.Now().Add(3*time.Hour))
+		if dbResponse.RowsAffected == 0 {
+			return response.ErrorResponse("Failed to update token time and token", fiber.StatusBadRequest, ctx)
+		}
+	}
 
-	return response.SuccessResponse("Configuration added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
+	return response.SuccessResponse("USSD push sucessful "+date_utils.GetNowString(), fiber.StatusOK, ctx)
 }
 
 func (c eventHubPaymentController) GetPaymentTransactions(ctx *fiber.Ctx) error {
