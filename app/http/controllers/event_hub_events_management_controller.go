@@ -88,7 +88,7 @@ func (c eventHubEventsManagementController) AddEventImage(ctx *fiber.Ctx) error 
 	}
 
 	/*----------------------------------------------------------
-	 04. VALIDATING THE IMAGE FILE EXTENSION IF SUPPORTED
+	 04. VALIDATING EVENT IMAGE FILE EXTENSION IF SUPPORTED
 	------------------------------------------------------------*/
 	file, er := ctx.FormFile("image")
 	if er != nil {
