@@ -97,7 +97,7 @@ func (r eventHubEventsManagementRepository) FindProductImagesByProductID(eventID
 func (r eventHubEventsManagementRepository) GetDashboardStatistics(role string, userID uint64) (*models.EventHubDashboardStatisticsDTO, *gorm.DB) {
 	var statistics *models.EventHubDashboardStatisticsDTO
 	if role == constants.EventPlanner {
-		urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatisticsForEventPlanner(), userID).Find(&statistics)
+		urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatisticsForEventPlanner(), userID, userID).Find(&statistics)
 		return statistics, urDB
 	}
 	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatistics()).Find(&statistics)
