@@ -61,7 +61,11 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	if eventError != nil {
 		return response.ErrorResponse(eventError.Error(), fiber.StatusBadRequest, ctx)
 	}
-	request.Amount = event.EventEntrance
+	for i := range event.EventPackages {
+		if request.EventPackageID == event.EventPackages[i].ID {
+			request.Amount = event.EventPackages[i].Amount
+		}
+	}
 	/*---------------------------------------------------------
 	 04. GET CONFIGURATIONS
 	----------------------------------------------------------*/

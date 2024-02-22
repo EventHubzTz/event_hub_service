@@ -19,4 +19,5 @@ func AuthenticatedEventHubUsersManagementRoutes(route fiber.Router) {
 	route.Post("/generate/forgot/password/otp", controllers.EventHubUsersManagementController.GenerateForgotPasswordOtp)
 	route.Post("/verify/otp/reset/password", controllers.EventHubUsersManagementController.VerifyOTPResetPassword)
 	route.Post("/update/password", controllers.EventHubUsersManagementController.UpdatePassword)
+	route.Post("/delete/user", controllers.EventHubUsersManagementController.DeleteUser)
 }

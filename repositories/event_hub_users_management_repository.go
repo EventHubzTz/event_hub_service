@@ -124,3 +124,8 @@ func (r eventHubUsersManagementRepository) UpdateOTPCodeForForgotPassword(userFo
 	urDB := db.Save(&userForgotPasswordOTP)
 	return userForgotPasswordOTP, urDB
 }
+
+func (r eventHubUsersManagementRepository) DeleteUser(userId uint64) *gorm.DB {
+	sRDB := db.Where("id = ? ", userId).Delete(models.EventHubUser{})
+	return sRDB
+}

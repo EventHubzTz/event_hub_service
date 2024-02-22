@@ -3,6 +3,7 @@ package controllers
 import (
 	"time"
 
+	"github.com/EventHubzTz/event_hub_service/app/http/requests/events"
 	"github.com/EventHubzTz/event_hub_service/app/http/requests/users"
 	"github.com/EventHubzTz/event_hub_service/app/models"
 	"github.com/EventHubzTz/event_hub_service/repositories"
@@ -471,4 +472,40 @@ func (c eventHubUsersManagementController) UpdatePassword(ctx *fiber.Ctx) error 
 	 09. IF ALL THIS WENT WELL THEN RETURN SUCCESS
 	----------------------------------------------------------*/
 	return response.SuccessResponse(message, fiber.StatusOK, ctx)
+}
+
+func (c eventHubUsersManagementController) DeleteUser(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request events.EventHubEventGetRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. DELETE USER AND GET RESPONSE IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	dbResponse := repositories.EventHubUsersManagementRepository.DeleteUser(request.EventID)
+	/*---------------------------------------------------------
+	 05. CHECK IF ROW IS AFFECTED AND RETURN RESPONSE
+	----------------------------------------------------------*/
+	if dbResponse.RowsAffected == 0 {
+		return response.ErrorResponse("Failed to delete event", fiber.StatusBadRequest, ctx)
+	}
+
+	return response.SuccessResponse("Event deleted successfully!", fiber.StatusOK, ctx)
 }
