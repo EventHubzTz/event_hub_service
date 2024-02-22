@@ -22,7 +22,7 @@ func (s eventHubEventsManagementService) AddEvent(event models.EventHubEvent) er
 	----------------------------------------------------------*/
 	_, dbResponse := repositories.EventHubEventsManagementRepository.AddEvent(&event)
 	if dbResponse.RowsAffected == 0 {
-		return errors.New("failed to register event! ")
+		return errors.New("failed to add event! ")
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventH
 		return errors.New("failed to update event! ")
 	}
 	/*--------------------------------------------------------------------
-	 02. UPDATE REGION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	 02. UPDATE EVENT AND GET DB RESPONSE AND CHECK AFFECTED ROWS
 	-----------------------------------------------------------------------*/
 	event.EventName = regionRequest.EventName
 	event.EventLocation = regionRequest.EventLocation
@@ -85,12 +85,46 @@ func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventH
 
 func (s eventHubEventsManagementService) CheckIfEventReachMaxCoverImageLimit(eventID uint64) error {
 	/*---------------------------------------------------
-	 01.  CHECKING IF PRODUCT REACH MAX IMAGE LIMIT (5)
+	 01.  CHECKING IF EVENT REACH MAX IMAGE LIMIT (5)
 	----------------------------------------------------*/
 	coverImageFromDB, _ := repositories.EventHubEventsManagementRepository.FindProductImagesByProductID(eventID)
 	if len(coverImageFromDB) >= 5 {
 		return errors.New("you have reach  maximum number of 5 photo per event")
 	}
+	return nil
+}
+
+func (s eventHubEventsManagementService) AddEventPackage(eventPackage models.EventHubEventPackages) error {
+	/*---------------------------------------------------------
+	 01. CREATE EVENT PACKAGE AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	----------------------------------------------------------*/
+	_, dbResponse := repositories.EventHubEventsManagementRepository.AddEventPackage(&eventPackage)
+	if dbResponse.RowsAffected == 0 {
+		return errors.New("failed to add event package! ")
+	}
+	return nil
+}
+
+func (s eventHubEventsManagementService) UpdateEventPackage(regionRequest models.EventHubEventPackages, id uint64) error {
+	/*--------------------------------------------------------------------
+	 01. FIND REGION WITH GIVEN ID
+	-----------------------------------------------------------------------*/
+	eventPackage, dbResponse := repositories.EventHubEventsManagementRepository.GetEventPackageWithId(id)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return errors.New("failed to update event package! ")
+	}
+	/*--------------------------------------------------------------------
+	 02. UPDATE EVENT PACKAGE AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	-----------------------------------------------------------------------*/
+	eventPackage.PackageName = regionRequest.PackageName
+	eventPackage.Amount = regionRequest.Amount
+	dbResponse = repositories.EventHubEventsManagementRepository.UpdateEventPackageWithId(eventPackage)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return errors.New("failed to update event package! ")
+	}
+
 	return nil
 }
 

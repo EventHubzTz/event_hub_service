@@ -59,6 +59,12 @@ func (r eventHubEventsManagementRepository) GetEvent(eventID uint64) (models.Eve
 					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.video_url) ELSE event_hub_event_images.video_url END video_url",
 					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
 				)
+		}).
+		Preload("EventPackages", func(db *gorm.DB) *gorm.DB {
+			return db.Table("event_hub_event_packages").
+				Select(
+					"event_hub_event_packages.*",
+				)
 		})
 	if eventID != 0 {
 		clDB = clDB.Where("t1.id = ?", eventID)
@@ -83,8 +89,8 @@ func (r eventHubEventsManagementRepository) DeleteEventImage(eventImageId uint64
 	return sRDB
 }
 
-func (r eventHubEventsManagementRepository) DeleteEvent(regionId uint64) *gorm.DB {
-	sRDB := db.Where("id = ? ", regionId).Delete(models.EventHubEvent{})
+func (r eventHubEventsManagementRepository) DeleteEvent(eventId uint64) *gorm.DB {
+	sRDB := db.Where("id = ? ", eventId).Delete(models.EventHubEvent{})
 	return sRDB
 }
 
@@ -92,6 +98,27 @@ func (r eventHubEventsManagementRepository) FindProductImagesByProductID(eventID
 	var contentCoverImage []models.EventHubEventImagesDTO
 	ccDB := db.Where("event_id = ?", eventID).Find(&contentCoverImage)
 	return contentCoverImage, ccDB
+}
+
+func (r eventHubEventsManagementRepository) AddEventPackage(eventPackage *models.EventHubEventPackages) (*models.EventHubEventPackages, *gorm.DB) {
+	urDB := db.Create(&eventPackage)
+	return eventPackage, urDB
+}
+
+func (r eventHubEventsManagementRepository) GetEventPackageWithId(id uint64) (*models.EventHubEventPackages, *gorm.DB) {
+	var eventPackage *models.EventHubEventPackages
+	sRDB := db.Find(&eventPackage, id)
+	return eventPackage, sRDB
+}
+
+func (r eventHubEventsManagementRepository) UpdateEventPackageWithId(eventPackage *models.EventHubEventPackages) *gorm.DB {
+	sRDB := db.Save(&eventPackage)
+	return sRDB
+}
+
+func (r eventHubEventsManagementRepository) DeleteEventPackage(eventPackageId uint64) *gorm.DB {
+	sRDB := db.Where("id = ? ", eventPackageId).Delete(models.EventHubEventPackages{})
+	return sRDB
 }
 
 func (r eventHubEventsManagementRepository) GetDashboardStatistics(role string, userID uint64) (*models.EventHubDashboardStatisticsDTO, *gorm.DB) {

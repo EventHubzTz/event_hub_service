@@ -13,7 +13,7 @@ var Tables = []interface{}{
 	&EventHubUserToken{}, &EventHubUserOTPCode{}, &EventHubOTPCodeMessage{},
 	&EventHubOTPMessageResponse{}, &EventHubForgotPasswordOTP{}, &EventHubEvent{},
 	&EventHubEventCategories{}, &EventHubEventSubCategories{}, &EventHubEventImages{},
-	&EventHubConfigurations{}, &EventHubPaymentTransactions{},
+	&EventHubConfigurations{}, &EventHubPaymentTransactions{}, &EventHubEventPackages{},
 }
 
 type Timestamp struct {

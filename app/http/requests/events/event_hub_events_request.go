@@ -86,6 +86,35 @@ func (request EventHubEventImageRequest) ToModel() models.EventHubEventImages {
 	}
 }
 
+type EventHubEventPackageRequest struct {
+	EventID     uint64  `json:"event_id" validate:"required"`
+	PackageName string  `json:"package_name"`
+	Amount      float32 `json:"amount"`
+}
+
+func (request EventHubEventPackageRequest) ToModel() models.EventHubEventPackages {
+	return models.EventHubEventPackages{
+		EventID:     request.EventID,
+		PackageName: request.PackageName,
+		Amount:      request.Amount,
+	}
+}
+
+type EventHubUpdateEventPackageRequest struct {
+	models.IDRequest
+	EventID     uint64  `json:"event_id" validate:"required"`
+	PackageName string  `json:"package_name"`
+	Amount      float32 `json:"amount"`
+}
+
+func (request EventHubUpdateEventPackageRequest) ToModel() models.EventHubEventPackages {
+	return models.EventHubEventPackages{
+		EventID:     request.EventID,
+		PackageName: request.PackageName,
+		Amount:      request.Amount,
+	}
+}
+
 type EventHubEventGetRequest struct {
 	EventID uint64 `json:"id" validate:"required"`
 }

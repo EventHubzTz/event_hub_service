@@ -174,6 +174,12 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, role,
 					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.video_url) ELSE event_hub_event_images.video_url END video_url",
 					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
 				)
+		}).
+		Preload("EventPackages", func(db *gorm.DB) *gorm.DB {
+			return db.Table("event_hub_event_packages").
+				Select(
+					"event_hub_event_packages.*",
+				)
 		})
 	if role == constants.EventPlanner {
 		clDB = clDB.Where("t1.user_id = ?", userID)
@@ -220,6 +226,9 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 		)
 	if role == constants.EventPlanner {
 		clDB = clDB.Where("t3.user_id = ?", userID)
+	}
+	if role == constants.NormalUser {
+		clDB = clDB.Where("t1.user_id = ?", userID)
 	}
 	if status != "" {
 		clDB = clDB.Where("t1.payment_status = ?", status)

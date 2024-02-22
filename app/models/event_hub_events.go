@@ -23,21 +23,22 @@ type EventHubEvent struct {
 
 type EventHubEventDTO struct {
 	ID
-	UserID               uint64                   `json:"user_id"`
-	EventOwner           string                   `json:"event_owner"`
-	EventOwnerProfile    string                   `json:"event_owner_profile"`
-	EventName            string                   `json:"event_name"`
-	EventLocation        string                   `json:"event_location"`
-	EventTime            string                   `json:"event_time"`
-	EventCapacity        int                      `json:"event_capacity"`
-	EventEntrance        float32                  `json:"event_entrance"`
-	EventDescription     string                   `json:"event_description"`
-	EventCategoryID      uint64                   `json:"event_category_id"`
-	EventSubCategoryID   uint64                   `json:"event_sub_category_id"`
-	EventCategoryName    string                   `json:"event_category_name"`
-	EventSubCategoryName string                   `json:"event_sub_category_name"`
-	Paid                 bool                     `json:"paid"`
-	EventFiles           []EventHubEventImagesDTO `json:"event_files" gorm:"foreignKey:event_id"`
+	UserID               uint64                     `json:"user_id"`
+	EventOwner           string                     `json:"event_owner"`
+	EventOwnerProfile    string                     `json:"event_owner_profile"`
+	EventName            string                     `json:"event_name"`
+	EventLocation        string                     `json:"event_location"`
+	EventTime            string                     `json:"event_time"`
+	EventCapacity        int                        `json:"event_capacity"`
+	EventEntrance        float32                    `json:"event_entrance"`
+	EventDescription     string                     `json:"event_description"`
+	EventCategoryID      uint64                     `json:"event_category_id"`
+	EventSubCategoryID   uint64                     `json:"event_sub_category_id"`
+	EventCategoryName    string                     `json:"event_category_name"`
+	EventSubCategoryName string                     `json:"event_sub_category_name"`
+	Paid                 bool                       `json:"paid"`
+	EventFiles           []EventHubEventImagesDTO   `json:"event_files" gorm:"foreignKey:event_id"`
+	EventPackages        []EventHubEventPackagesDTO `json:"event_packages" gorm:"foreignKey:event_id"`
 	TimestampString
 }
 
