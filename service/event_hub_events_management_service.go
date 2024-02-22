@@ -71,7 +71,6 @@ func (s eventHubEventsManagementService) UpdateEvent(regionRequest models.EventH
 	event.EventTime = regionRequest.EventTime
 	event.EventDescription = regionRequest.EventDescription
 	event.EventCapacity = regionRequest.EventCapacity
-	event.EventEntrance = regionRequest.EventEntrance
 	event.EventCategoryID = regionRequest.EventCategoryID
 	event.EventSubCategoryID = regionRequest.EventSubCategoryID
 	dbResponse = repositories.EventHubEventsManagementRepository.UpdateEventWithId(event)
