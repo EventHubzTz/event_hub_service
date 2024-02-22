@@ -242,3 +242,9 @@ func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {
 		"(SELECT COUNT(*) FROM event_hub_events) AS total_events," +
 		"(SELECT SUM(amount) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS total_amount"
 }
+
+func (q eventHubQueryBuilder) QueryGetDashboardStatisticsForEventPlanner() string {
+	return "SELECT " +
+		"(SELECT COUNT(*) FROM event_hub_events WHERE user_id = ?) AS total_events," +
+		"(SELECT SUM(amount) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS total_amount"
+}

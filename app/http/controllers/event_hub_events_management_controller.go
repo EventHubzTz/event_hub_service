@@ -370,5 +370,6 @@ func (c eventHubEventsManagementController) DeleteEvent(ctx *fiber.Ctx) error {
 }
 
 func (c eventHubEventsManagementController) GetDashboardStatistics(ctx *fiber.Ctx) error {
-	return response.MapDataResponse(service.EventHubEventsManagementService.GetDashboardStatistics(), fiber.StatusOK, ctx)
+	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
+	return response.MapDataResponse(service.EventHubEventsManagementService.GetDashboardStatistics(user.Role, user.Id), fiber.StatusOK, ctx)
 }
