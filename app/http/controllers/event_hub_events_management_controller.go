@@ -96,10 +96,13 @@ func (c eventHubEventsManagementController) AddEventImage(ctx *fiber.Ctx) error 
 	}
 	allowedExtensions := []string{"png", "jpg", "jpeg", "mp4", "mkv", "svg", "webp"}
 	uploadedFileExtension := strings.ToLower(strings.Split(file.Filename, ".")[len(strings.Split(file.Filename, "."))-1])
-	if uploadedFileExtension != allowedExtensions[0] && uploadedFileExtension != allowedExtensions[1] &&
+	if uploadedFileExtension != allowedExtensions[0] &&
+		uploadedFileExtension != allowedExtensions[1] &&
 		uploadedFileExtension != allowedExtensions[2] &&
 		uploadedFileExtension != allowedExtensions[3] &&
-		uploadedFileExtension != allowedExtensions[4] {
+		uploadedFileExtension != allowedExtensions[4] &&
+		uploadedFileExtension != allowedExtensions[5] &&
+		uploadedFileExtension != allowedExtensions[6] {
 		return response.ErrorResponse("Invalid file format. Supported. 'png', 'jpg', 'jpeg' 'mp4', 'mkv', 'webp'", fiber.StatusBadRequest, ctx)
 	}
 
