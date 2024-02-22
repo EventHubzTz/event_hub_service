@@ -204,7 +204,7 @@ func (q eventHubQueryBuilder) QueryEventDetails() string {
 		"WHERE t1.id = ?"
 }
 
-func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
+func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, role, query, status string, userID uint64) (models.Pagination, *gorm.DB) {
 	var events []models.EventHubPaymentTransactionsDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
@@ -218,6 +218,9 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		)
+	if role == constants.EventPlanner {
+		clDB = clDB.Where("t3.user_id = ?", userID)
+	}
 	if status != "" {
 		clDB = clDB.Where("t1.payment_status = ?", status)
 	}
