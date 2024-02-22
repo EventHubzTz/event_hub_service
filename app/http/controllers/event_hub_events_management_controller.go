@@ -94,13 +94,13 @@ func (c eventHubEventsManagementController) AddEventImage(ctx *fiber.Ctx) error 
 	if er != nil {
 		return response.ErrorResponse(er.Error(), fiber.StatusBadRequest, ctx)
 	}
-	allowedExtensions := []string{"png", "jpg", "jpeg", "mp4", "mkv", "svg"}
+	allowedExtensions := []string{"png", "jpg", "jpeg", "mp4", "mkv", "svg", "webp"}
 	uploadedFileExtension := strings.ToLower(strings.Split(file.Filename, ".")[len(strings.Split(file.Filename, "."))-1])
 	if uploadedFileExtension != allowedExtensions[0] && uploadedFileExtension != allowedExtensions[1] &&
 		uploadedFileExtension != allowedExtensions[2] &&
 		uploadedFileExtension != allowedExtensions[3] &&
 		uploadedFileExtension != allowedExtensions[4] {
-		return response.ErrorResponse("Invalid file format. Supported. 'png', 'jpg', 'jpeg' 'mp4', 'mkv', 'mkv'", fiber.StatusBadRequest, ctx)
+		return response.ErrorResponse("Invalid file format. Supported. 'png', 'jpg', 'jpeg' 'mp4', 'mkv', 'webp'", fiber.StatusBadRequest, ctx)
 	}
 
 	if file.Size > (50 * 1024 * 1024) {
