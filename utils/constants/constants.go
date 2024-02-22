@@ -3,17 +3,17 @@ package constants
 type UserRole string
 
 const (
+	Yes           string = "YES"
+	No            string = "NO"
 	LocalStorage  string = "LOCAL"
 	RemoteStorage string = "REMOTE"
 	Completed     string = "COMPLETED"
 	Success       string = "success"
 	Failure       string = "failure"
 	Currency      string = "TZS"
-)
-
-const (
-	Yes = "YES"
-	No  = "NO"
+	NormalUser    string = "NORMAL_USER"
+	EventPlanner  string = "EVENT_PLANNER"
+	SuperAdmin    string = "SUPER_ADMIN"
 )
 
 type Color string

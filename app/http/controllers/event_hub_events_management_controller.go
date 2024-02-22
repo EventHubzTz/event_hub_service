@@ -217,7 +217,8 @@ func (c eventHubEventsManagementController) GetEvents(ctx *fiber.Ctx) error {
 	/*-----------------------------------------------------------------
 	 04. GET EVENTS AND GET ERROR IF IS AVAILABLE
 	-------------------------------------------------------------------*/
-	events, err := service.EventHubEventsManagementService.GetEvents(pagination, request.Query, request.ProductCategoryID, request.ProductSubCategoryID)
+	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
+	events, err := service.EventHubEventsManagementService.GetEvents(pagination, user.Role, request.Query, user.Id, request.ProductCategoryID, request.ProductSubCategoryID)
 	/*---------------------------------------------------------
 	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/

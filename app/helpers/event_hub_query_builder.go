@@ -6,6 +6,7 @@ import (
 
 	"github.com/EventHubzTz/event_hub_service/app/models"
 	"github.com/EventHubzTz/event_hub_service/database"
+	"github.com/EventHubzTz/event_hub_service/utils/constants"
 	"gorm.io/gorm"
 )
 
@@ -147,7 +148,7 @@ func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagin
 
 }
 
-func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
+func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, role, query string, userID, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
 	var events []models.EventHubEventDTO
 	baseUrl := os.Getenv("APP_URL")
 
@@ -161,8 +162,8 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 			"t2.event_category_name",
 			"t3.event_sub_category_name",
 			"CONCAT(t4.first_name, ' ', t4.last_name) as event_owner",
-			"CASE t4.image_storage WHEN 'LOCAL' THEN CONCAT('" + baseUrl + "',t4.profile_image) ELSE t4.profile_image END as event_owner_profile," +
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"CASE t4.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',t4.profile_image) ELSE t4.profile_image END as event_owner_profile,"+
+				"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		).
 		Preload("EventFiles", func(db *gorm.DB) *gorm.DB {
@@ -174,6 +175,9 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, query
 					"CASE event_hub_event_images.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',event_hub_event_images.thumbunail_url) ELSE event_hub_event_images.thumbunail_url END thumbunail_url",
 				)
 		})
+	if role == constants.EventPlanner {
+		clDB = clDB.Where("t1.user_id = ?", userID)
+	}
 	if eventCategoryId != 0 {
 		clDB = clDB.Where("t1.event_category_id = ?", eventCategoryId)
 	}

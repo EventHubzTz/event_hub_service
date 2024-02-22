@@ -27,9 +27,9 @@ func (r eventHubEventsManagementRepository) AddEventImage(eventImage models.Even
 	return eventImage, chR
 }
 
-func (r eventHubEventsManagementRepository) GetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
+func (r eventHubEventsManagementRepository) GetEvents(pagination models.Pagination, role, query string, userID, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, *gorm.DB) {
 
-	events, urDB := helpers.EventHubQueryBuilder.QueryGetEvents(pagination, query, eventCategoryId, eventSubCategoryId)
+	events, urDB := helpers.EventHubQueryBuilder.QueryGetEvents(pagination, role, query, userID, eventCategoryId, eventSubCategoryId)
 
 	return events, urDB
 }

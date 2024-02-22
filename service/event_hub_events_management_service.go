@@ -35,9 +35,9 @@ func (s eventHubEventsManagementService) AddEventImage(eventImage models.EventHu
 	return nil
 }
 
-func (s eventHubEventsManagementService) GetEvents(pagination models.Pagination, query string, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, error) {
+func (s eventHubEventsManagementService) GetEvents(pagination models.Pagination, role, query string, userID, eventCategoryId, eventSubCategoryId uint64) (models.Pagination, error) {
 	var newQuery = "%" + query + "%"
-	events, dbResponse := repositories.EventHubEventsManagementRepository.GetEvents(pagination, newQuery, eventCategoryId, eventSubCategoryId)
+	events, dbResponse := repositories.EventHubEventsManagementRepository.GetEvents(pagination, role, newQuery, userID, eventCategoryId, eventSubCategoryId)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
 		return models.Pagination{}, errors.New("events not found! ")
