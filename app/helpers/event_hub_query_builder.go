@@ -246,5 +246,5 @@ func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {
 func (q eventHubQueryBuilder) QueryGetDashboardStatisticsForEventPlanner() string {
 	return "SELECT " +
 		"(SELECT COUNT(*) FROM event_hub_events WHERE user_id = ?) AS total_events," +
-		"(SELECT SUM(amount) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS total_amount"
+		"(SELECT SUM(amount) FROM event_hub_payment_transactions LEFT JOIN event_hub_events WHERE payment_status='COMPLETED' AND event_hub_events.user_id = ?) AS total_amount"
 }
