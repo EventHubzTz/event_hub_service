@@ -124,3 +124,11 @@ type EventHubEventsGetsRequest struct {
 	Page                 int    `json:"page,omitempty"`
 	Sort                 string `json:"sort,omitempty"`
 }
+
+type EventHubEventPackagesGetsRequest struct {
+	Query   string `json:"query"`
+	EventID uint64 `json:"event_id"`
+	Limit   int    `json:"limit,omitempty"`
+	Page    int    `json:"page,omitempty"`
+	Sort    string `json:"sort,omitempty"`
+}

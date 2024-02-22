@@ -99,7 +99,7 @@ func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string 
 }
 
 func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
-	var productsCategories []models.EventHubEventCategoriesDTO
+	var eventCategories []models.EventHubEventCategoriesDTO
 	baseUrl := os.Getenv("APP_URL")
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEventCategories{}, &pagination, database.DB())).
@@ -117,14 +117,14 @@ func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Paginati
 			query,
 		)
 	}
-	clDB = clDB.Find(&productsCategories)
-	pagination.Results = productsCategories
+	clDB = clDB.Find(&eventCategories)
+	pagination.Results = eventCategories
 	return pagination, clDB
 
 }
 
 func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagination, eventCategoryId uint64, query string) (models.Pagination, *gorm.DB) {
-	var productsCategories []models.EventHubEventSubCategoriesDTO
+	var eventSubCategories []models.EventHubEventSubCategoriesDTO
 	baseUrl := os.Getenv("APP_URL")
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubEventSubCategories{}, &pagination, database.DB())).
@@ -142,8 +142,8 @@ func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagin
 			query,
 		)
 	}
-	clDB = clDB.Find(&productsCategories)
-	pagination.Results = productsCategories
+	clDB = clDB.Find(&eventSubCategories)
+	pagination.Results = eventSubCategories
 	return pagination, clDB
 
 }
@@ -198,6 +198,32 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, role,
 	}
 	clDB = clDB.Find(&events)
 	pagination.Results = events
+	return pagination, clDB
+
+}
+
+func (q eventHubQueryBuilder) QueryAllEventPackages(pagination models.Pagination, eventID uint64, query string) (models.Pagination, *gorm.DB) {
+	var eventPackages []models.EventHubEventPackagesDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubEventPackages{}, &pagination, database.DB())).
+		Table("event_hub_event_packages as t1").
+		Select(
+			"t1.*",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		).
+		Where("t1.event_id = ?", eventID)
+	if query != "%%" {
+		clDB = clDB.Where("t1.id LIKE ? OR "+
+			"t1.package_name LIKE ? OR "+
+			"t1.amount LIKE ? ",
+			query,
+			query,
+			query,
+		)
+	}
+	clDB = clDB.Find(&eventPackages)
+	pagination.Results = eventPackages
 	return pagination, clDB
 
 }

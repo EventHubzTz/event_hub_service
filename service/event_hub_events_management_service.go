@@ -104,6 +104,16 @@ func (s eventHubEventsManagementService) AddEventPackage(eventPackage models.Eve
 	return nil
 }
 
+func (s eventHubEventsManagementService) GetAllEventPackages(pagination models.Pagination, eventID uint64, query string) (models.Pagination, error) {
+	var newQuery = "%" + query + "%"
+	events, dbResponse := repositories.EventHubEventsManagementRepository.GetAllEventPackages(pagination, eventID, newQuery)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return models.Pagination{}, errors.New("event packages not found! ")
+	}
+	return events, nil
+}
+
 func (s eventHubEventsManagementService) UpdateEventPackage(regionRequest models.EventHubEventPackages, id uint64) error {
 	/*--------------------------------------------------------------------
 	 01. FIND REGION WITH GIVEN ID

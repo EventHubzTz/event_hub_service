@@ -15,6 +15,7 @@ func EventHubEventsManagementRoutes(route fiber.Router) {
 	route.Post("/delete/event", controllers.EventHubEventsManagementController.DeleteEvent)
 
 	route.Post("/add/event/package", controllers.EventHubEventsManagementController.AddEventPackage)
+	route.Post("/get/event/packages", controllers.EventHubEventsManagementController.GetAllEventPackages)
 	route.Post("/update/event/package", controllers.EventHubEventsManagementController.UpdateEventPackage)
 	route.Post("/delete/event/package", controllers.EventHubEventsManagementController.DeleteEventPackage)
 

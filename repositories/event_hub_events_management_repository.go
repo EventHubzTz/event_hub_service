@@ -105,6 +105,13 @@ func (r eventHubEventsManagementRepository) AddEventPackage(eventPackage *models
 	return eventPackage, urDB
 }
 
+func (r eventHubEventsManagementRepository) GetAllEventPackages(pagination models.Pagination, eventID uint64, query string) (models.Pagination, *gorm.DB) {
+
+	eventPackages, urDB := helpers.EventHubQueryBuilder.QueryAllEventPackages(pagination, eventID, query)
+
+	return eventPackages, urDB
+}
+
 func (r eventHubEventsManagementRepository) GetEventPackageWithId(id uint64) (*models.EventHubEventPackages, *gorm.DB) {
 	var eventPackage *models.EventHubEventPackages
 	sRDB := db.Find(&eventPackage, id)

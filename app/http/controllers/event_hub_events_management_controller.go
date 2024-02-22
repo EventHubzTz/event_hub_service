@@ -405,6 +405,46 @@ func (c eventHubEventsManagementController) AddEventPackage(ctx *fiber.Ctx) erro
 	return response.SuccessResponse("Event package added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
 }
 
+func (c eventHubEventsManagementController) GetAllEventPackages(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request events.EventHubEventPackagesGetsRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	var pagination models.Pagination
+	pagination.Limit = request.Limit
+	pagination.Sort = request.Sort
+	pagination.Page = request.Page
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	----------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. GET EVENT PACKAGES AND GET ERROR IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	events, err := service.EventHubEventsManagementService.GetAllEventPackages(pagination, request.EventID, request.Query)
+	/*---------------------------------------------------------
+	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
+	----------------------------------------------------------*/
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
+	}
+	return response.InternalServiceDataResponse(events, fiber.StatusOK, ctx)
+}
+
 func (c eventHubEventsManagementController) UpdateEventPackage(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
