@@ -247,8 +247,6 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			"t1.*",
 			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
 			"t3.event_name",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
 		)
 	if role == constants.EventPlanner {
 		clDB = clDB.Where("t3.user_id = ?", userID)
