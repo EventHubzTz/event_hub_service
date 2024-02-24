@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -45,15 +46,23 @@ func (q eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string,
 		if err != nil {
 			return nil, err
 		}
+		defer res.Body.Close()
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
 		if res.StatusCode == 200 {
 			var responseMap map[string]interface{}
-			json.NewDecoder(res.Body).Decode(&responseMap)
+			if err := json.Unmarshal(body, &responseMap); err != nil {
+				return nil, err
+			}
 			if _, exist := responseMap["messages"].([]interface{})[0].(map[string]interface{})["messageId"]; exist {
 				return json.Marshal(responseMap)
 			}
 			return nil, errors.New("message not sent something went wrong")
 		} else {
-			return nil, errors.New("invalid response from the server")
+			return nil, fmt.Errorf("status: %d, Response: %s", res.StatusCode, string(body))
 		}
 
 	} else {
