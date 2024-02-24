@@ -315,3 +315,24 @@ func createUserOTPCodeMessage(userID uint64, appId string, otpCode string) (*mod
 	}
 	return repositories.EventHubUsersManagementRepository.SaveUserOTPCodeMessage(&otpCodeMessage)
 }
+
+func (c eventHubUsersManagementService) SendSms(phone, body string) {
+	errorCounter := 0
+
+	senderID, errSenderID := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(2)
+	if errSenderID == nil {
+		messageUrl, errMessageUrl := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(3)
+		if errMessageUrl == nil {
+			authorizationToken, errAuthorizationToken := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(4)
+			if errAuthorizationToken == nil {
+				_, _ = helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
+			} else {
+				errorCounter++
+			}
+		} else {
+			errorCounter++
+		}
+	} else {
+		errorCounter++
+	}
+}

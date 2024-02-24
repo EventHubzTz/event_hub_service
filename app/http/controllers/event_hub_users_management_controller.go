@@ -509,3 +509,37 @@ func (c eventHubUsersManagementController) DeleteUser(ctx *fiber.Ctx) error {
 
 	return response.SuccessResponse("Event deleted successfully!", fiber.StatusOK, ctx)
 }
+
+func (c eventHubUsersManagementController) SendSms(ctx *fiber.Ctx) error {
+	type MessageRequest struct {
+		PhoneNumber string `json:"phone_number" validate:"required"`
+		Message     string `json:"message" validate:"required"`
+	}
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request MessageRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. SEND MESSAGE
+	-------------------------------------------------------------------*/
+	service.EventHubUsersManagementService.SendSms(request.PhoneNumber, request.Message)
+
+	return response.SuccessResponse("Message sent successfully!", fiber.StatusOK, ctx)
+}
