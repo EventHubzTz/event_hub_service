@@ -539,7 +539,10 @@ func (c eventHubUsersManagementController) SendSms(ctx *fiber.Ctx) error {
 	/*-----------------------------------------------------------------
 	 04. SEND MESSAGE
 	-------------------------------------------------------------------*/
-	service.EventHubUsersManagementService.SendSms(request.PhoneNumber, request.Message)
+	err = service.EventHubUsersManagementService.SendSms(request.PhoneNumber, request.Message)
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	}
 
 	return response.SuccessResponse("Message sent successfully!", fiber.StatusOK, ctx)
 }
