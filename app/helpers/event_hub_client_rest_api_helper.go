@@ -60,7 +60,7 @@ func (q eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string,
 			if _, exist := responseMap["messages"].([]interface{})[0].(map[string]interface{})["messageId"]; exist {
 				return json.Marshal(responseMap)
 			}
-			return nil, errors.New("message not sent something went wrong")
+			return nil, fmt.Errorf("status: %d, Response: %s", res.StatusCode, string(body))
 		} else {
 			return nil, fmt.Errorf("status: %d, Response: %s", res.StatusCode, string(body))
 		}
