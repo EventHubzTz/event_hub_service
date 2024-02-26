@@ -4,7 +4,7 @@ type EventHubUser struct {
 	ID
 	FirstName     string `json:"first_name" gorm:"not null;size:50" validate:"min=3"`
 	LastName      string `json:"last_name" gorm:"not null;size:50" validate:"min=3"`
-	Email         string `json:"email" gorm:"not null;unique;size:50" validate:"required,email,min=3,unique=users_tests.email"`
+	Email         string `json:"email" gorm:"null;size:50" validate:"email,unique=users_tests.email"`
 	PhoneNumber   string `json:"phone_no" gorm:"not null;unique;size:20" validate:"required,min=9,unique=users_tests.phone_number"`
 	Gender        string `json:"gender" gorm:"not null;type:enum('MALE','FEMALE');default:'MALE'"`
 	ProfileImage  string `json:"profile_image" gorm:"null;size:200;default:/users/profileImages/male.png"`

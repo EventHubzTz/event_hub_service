@@ -5,7 +5,7 @@ import "github.com/EventHubzTz/event_hub_service/app/models"
 type EventHubRegisterUserRequest struct {
 	FirstName   string `json:"first_name" validate:"required"`
 	LastName    string `json:"last_name" validate:"required"`
-	Email       string `json:"email" validate:"required,email,unique=event_hub_users.email,min=3,max=50"`
+	Email       string `json:"email" validate:"email,unique=event_hub_users.email"`
 	PhoneNumber string `json:"phone_no" validate:"required,unique=event_hub_users.phone_number,min=3,max=20,country_code=TZ"`
 	Gender      string `json:"gender" validate:"required,max=10"`
 	Password    string `json:"password" validate:"required,max=50"`
@@ -31,9 +31,9 @@ func (request EventHubRegisterUserRequest) ToModel() models.EventHubUser {
 type EventHubUsersGetsRequest struct {
 	Role  string `json:"role"`
 	Query string `json:"query"`
-	Limit int    `json:"limit,omitempty;query:limit" `
-	Page  int    `json:"page,omitempty;query:page"`
-	Sort  string `json:"sort,omitempty;query:sort"`
+	Limit int    `json:"limit,omitempty"`
+	Page  int    `json:"page,omitempty"`
+	Sort  string `json:"sort,omitempty"`
 }
 
 type EventHubResendOTPRequest struct {
