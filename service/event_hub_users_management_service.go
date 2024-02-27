@@ -285,8 +285,6 @@ func SaveOTPCode(phoneNumber, appID string, userId int) (*models.EventHubUserOTP
 		return nil, Dbres, ""
 	}
 
-	// commands.AFYAAPPSendOtpMessageToUsersWhoHaveNoOtpMessage.SendOtpToUser(int64(userId),sm,request.PhoneNumber)
-
 	return nil, Dbres, sms.Body
 }
 
