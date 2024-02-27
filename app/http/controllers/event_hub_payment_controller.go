@@ -63,7 +63,9 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	}
 	for i := range event.EventPackages {
 		if request.EventPackageID == event.EventPackages[i].ID {
-			request.Amount = event.EventPackages[i].Amount
+			if request.Amount < event.EventPackages[i].Amount {
+				request.Amount = event.EventPackages[i].Amount
+			}
 		}
 	}
 	/*---------------------------------------------------------
