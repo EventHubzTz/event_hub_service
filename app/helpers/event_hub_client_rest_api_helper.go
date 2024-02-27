@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -68,6 +69,24 @@ func (q eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string,
 	} else {
 		return nil, errors.New("invalid request from the server")
 	}
+}
+
+func MobiSMSApi(senderID string, messageUrl string, authorizationToken string, phoneNo string, message string) ([]byte, error) {
+	encodedWord := url.QueryEscape(message)
+	url := messageUrl + "?user=NOSOLITE&pwd=" + authorizationToken + "&senderid=" + senderID + "&mobileno=" + phoneNo[len(phoneNo)-9:] + "&msgtext=" + encodedWord + "&priority=High&CountryCode=+255"
+
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
 }
 
 type GenerateAzamPayTokenResponse struct {
