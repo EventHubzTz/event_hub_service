@@ -323,10 +323,15 @@ func (c eventHubUsersManagementService) SendSms(phone, body string) error {
 		if errMessageUrl == nil {
 			authorizationToken, errAuthorizationToken := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(4)
 			if errAuthorizationToken == nil {
-				_, err := helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
+				response, err := helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
 				// _, err := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
 				if err != nil {
 					return err
+				}
+				otpCodeMessageResponse := models.EventHubOTPMessageResponse{Value: string(response)}
+				_, usrDB := repositories.EventHubUsersManagementRepository.SaveUserOTPCodeMessageResponse(&otpCodeMessageResponse)
+				if usrDB.RowsAffected == 0 {
+					return usrDB.Error
 				}
 			} else {
 				return errors.New("error get authorization token")
