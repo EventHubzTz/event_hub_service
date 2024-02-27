@@ -112,7 +112,8 @@ func (s eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phon
 			authorizationToken, errAuthorizationToken := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(4)
 			if errAuthorizationToken == nil {
 
-				response, _ := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
+				response, _ := helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
+				// response, _ := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
 
 				/*--------------------------------------------
 					04. SAVING RETURNED RESPONSE INTO A TABLE
