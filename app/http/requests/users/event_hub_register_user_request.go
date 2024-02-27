@@ -5,7 +5,7 @@ import "github.com/EventHubzTz/event_hub_service/app/models"
 type EventHubRegisterUserRequest struct {
 	FirstName   string `json:"first_name" validate:"required"`
 	LastName    string `json:"last_name" validate:"required"`
-	Email       string `json:"email" validate:"email,unique=event_hub_users.email"`
+	Email       string `json:"email"`
 	PhoneNumber string `json:"phone_no" validate:"required,unique=event_hub_users.phone_number,min=3,max=20,country_code=TZ"`
 	Gender      string `json:"gender" validate:"required,max=10"`
 	Password    string `json:"password" validate:"required,max=50"`
