@@ -146,7 +146,7 @@ func (c eventHubUsersManagementController) VerifyPhoneNumberUsingOTP(ctx *fiber.
 	     VALIDATION PASSED
 	----------------------------------------------------------*/
 	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
-	err = service.EventHubUsersManagementService.VerifyMobileNumberOTPCOde(request.ToModel(), user, ctx)
+	err = service.EventHubUsersManagementService.VerifyOTPCOde(request.ToModel(), user, ctx)
 	/*---------------------------------------------------------
 	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/

@@ -188,6 +188,18 @@ func (s eventHubUsersManagementService) VerifyMobileNumberOTPCOde(otpCode models
 	return nil
 }
 
+func (s eventHubUsersManagementService) VerifyOTPCOde(otpCode models.EventHubUserOTPCode, user *models.EventHubUser, ctx *fiber.Ctx) error {
+	/*---------------------------------------------------------
+	 01. CHECK IF THE OTP CODE DETAILS ARE CORRECT IN THE
+	     DATABASE
+	----------------------------------------------------------*/
+	phoneAndCodeStatus := repositories.EventHubUsersManagementRepository.VerifyPhoneNumberAndOTPCode(otpCode)
+	if !phoneAndCodeStatus {
+		return errors.New("invalid Phone number OTP Code")
+	}
+	return nil
+}
+
 func (s eventHubUsersManagementService) GenerateForgotPasswordOtp(phoneNumber, appSignature string, user *models.EventHubUserDTO) interface{} {
 	userForgetPasswordOTPDetails := repositories.EventHubUsersManagementRepository.FindForgetPasswordOTPDetails(user.Id)
 	/*----------------------------------------------------------
