@@ -37,7 +37,7 @@ type EventHubUsersGetsRequest struct {
 }
 
 type EventHubResendOTPRequest struct {
-	PhoneNumber string `json:"phone_number" validate:"required,country_code=TZ"`
+	PhoneNumber string `json:"phone_number" validate:"required"`
 	AppID       string `json:"app_id" validate:"max=12"`
 }
 
@@ -66,7 +66,7 @@ func (request EventHubUpdatePasswordRequest) ToModel(hashedMessage string) model
 }
 
 type EventHubVerifyPhoneNumberUsingOTPRequest struct {
-	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=20,country_code=TZ"`
+	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=20"`
 	OTP         string `json:"otp" validate:"required,max=6"`
 }
 
