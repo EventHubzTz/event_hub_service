@@ -4,6 +4,10 @@ import (
 	"github.com/EventHubzTz/event_hub_service/app/models"
 )
 
+type EventHubGetTransactionRequest struct {
+	TransactionID string `json:"transaction_id"`
+}
+
 type EventHubPaymentRequest struct {
 	OrderID        string  `json:"order_id"`
 	TransactionID  string  `json:"transaction_id"`

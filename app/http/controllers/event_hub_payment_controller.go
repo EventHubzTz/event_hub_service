@@ -210,14 +210,47 @@ func (c eventHubPaymentController) GetPaymentTransactions(ctx *fiber.Ctx) error 
 	 04. GET PAYMENT TRANSACTIONS AND GET ERROR IF IS AVAILABLE
 	-------------------------------------------------------------------*/
 	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
-	events, err := service.EventHubPaymentService.GetPaymentTransactions(pagination, user.Role, request.Query, request.Status, user.Id)
+	paymentTransactions, err := service.EventHubPaymentService.GetPaymentTransactions(pagination, user.Role, request.Query, request.Status, user.Id)
 	/*---------------------------------------------------------
 	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/
 	if err != nil {
 		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
 	}
-	return response.InternalServiceDataResponse(events, fiber.StatusOK, ctx)
+	return response.InternalServiceDataResponse(paymentTransactions, fiber.StatusOK, ctx)
+}
+
+func (c eventHubPaymentController) GetTransactionByTransactionID(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request payments.EventHubGetTransactionRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*---------------------------------------------------------
+	 04. GET TRANSACTION
+	----------------------------------------------------------*/
+	transaction := repositories.EventHubPaymentRepository.GetTransactionByTransactionID(request.TransactionID)
+	if transaction == nil {
+		return response.ErrorResponse("Transaction does not exist in the system", fiber.StatusInternalServerError, ctx)
+	}
+
+	return response.InternalServiceDataResponse(transaction, fiber.StatusOK, ctx)
 }
 
 func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
