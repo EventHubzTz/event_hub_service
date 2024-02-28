@@ -27,8 +27,8 @@ func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagi
 	return events, urDB
 }
 
-func (r eventHubPaymentRepository) GetTransactionByTransactionID(transactionID string) *models.EventHubPaymentTransactionsDTO {
-	var transaction *models.EventHubPaymentTransactionsDTO
+func (r eventHubPaymentRepository) GetTransactionByTransactionID(transactionID string) *models.EventHubPaymentTransactions {
+	var transaction *models.EventHubPaymentTransactions
 	dbErr := db.Where("transaction_id = ?", transactionID).Find(&transaction)
 	if dbErr.RowsAffected == 0 {
 		return nil
