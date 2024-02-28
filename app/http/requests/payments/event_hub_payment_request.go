@@ -48,6 +48,6 @@ type EventHubUpdatePaymentStatusRequest struct {
 	Operator          string `json:"operator" validate:"required"`
 	Reference         string `json:"reference" validate:"required"`
 	Transactionstatus string `json:"transactionstatus" validate:"required"`
-	SubmerchantAcc    string `json:"submerchantAcc" validate:"required"`
+	SubmerchantAcc    string `json:"submerchantAcc"`
 	FspReferenceId    string `json:"fspReferenceId"`
 }
