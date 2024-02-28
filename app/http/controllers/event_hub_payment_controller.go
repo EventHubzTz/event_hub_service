@@ -45,7 +45,6 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
 	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
-	request.PaymentStatus = "COMPLETED"
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
 	     IN A REQUEST
