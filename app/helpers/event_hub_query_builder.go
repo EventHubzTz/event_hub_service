@@ -258,7 +258,8 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 		clDB = clDB.Where("t1.payment_status = ?", status)
 	}
 	if phoneNumber != "" {
-		clDB = clDB.Where("t1.phone_number = ?", phoneNumber)
+		clDB = clDB.Where("t1.phone_number = ?", phoneNumber).
+			Where("t1.payment_status = ?", constants.Completed)
 	}
 	if query != "%%" {
 		clDB = clDB.Where(
