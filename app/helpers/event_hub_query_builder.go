@@ -236,7 +236,7 @@ func (q eventHubQueryBuilder) QueryEventDetails() string {
 		"WHERE t1.id = ?"
 }
 
-func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, role, query, status string, userID uint64) (models.Pagination, *gorm.DB) {
+func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
 	var events []models.EventHubPaymentTransactionsDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
@@ -256,6 +256,9 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 	}
 	if status != "" {
 		clDB = clDB.Where("t1.payment_status = ?", status)
+	}
+	if phoneNumber != "" {
+		clDB = clDB.Where("t1.phone_number = ?", phoneNumber)
 	}
 	if query != "%%" {
 		clDB = clDB.Where(

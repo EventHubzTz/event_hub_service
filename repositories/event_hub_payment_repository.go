@@ -20,9 +20,9 @@ func (r eventHubPaymentRepository) AddPaymentTransaction(paymentTransation *mode
 	return paymentTransation, urDB
 }
 
-func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagination, role, query, status string, userID uint64) (models.Pagination, *gorm.DB) {
+func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
 
-	events, urDB := helpers.EventHubQueryBuilder.QueryPaymentTransactions(pagination, role, query, status, userID)
+	events, urDB := helpers.EventHubQueryBuilder.QueryPaymentTransactions(pagination, role, query, status, phoneNumber, userID)
 
 	return events, urDB
 }

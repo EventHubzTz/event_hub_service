@@ -210,7 +210,7 @@ func (c eventHubPaymentController) GetPaymentTransactions(ctx *fiber.Ctx) error 
 	 04. GET PAYMENT TRANSACTIONS AND GET ERROR IF IS AVAILABLE
 	-------------------------------------------------------------------*/
 	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
-	paymentTransactions, err := service.EventHubPaymentService.GetPaymentTransactions(pagination, user.Role, request.Query, request.Status, user.Id)
+	paymentTransactions, err := service.EventHubPaymentService.GetPaymentTransactions(pagination, user.Role, request.Query, request.Status, request.PhoneNumber, user.Id)
 	/*---------------------------------------------------------
 	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
 	----------------------------------------------------------*/
