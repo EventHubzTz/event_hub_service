@@ -342,7 +342,7 @@ func (c eventHubUsersManagementService) SendSms(phone, body string) error {
 				otpCodeMessageResponse := models.EventHubOTPMessageResponse{Value: string(response)}
 				_, usrDB := repositories.EventHubUsersManagementRepository.SaveUserOTPCodeMessageResponse(&otpCodeMessageResponse)
 				if usrDB.RowsAffected == 0 {
-					return usrDB.Error
+					return errors.New(string(response))
 				}
 			} else {
 				return errors.New("error get authorization token")
