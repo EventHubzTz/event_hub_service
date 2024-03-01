@@ -94,7 +94,6 @@ func (s eventHubUsersManagementService) ChangePassword(user models.EventHubUser,
 }
 
 func (s eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phone string) {
-	successCounter := 0
 	errorCounter := 0
 	/*---------------------------------------------------------
 	 01. SAVE THE OTP CODE FOR VERIFICATION OF THE MOBILE
@@ -112,19 +111,9 @@ func (s eventHubUsersManagementService) SendOtpToUser(userID uint64, appID, phon
 			authorizationToken, errAuthorizationToken := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(4)
 			if errAuthorizationToken == nil {
 
-				response, _, _ := helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
+				_, _, _ = helpers.MobiSMSApi(senderID, messageUrl, authorizationToken, phone, body)
 				// response, _ := helpers.EventHubClientRESTAPIHelper.SendOTPMessageToMobileUser(senderID, messageUrl, authorizationToken, phone, body)
 
-				/*--------------------------------------------
-					04. SAVING RETURNED RESPONSE INTO A TABLE
-				----------------------------------------------*/
-				otpCodeMessageResponse := models.EventHubOTPMessageResponse{Value: string(response)}
-				_, usrDB := repositories.EventHubUsersManagementRepository.SaveUserOTPCodeMessageResponse(&otpCodeMessageResponse)
-				if usrDB.RowsAffected == 0 {
-					errorCounter++
-				} else {
-					successCounter++
-				}
 			} else {
 				errorCounter++
 			}
@@ -319,7 +308,7 @@ func createUserOTPCodeMessage(userID uint64, appId string, otpCode string) (*mod
 	 01 FETCHING THE MOBILE APPLICATION ID FROM THE DATABASE
 	------------------------------------------------------------*/
 	// appSignature := repositories.EventHubExternalOperationsRepository.GetApplicationSignature()
-	message := "Your Event Hub OTP Code is: " + otpCode + " " + appId
+	message := "Your Pugu Marathon OTP Code is: " + otpCode + " " + appId
 	otpCodeMessage := models.EventHubOTPCodeMessage{
 		UserID: userID,
 		Body:   message,
