@@ -17,6 +17,8 @@ type EventHubPaymentRequest struct {
 	TicketOwner    string  `json:"ticket_owner" validate:"required"`
 	TShirtSize     string  `json:"t_shirt_size"`
 	Location       string  `json:"location" validate:"required"`
+	Distance       string  `json:"distance" validate:"required"`
+	DateOfBirth    string  `json:"date_of_birth" validate:"required"`
 	PhoneNumber    string  `json:"phone_number" validate:"required"`
 	Amount         float32 `json:"amount"`
 	Currency       string  `json:"currency"`
@@ -35,6 +37,8 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 		TicketOwner:   request.TicketOwner,
 		TShirtSize:    request.TShirtSize,
 		Location:      request.Location,
+		Distance:      request.Distance,
+		DateOfBirth:   request.DateOfBirth,
 		PhoneNumber:   request.PhoneNumber,
 		Amount:        request.Amount,
 		Currency:      request.Currency,

@@ -27,6 +27,11 @@ func newEventHubPaymentController() eventHubPaymentController {
 }
 
 func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
+	type PaymentTransactionData struct {
+		Message       string `json:"message"`
+		TransactionID string `json:"transaction_id"`
+	}
+
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
 	     CONTENTS
@@ -176,7 +181,12 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 		return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
 	}
 
-	return response.SuccessResponse(pushUSSDResponse.Message, fiber.StatusOK, ctx)
+	paymentData := PaymentTransactionData{
+		Message:       pushUSSDResponse.Message,
+		TransactionID: request.TransactionID,
+	}
+
+	return response.DataListSuccessResponse(paymentData, fiber.StatusOK, ctx)
 }
 
 func (c eventHubPaymentController) GetPaymentTransactions(ctx *fiber.Ctx) error {

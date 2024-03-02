@@ -9,6 +9,8 @@ type EventHubPaymentTransactions struct {
 	TicketOwner   string  `json:"ticket_owner" gorm:"not null"`
 	TShirtSize    string  `json:"t_shirt_size" gorm:"null"`
 	Location      string  `json:"location" gorm:"not null"`
+	Distance      string  `json:"distance" gorm:"not null"`
+	DateOfBirth   string  `json:"date_of_birth" gorm:"not null;size:50"`
 	PhoneNumber   string  `json:"phone_number" gorm:"not null"`
 	Amount        float32 `json:"amount" gorm:"default:0;not null"`
 	Currency      string  `json:"currency" gorm:"not null"`
@@ -31,6 +33,8 @@ type EventHubPaymentTransactionsDTO struct {
 	TicketOwner   string  `json:"ticket_owner"`
 	TShirtSize    string  `json:"t_shirt_size"`
 	Location      string  `json:"location"`
+	Distance      string  `json:"distance"`
+	DateOfBirth   string  `json:"date_of_birth"`
 	PhoneNumber   string  `json:"phone_number"`
 	Amount        float32 `json:"amount"`
 	Currency      string  `json:"currency"`
