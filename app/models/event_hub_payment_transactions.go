@@ -10,7 +10,7 @@ type EventHubPaymentTransactions struct {
 	TShirtSize    string  `json:"t_shirt_size" gorm:"null"`
 	Location      string  `json:"location" gorm:"not null"`
 	Distance      string  `json:"distance" gorm:"null"`
-	DateOfBirth   string  `json:"date_of_birth" gorm:"not null;size:50"`
+	DateOfBirth   string  `json:"date_of_birth" gorm:"null;size:50"`
 	PhoneNumber   string  `json:"phone_number" gorm:"not null"`
 	Amount        float32 `json:"amount" gorm:"default:0;not null"`
 	Currency      string  `json:"currency" gorm:"not null"`
