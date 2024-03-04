@@ -1,0 +1,10 @@
+[Unit]
+Description=Special For Starting Event Hub Service Test Bed
+After=syslog.target network.target
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/event_hub_service_testbed.sh  /etc/customCommands/event_hub_service_testbed.sh
+Restart=on-abort
+[Install]
+WantedBy=multi-user.target
