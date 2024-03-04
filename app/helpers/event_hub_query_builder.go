@@ -247,6 +247,7 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			"t1.*",
 			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
 			"t3.event_name",
+			"CONCAT(YEAR(CURDATE()) - YEAR(STR_TO_DATE(t1.date_of_birth,'%d/%m/%Y')), ' Year(s)') as age",
 		)
 	if role == constants.EventPlanner {
 		clDB = clDB.Where("t3.user_id = ?", userID)
