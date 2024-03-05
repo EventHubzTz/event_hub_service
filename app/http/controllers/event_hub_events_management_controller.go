@@ -518,6 +518,33 @@ func (c eventHubEventsManagementController) DeleteEventPackage(ctx *fiber.Ctx) e
 }
 
 func (c eventHubEventsManagementController) GetDashboardStatistics(ctx *fiber.Ctx) error {
+	type OrdersStatisticsForVendorRequest struct {
+		From string `json:"from" validate:"required"`
+		To   string `json:"to" validate:"required"`
+	}
+
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF REGISTERING
+	     USER
+	---------------------------------------------------------*/
+	var request OrdersStatisticsForVendorRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	----------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
 	user := service.EventHubUserTokenService.GetUserFromLocal(ctx)
-	return response.MapDataResponse(service.EventHubEventsManagementService.GetDashboardStatistics(user.Role, user.Id), fiber.StatusOK, ctx)
+	return response.MapDataResponse(service.EventHubEventsManagementService.GetDashboardStatistics(user.Role, request.From, request.To, user.Id), fiber.StatusOK, ctx)
 }

@@ -137,7 +137,7 @@ func (s eventHubEventsManagementService) UpdateEventPackage(regionRequest models
 	return nil
 }
 
-func (s eventHubEventsManagementService) GetDashboardStatistics(role string, userID uint64) *models.EventHubDashboardStatisticsDTO {
-	statistics, _ := repositories.EventHubEventsManagementRepository.GetDashboardStatistics(role, userID)
+func (s eventHubEventsManagementService) GetDashboardStatistics(role, from, to string, userID uint64) *models.EventHubDashboardStatisticsDTO {
+	statistics, _ := repositories.EventHubEventsManagementRepository.GetDashboardStatistics(role, from, to, userID)
 	return statistics
 }

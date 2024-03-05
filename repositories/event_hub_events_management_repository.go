@@ -128,12 +128,12 @@ func (r eventHubEventsManagementRepository) DeleteEventPackage(eventPackageId ui
 	return sRDB
 }
 
-func (r eventHubEventsManagementRepository) GetDashboardStatistics(role string, userID uint64) (*models.EventHubDashboardStatisticsDTO, *gorm.DB) {
+func (r eventHubEventsManagementRepository) GetDashboardStatistics(role, from, to string, userID uint64) (*models.EventHubDashboardStatisticsDTO, *gorm.DB) {
 	var statistics *models.EventHubDashboardStatisticsDTO
 	if role == constants.EventPlanner {
 		urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatisticsForEventPlanner(), userID, userID).Find(&statistics)
 		return statistics, urDB
 	}
-	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatistics()).Find(&statistics)
+	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatistics(), from, to, from, to, from, to, from, to).Find(&statistics)
 	return statistics, urDB
 }
