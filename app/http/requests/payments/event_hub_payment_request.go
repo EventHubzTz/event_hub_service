@@ -18,7 +18,7 @@ type EventHubPaymentRequest struct {
 	TShirtSize     string  `json:"t_shirt_size"`
 	Location       string  `json:"location" validate:"required"`
 	Distance       string  `json:"distance"`
-	DateOfBirth    string  `json:"date_of_birth" validate:"required"`
+	DateOfBirth    string  `json:"date_of_birth"`
 	PhoneNumber    string  `json:"phone_number" validate:"required"`
 	Amount         float32 `json:"amount"`
 	Currency       string  `json:"currency"`
