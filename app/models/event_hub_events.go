@@ -42,9 +42,12 @@ type EventHubEventDTO struct {
 }
 
 type EventHubDashboardStatisticsDTO struct {
-	TotalUsers  int     `json:"total_users"`
-	TotalEvents int     `json:"total_events"`
-	TotalAmount float32 `json:"total_amount"`
+	TotalUsers          int     `json:"total_users"`
+	TotalEvents         int     `json:"total_events"`
+	TotalAmount         float32 `json:"total_amount"`
+	AgregatorCollection float32 `json:"agregator_collection"`
+	SystemCollection    float32 `json:"system_collection"`
+	RemainedCollection  float32 `json:"remained_collection"`
 }
 
 func (EventHubEvent) TableName() string {
