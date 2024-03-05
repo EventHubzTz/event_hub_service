@@ -279,8 +279,8 @@ func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {
 		"(SELECT COUNT(*) FROM event_hub_users) AS total_users," +
 		"(SELECT COUNT(*) FROM event_hub_events) AS total_events," +
 		"(SELECT SUM(amount) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS total_amount," +
-		"(SELECT SUM(amount * 0.3) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS agregator_collection," +
-		"(SELECT SUM(amount * 0.3) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS system_collection," +
+		"(SELECT SUM(amount * 0.03) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS agregator_collection," +
+		"(SELECT SUM(amount * 0.03) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS system_collection," +
 		"(SELECT SUM(amount * 0.94) FROM event_hub_payment_transactions WHERE payment_status='COMPLETED') AS remained_collection"
 }
 
