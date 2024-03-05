@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -68,7 +69,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	for i := range event.EventPackages {
 		if request.EventPackageID == event.EventPackages[i].ID {
 			if request.Amount < event.EventPackages[i].Amount {
-				request.Amount = event.EventPackages[i].Amount
+				return response.ErrorResponseStr("Minimum amount is "+fmt.Sprintf("%.2f", event.EventPackages[i].Amount), fiber.StatusBadRequest, ctx)
 			}
 		}
 	}
