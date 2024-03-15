@@ -287,7 +287,7 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 	}
 	if query != "%%" {
 		clDB = clDB.Where(
-			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.ticket_owner,' ',t1.t_shirt_size,' ',t1.location,' ',t1.distance,' ',t1.date_of_birth,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t2.first_name,' ',t2.last_name,' ',t3.event_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.ticket_owner_first_name,' ',t1.t_shirt_size,' ',t1.location,' ',t1.distance,' ',t1.date_of_birth,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t2.first_name,' ',t2.last_name,' ',t3.event_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
 			query,
 		)
 	}

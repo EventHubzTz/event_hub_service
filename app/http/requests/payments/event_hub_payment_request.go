@@ -9,20 +9,21 @@ type EventHubGetTransactionRequest struct {
 }
 
 type EventHubPaymentRequest struct {
-	OrderID        string  `json:"order_id"`
-	TransactionID  string  `json:"transaction_id"`
-	EventID        uint64  `json:"event_id" validate:"required"`
-	EventPackageID uint64  `json:"event_package_id" validate:"required"`
-	UserID         uint64  `json:"user_id"`
-	TicketOwner    string  `json:"ticket_owner" validate:"required"`
-	TShirtSize     string  `json:"t_shirt_size"`
-	Location       string  `json:"location" validate:"required"`
-	Distance       string  `json:"distance"`
-	DateOfBirth    string  `json:"date_of_birth"`
-	PhoneNumber    string  `json:"phone_number" validate:"required"`
-	Amount         float32 `json:"amount"`
-	Currency       string  `json:"currency"`
-	Provider       string  `json:"provider" validate:"required"`
+	OrderID              string  `json:"order_id"`
+	TransactionID        string  `json:"transaction_id"`
+	EventID              uint64  `json:"event_id" validate:"required"`
+	EventPackageID       uint64  `json:"event_package_id" validate:"required"`
+	UserID               uint64  `json:"user_id"`
+	TicketOwnerFirstName string  `json:"ticket_owner_first_name" validate:"required"`
+	TicketOwnerLastName  string  `json:"ticket_owner_last_name" validate:"required"`
+	TShirtSize           string  `json:"t_shirt_size"`
+	Location             string  `json:"location" validate:"required"`
+	Distance             string  `json:"distance"`
+	DateOfBirth          string  `json:"date_of_birth"`
+	PhoneNumber          string  `json:"phone_number" validate:"required"`
+	Amount               float32 `json:"amount"`
+	Currency             string  `json:"currency"`
+	Provider             string  `json:"provider" validate:"required"`
 }
 
 func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactions {
@@ -30,19 +31,20 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 	 01. ASSIGN REQUEST TO EVENT MODEL
 	----------------------------------------------------------*/
 	return models.EventHubPaymentTransactions{
-		OrderID:       request.OrderID,
-		TransactionID: request.TransactionID,
-		EventID:       request.EventID,
-		UserID:        request.UserID,
-		TicketOwner:   request.TicketOwner,
-		TShirtSize:    request.TShirtSize,
-		Location:      request.Location,
-		Distance:      request.Distance,
-		DateOfBirth:   request.DateOfBirth,
-		PhoneNumber:   request.PhoneNumber,
-		Amount:        request.Amount,
-		Currency:      request.Currency,
-		Provider:      request.Provider,
+		OrderID:              request.OrderID,
+		TransactionID:        request.TransactionID,
+		EventID:              request.EventID,
+		UserID:               request.UserID,
+		TicketOwnerFirstName: request.TicketOwnerFirstName,
+		TicketOwnerLastName:  request.TicketOwnerLastName,
+		TShirtSize:           request.TShirtSize,
+		Location:             request.Location,
+		Distance:             request.Distance,
+		DateOfBirth:          request.DateOfBirth,
+		PhoneNumber:          request.PhoneNumber,
+		Amount:               request.Amount,
+		Currency:             request.Currency,
+		Provider:             request.Provider,
 	}
 }
 
