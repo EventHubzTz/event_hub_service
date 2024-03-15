@@ -98,6 +98,29 @@ func (q eventHubQueryBuilder) QuerySpecificUserDetailsUsingPhoneNumber() string 
 		"WHERE t1.phone_number =  ? "
 }
 
+func (q eventHubQueryBuilder) QueryAllDekania(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+	var regions []models.EventHubDekaniaDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubDekania{}, &pagination, database.DB())).
+		Table("event_hub_dekania as t1").
+		Select(
+			"t1.*",
+			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+		)
+	if query != "%%" {
+		clDB = clDB.Where("t1.id LIKE ? OR "+
+			"t1.dekania_name LIKE ? ",
+			query,
+			query,
+		)
+	}
+	clDB = clDB.Find(&regions)
+	pagination.Results = regions
+	return pagination, clDB
+
+}
+
 func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
 	var eventCategories []models.EventHubEventCategoriesDTO
 	baseUrl := os.Getenv("APP_URL")

@@ -14,6 +14,7 @@ var Tables = []interface{}{
 	&EventHubOTPMessageResponse{}, &EventHubForgotPasswordOTP{}, &EventHubEvent{},
 	&EventHubEventCategories{}, &EventHubEventSubCategories{}, &EventHubEventImages{},
 	&EventHubConfigurations{}, &EventHubPaymentTransactions{}, &EventHubEventPackages{},
+	&EventHubDekania{},
 }
 
 type Timestamp struct {
