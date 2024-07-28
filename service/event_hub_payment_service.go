@@ -16,11 +16,22 @@ func newEventHubPaymentService() eventHubPaymentService {
 	return eventHubPaymentService{}
 }
 
-func (s eventHubPaymentService) AddPaymentTransaction(configuration models.EventHubPaymentTransactions) error {
+func (s eventHubPaymentService) AddPaymentTransaction(paymentData models.EventHubPaymentTransactions) error {
 	/*---------------------------------------------------------
 	 01. ADD CONFIGURATION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
 	----------------------------------------------------------*/
-	_, dbResponse := repositories.EventHubPaymentRepository.AddPaymentTransaction(&configuration)
+	_, dbResponse := repositories.EventHubPaymentRepository.AddPaymentTransaction(&paymentData)
+	if dbResponse.RowsAffected == 0 {
+		return errors.New("failed to add payment transaction! ")
+	}
+	return nil
+}
+
+func (s eventHubPaymentService) AddVotingPaymentTransaction(paymentData models.EventHubVotingPaymentTransactions) error {
+	/*---------------------------------------------------------
+	 01. ADD CONFIGURATION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	----------------------------------------------------------*/
+	_, dbResponse := repositories.EventHubPaymentRepository.AddVotingPaymentTransaction(&paymentData)
 	if dbResponse.RowsAffected == 0 {
 		return errors.New("failed to add payment transaction! ")
 	}

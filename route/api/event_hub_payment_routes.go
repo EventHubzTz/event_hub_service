@@ -11,6 +11,7 @@ func EventHubPaymentRoutes(route fiber.Router) {
 
 func AuthenticatedEventHubPaymentRoutes(route fiber.Router) {
 	route.Post("/push/ussd", controllers.EventHubPaymentController.PushUSSD)
+	route.Post("/make/vote", controllers.EventHubPaymentController.VotingPushUSSD)
 	route.Post("/get/payment/transaction", controllers.EventHubPaymentController.GetPaymentTransactions)
 	route.Post("/get/transaction/by/transaction/id", controllers.EventHubPaymentController.GetTransactionByTransactionID)
 }

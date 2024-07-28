@@ -23,6 +23,10 @@ type EventHubPaymentTransactions struct {
 	EventHubEvent EventHubEvent `gorm:"foreignKey:EventID;constraint:OnDelete:NO ACTION"`
 }
 
+/*----------------------------------------
+  01.  DATA TRANSFER OBJECT
+------------------------------------------*/
+
 type EventHubPaymentTransactionsDTO struct {
 	ID            uint64  `json:"id"`
 	OrderID       string  `json:"order_id"`
@@ -44,10 +48,6 @@ type EventHubPaymentTransactionsDTO struct {
 	CreatedAt     string  `json:"created_at"`
 	UpdatedAt     string  `json:"updated_at"`
 }
-
-/*----------------------------------------
-  01.  PRODUCTS ORDERS DATA TRANSFER OBJECT
-------------------------------------------*/
 
 func (EventHubPaymentTransactions) TableName() string {
 	return tablePrefix + "payment_transactions"

@@ -19,7 +19,7 @@ func newEventHubQueryBuilder() eventHubQueryBuilder {
 	return eventHubQueryBuilder{}
 }
 
-func paginate(value interface{}, pagination *models.Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+func paginate(value interface{}, pagination *models.Pagination, _ *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		var totalRows int64
 

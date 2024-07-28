@@ -48,6 +48,33 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 	}
 }
 
+type EventHubVotingPaymentRequest struct {
+	OrderID       string  `json:"order_id"`
+	TransactionID string  `json:"transaction_id"`
+	NomineeID     string  `json:"nominee_id" validate:"required"`
+	NumberOfVotes int     `json:"number_of_votes"`
+	PhoneNumber   string  `json:"phone_number" validate:"required"`
+	Amount        float32 `json:"amount"`
+	Currency      string  `json:"currency"`
+	Provider      string  `json:"provider" validate:"required"`
+}
+
+func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPaymentTransactions {
+	/*---------------------------------------------------------
+	 01. ASSIGN REQUEST TO EVENT MODEL
+	----------------------------------------------------------*/
+	return models.EventHubVotingPaymentTransactions{
+		OrderID:       request.OrderID,
+		TransactionID: request.TransactionID,
+		NomineeID:     request.NomineeID,
+		NumberOfVotes: request.NumberOfVotes,
+		PhoneNumber:   request.PhoneNumber,
+		Amount:        request.Amount,
+		Currency:      request.Currency,
+		Provider:      request.Provider,
+	}
+}
+
 type EventHubUpdatePaymentStatusRequest struct {
 	AdditionalProperties struct {
 		Property1 interface{} `json:"property1"`
