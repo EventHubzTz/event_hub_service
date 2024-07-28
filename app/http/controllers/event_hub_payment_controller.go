@@ -209,6 +209,9 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	if err != nil {
 		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 	}
+	if request.NumberOfVotes > 0 {
+		request.Amount = request.Amount * float32(request.NumberOfVotes)
+	}
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
 	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
