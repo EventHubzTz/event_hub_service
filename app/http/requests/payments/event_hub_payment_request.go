@@ -63,7 +63,7 @@ type EventHubVotingPaymentRequest struct {
 	PhoneNumber    string  `json:"phone_number" validate:"required"`
 	TotalAmount    float32 `json:"amount"`
 	Currency       string  `json:"currency"`
-	Provider       string  `json:"provider" validate:"required"`
+	Provider       string  `json:"provider"`
 	GeneratedID    string  `json:"generated_id" validate:"required"`
 	VotedFor       string  `json:"voted_for" validate:"required"`
 	VoteNumbers    int     `json:"vote_numbers" validate:"required"`
