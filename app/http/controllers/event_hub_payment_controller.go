@@ -326,6 +326,9 @@ func (c eventHubPaymentController) AzamPayPushUSSD(ctx *fiber.Ctx) error {
 	if !pushUSSDResponse.Success {
 		return response.ErrorResponseStr(pushUSSDResponse.Results, fiber.StatusBadRequest, ctx)
 	}
+	if len(pushUSSDResponse.Errors) != 0 {
+		return response.DataListErrorResponse(pushUSSDResponse.Errors, fiber.StatusBadRequest, ctx)
+	}
 	request.TransactionID = pushUSSDResponse.TransactionID
 
 	paymentData := PaymentTransactionData{
@@ -364,9 +367,6 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	if request.VoteNumbers > 0 {
 		request.TotalAmount = request.TotalAmount * float32(request.VoteNumbers)
 	}
-	request.Currency = constants.Currency
-	request.OrderID = utils.GenerateOrderId()
-	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
 	     IN A REQUEST
@@ -449,38 +449,26 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 		}
 	}
 	/*---------------------------------------------------------
-	 14. GET AZAMPAY CHECKOUT BASE URL
+	 14. PUSH USSD
 	----------------------------------------------------------*/
-	checkoutBaseURL, checkoutBaseURLError := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(6)
-	if checkoutBaseURLError != nil {
-		return response.ErrorResponseStr(checkoutBaseURLError.Error.Error(), fiber.StatusBadRequest, ctx)
-	}
-	/*---------------------------------------------------------
-	 15. PUSH USSD
-	----------------------------------------------------------*/
-	url := checkoutBaseURL + "/azampay/mno/checkout"
-	pushUSSDResponse, pushUSSDError := helpers.AzamPayPushUSSD(
+	url := "https://www.service.eventhubtz.com/api/v1/azampay/push/ussd"
+	pushUSSDResponse, pushUSSDError := helpers.PushUSSD(
 		url,
 		request.PhoneNumber,
 		strconv.FormatFloat(float64(request.TotalAmount), 'f', -1, 32),
-		request.Currency,
-		request.OrderID,
-		request.Provider,
-		configurations.AzampayToken,
-		apiKey,
 	)
 	if pushUSSDError != nil {
 		return response.ErrorResponseStr(pushUSSDError.Error(), fiber.StatusBadRequest, ctx)
 	}
-	if !pushUSSDResponse.Success {
+	if pushUSSDResponse.Error {
 		return response.ErrorResponseStr(pushUSSDResponse.Results, fiber.StatusBadRequest, ctx)
 	}
-	if len(pushUSSDResponse.Errors) != 0 {
-		return response.DataListErrorResponse(pushUSSDResponse.Errors, fiber.StatusBadRequest, ctx)
-	}
 	request.TransactionID = pushUSSDResponse.TransactionID
+	request.Currency = pushUSSDResponse.Currency
+	request.OrderID = pushUSSDResponse.OrderID
+	request.Provider = pushUSSDResponse.Provider
 	/*--------------------------------------------------------------------
-	 16. ADD PAYMENT TRANSACTION
+	 15. ADD PAYMENT TRANSACTION
 	-----------------------------------------------------------------------*/
 	err = service.EventHubPaymentService.AddVotingPaymentTransaction(request.ToModel())
 	if err != nil {
