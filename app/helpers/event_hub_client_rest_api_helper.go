@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/EventHubzTz/event_hub_service/app/models"
 )
 
 var EventHubClientRESTAPIHelper = newEventHubClientRESTAPIHelper()
@@ -197,6 +199,45 @@ func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider,
 	}
 
 	var results AzamPayPushUSSDResponse
+	if err := json.Unmarshal(body, &results); err != nil {
+		return nil, err
+	}
+
+	return &results, nil
+}
+
+type EventHubVotingDTO struct {
+	TotalAmount float32 `json:"total_amount"`
+	SessionFee  float32 `json:"session_fee"`
+}
+
+func FindTotalCheckoutFromDoctorApi(url string, payment models.EventHubVotingPaymentTransactionsDTO) (*EventHubVotingDTO, error) {
+
+	method := "POST"
+
+	requestByte, _ := json.Marshal(payment)
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(requestByte))
+
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var results EventHubVotingDTO
 	if err := json.Unmarshal(body, &results); err != nil {
 		return nil, err
 	}

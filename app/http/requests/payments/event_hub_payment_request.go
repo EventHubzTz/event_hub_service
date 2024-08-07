@@ -49,14 +49,29 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 }
 
 type EventHubVotingPaymentRequest struct {
-	OrderID       string  `json:"order_id"`
-	TransactionID string  `json:"transaction_id"`
-	NomineeID     string  `json:"nominee_id" validate:"required"`
-	NumberOfVotes int     `json:"number_of_votes"`
-	PhoneNumber   string  `json:"phone_number" validate:"required"`
-	Amount        float32 `json:"amount"`
-	Currency      string  `json:"currency"`
-	Provider      string  `json:"provider" validate:"required"`
+	OrderID        string  `json:"order_id"`
+	TransactionID  string  `json:"transaction_id"`
+	PhoneNumber    string  `json:"phone_number" validate:"required"`
+	TotalAmount    float32 `json:"amount"`
+	Currency       string  `json:"currency"`
+	Provider       string  `json:"provider" validate:"required"`
+	GeneratedID    string  `json:"generated_id" validate:"required"`
+	VotedFor       string  `json:"voted_for" validate:"required"`
+	VoteNumbers    int     `json:"vote_numbers" validate:"required"`
+	VotedForCode   string  `json:"voted_for_code" validate:"required"`
+	Longitude      string  `json:"longitude" validate:"required"`
+	Latitude       string  `json:"latitude" validate:"required"`
+	VotedID        string  `json:"voted_id" validate:"required"`
+	Browser        string  `json:"browser" validate:"required"`
+	OS             string  `json:"os" validate:"required"`
+	UserAgent      string  `json:"user_agent" validate:"required"`
+	Device         string  `json:"device" validate:"required"`
+	OsVersion      string  `json:"os_version" validate:"required"`
+	BrowserVersion string  `json:"browser_version" validate:"required"`
+	DeviceType     string  `json:"device_type" validate:"required"`
+	IPAddress      string  `json:"Ipaddress" validate:"required"`
+	Orientation    string  `json:"orientation" validate:"required"`
+	Location       string  `json:"location" validate:"required"`
 }
 
 func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPaymentTransactions {
@@ -64,14 +79,29 @@ func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPayme
 	 01. ASSIGN REQUEST TO EVENT MODEL
 	----------------------------------------------------------*/
 	return models.EventHubVotingPaymentTransactions{
-		OrderID:       request.OrderID,
-		TransactionID: request.TransactionID,
-		NomineeID:     request.NomineeID,
-		NumberOfVotes: request.NumberOfVotes,
-		PhoneNumber:   request.PhoneNumber,
-		Amount:        request.Amount,
-		Currency:      request.Currency,
-		Provider:      request.Provider,
+		OrderID:        request.OrderID,
+		TransactionID:  request.TransactionID,
+		PhoneNumber:    request.PhoneNumber,
+		TotalAmount:    request.TotalAmount,
+		Currency:       request.Currency,
+		Provider:       request.Provider,
+		GeneratedID:    request.GeneratedID,
+		VotedFor:       request.VotedFor,
+		VoteNumbers:    request.VoteNumbers,
+		VotedForCode:   request.VotedForCode,
+		Longitude:      request.Longitude,
+		Latitude:       request.Latitude,
+		VotedID:        request.VotedID,
+		Browser:        request.Browser,
+		OS:             request.OS,
+		UserAgent:      request.UserAgent,
+		Device:         request.Device,
+		OsVersion:      request.OsVersion,
+		BrowserVersion: request.BrowserVersion,
+		DeviceType:     request.DeviceType,
+		IPAddress:      request.IPAddress,
+		Orientation:    request.Orientation,
+		Location:       request.Location,
 	}
 }
 

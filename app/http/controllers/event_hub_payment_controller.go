@@ -209,9 +209,9 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	if err != nil {
 		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 	}
-	request.Amount = 1000
-	if request.NumberOfVotes > 0 {
-		request.Amount = request.Amount * float32(request.NumberOfVotes)
+	request.TotalAmount = 1000
+	if request.VoteNumbers > 0 {
+		request.TotalAmount = request.TotalAmount * float32(request.VoteNumbers)
 	}
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
@@ -311,7 +311,7 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	pushUSSDResponse, pushUSSDError := helpers.AzamPayPushUSSD(
 		url,
 		request.PhoneNumber,
-		strconv.FormatFloat(float64(request.Amount), 'f', -1, 32),
+		strconv.FormatFloat(float64(request.TotalAmount), 'f', -1, 32),
 		request.Currency,
 		request.OrderID,
 		request.Provider,
