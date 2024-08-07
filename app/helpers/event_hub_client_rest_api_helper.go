@@ -250,7 +250,7 @@ func PushUSSD(url, PhoneNumber string, amount float32) (*PushUSSDResponse, error
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	// req.Header.Add("event-hub-sign-auth", "XhoO2yoeISBAJja8AGuul0hYomoEkXKK")
+	req.Header.Add("event-hub-sign-auth", "XhoO2yoeISBAJja8AGuul0hYomoEkXKK")
 
 	res, err := client.Do(req)
 	if err != nil {
