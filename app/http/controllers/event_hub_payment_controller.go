@@ -190,6 +190,152 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	return response.DataListSuccessResponse(paymentData, fiber.StatusOK, ctx)
 }
 
+func (c eventHubPaymentController) AzamPayPushUSSD(ctx *fiber.Ctx) error {
+	type PaymentTransactionData struct {
+		Message       string `json:"message"`
+		OrderID       string `json:"order_id"`
+		TransactionID string `json:"transaction_id"`
+		Currency      string `json:"currency"`
+		Provider      string `json:"provider"`
+	}
+
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF PUSH
+	     USSD
+	---------------------------------------------------------*/
+	var request payments.EventHubAzamPayPaymentRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+	request.Currency = constants.Currency
+	request.OrderID = utils.GenerateOrderId()
+	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*---------------------------------------------------------
+	 04. GET CONFIGURATIONS
+	----------------------------------------------------------*/
+	configurations := service.EventHubConfigurationsService.GetConfigurations()
+	if configurations == nil {
+		return response.ErrorResponseStr("No records found !", fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 05. GET AZAMPAY API KEY
+	----------------------------------------------------------*/
+	apiKey, apiKeyError := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(10)
+	if apiKeyError != nil {
+		return response.ErrorResponseStr(apiKeyError.Error.Error(), fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 06. CHECK IF TOKEN TIME HAS EXPIRED
+	----------------------------------------------------------*/
+	generatedTime, err := time.Parse(time.RFC3339, configurations.AzampayTokenGeneratedTime)
+	if err != nil {
+		return response.ErrorResponseStr(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+	if time.Now().After(generatedTime) {
+		/*---------------------------------------------------------
+		 07. GET AZAMPAY AUTHENTICATOR BASE URL
+		----------------------------------------------------------*/
+		authenticatorBaseURL, err := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(5)
+		if err != nil {
+			return response.ErrorResponseStr(err.Error.Error(), fiber.StatusBadRequest, ctx)
+		}
+		/*---------------------------------------------------------
+		 08. GET AZAMPAY APP NAME
+		----------------------------------------------------------*/
+		appName, err := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(7)
+		if err != nil {
+			return response.ErrorResponseStr(err.Error.Error(), fiber.StatusBadRequest, ctx)
+		}
+		/*---------------------------------------------------------
+		 09. GET AZAMPAY CLIENT ID
+		----------------------------------------------------------*/
+		clientID, err := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(8)
+		if err != nil {
+			return response.ErrorResponseStr(err.Error.Error(), fiber.StatusBadRequest, ctx)
+		}
+		/*---------------------------------------------------------
+		 10. GET AZAMPAY CLIENT SECRET
+		----------------------------------------------------------*/
+		clientSecret, err := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(9)
+		if err != nil {
+			return response.ErrorResponseStr(err.Error.Error(), fiber.StatusBadRequest, ctx)
+		}
+		/*---------------------------------------------------------
+		 11. GET BEARER TOKEN
+		----------------------------------------------------------*/
+		url := authenticatorBaseURL + "/AppRegistration/GenerateToken"
+		tokenResponse, tokenError := helpers.GenerateAzamPayToken(url, appName, clientID, clientSecret, apiKey)
+		if tokenError != nil {
+			return response.ErrorResponseStr(tokenError.Error(), fiber.StatusBadRequest, ctx)
+		}
+		/*-----------------------------------------------------------------
+		 12. UPDATE TOKEN AND TOKEN TIME AND GET RESPONSE IF IS AVAILABLE
+		-------------------------------------------------------------------*/
+		dbResponse := repositories.EventHubConfigurationsRepository.UpdateTokenAndTokenTime(1, tokenResponse.Data.AccessToken, time.Now().Add(3*time.Hour))
+		if dbResponse.RowsAffected == 0 {
+			return response.ErrorResponse("Failed to update token time and token", fiber.StatusBadRequest, ctx)
+		}
+		/*---------------------------------------------------------
+		 13. GET CONFIGURATIONS
+		----------------------------------------------------------*/
+		configurations = service.EventHubConfigurationsService.GetConfigurations()
+		if configurations == nil {
+			return response.ErrorResponseStr("No records found !", fiber.StatusBadRequest, ctx)
+		}
+	}
+	/*---------------------------------------------------------
+	 14. GET AZAMPAY CHECKOUT BASE URL
+	----------------------------------------------------------*/
+	checkoutBaseURL, checkoutBaseURLError := repositories.EventHubExternalOperationsRepository.GetMicroServiceExternalOperationSetup(6)
+	if checkoutBaseURLError != nil {
+		return response.ErrorResponseStr(checkoutBaseURLError.Error.Error(), fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 15. PUSH USSD
+	----------------------------------------------------------*/
+	url := checkoutBaseURL + "/azampay/mno/checkout"
+	pushUSSDResponse, pushUSSDError := helpers.AzamPayPushUSSD(
+		url,
+		request.PhoneNumber,
+		strconv.FormatFloat(float64(request.TotalAmount), 'f', -1, 32),
+		request.Currency,
+		request.OrderID,
+		request.Provider,
+		configurations.AzampayToken,
+		apiKey,
+	)
+	if pushUSSDError != nil {
+		return response.ErrorResponseStr(pushUSSDError.Error(), fiber.StatusBadRequest, ctx)
+	}
+	if !pushUSSDResponse.Success {
+		return response.ErrorResponseStr(pushUSSDResponse.Results, fiber.StatusBadRequest, ctx)
+	}
+	request.TransactionID = pushUSSDResponse.TransactionID
+
+	paymentData := PaymentTransactionData{
+		Message:       pushUSSDResponse.Results,
+		OrderID:       request.OrderID,
+		TransactionID: request.TransactionID,
+		Currency:      request.Currency,
+		Provider:      request.Provider,
+	}
+
+	return response.DataListSuccessResponse(paymentData, fiber.StatusOK, ctx)
+}
+
 func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	type PaymentTransactionData struct {
 		Message       string `json:"message"`

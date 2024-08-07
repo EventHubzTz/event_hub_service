@@ -8,6 +8,15 @@ type EventHubGetTransactionRequest struct {
 	TransactionID string `json:"transaction_id"`
 }
 
+type EventHubAzamPayPaymentRequest struct {
+	OrderID       string  `json:"order_id"`
+	TransactionID string  `json:"transaction_id"`
+	PhoneNumber   string  `json:"phone_number" validate:"required"`
+	TotalAmount   float32 `json:"amount"`
+	Currency      string  `json:"currency"`
+	Provider      string  `json:"provider" validate:"required"`
+}
+
 type EventHubPaymentRequest struct {
 	OrderID              string  `json:"order_id"`
 	TransactionID        string  `json:"transaction_id"`
