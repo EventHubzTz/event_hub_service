@@ -458,9 +458,23 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 		request.TotalAmount,
 	)
 	if pushUSSDError != nil {
+		/*--------------------------------------------------------------------
+		 15. ADD PAYMENT TRANSACTION
+		-----------------------------------------------------------------------*/
+		err = service.EventHubPaymentService.AddVotingPaymentTransaction(request.ToModel())
+		if err != nil {
+			return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
+		}
 		return response.ErrorResponseStr(pushUSSDError.Error(), fiber.StatusBadRequest, ctx)
 	}
 	if pushUSSDResponse.Error {
+		/*--------------------------------------------------------------------
+		 16. ADD PAYMENT TRANSACTION
+		-----------------------------------------------------------------------*/
+		err = service.EventHubPaymentService.AddVotingPaymentTransaction(request.ToModel())
+		if err != nil {
+			return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
+		}
 		return response.ErrorResponseStr(pushUSSDResponse.Data.Results, fiber.StatusBadRequest, ctx)
 	}
 	request.TransactionID = pushUSSDResponse.Data.TransactionID
@@ -468,7 +482,7 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	request.OrderID = pushUSSDResponse.Data.OrderID
 	request.Provider = pushUSSDResponse.Data.Provider
 	/*--------------------------------------------------------------------
-	 15. ADD PAYMENT TRANSACTION
+	 17. ADD PAYMENT TRANSACTION
 	-----------------------------------------------------------------------*/
 	err = service.EventHubPaymentService.AddVotingPaymentTransaction(request.ToModel())
 	if err != nil {

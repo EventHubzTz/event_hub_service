@@ -3,11 +3,11 @@ package models
 type EventHubVotingPaymentTransactions struct {
 	ID
 	OrderID        string  `json:"order_id" gorm:"null"`
-	TransactionID  string  `json:"transaction_id" gorm:"not null"`
+	TransactionID  string  `json:"transaction_id" gorm:"null"`
 	PhoneNumber    string  `json:"phone_number" gorm:"not null"`
 	TotalAmount    float32 `json:"total_amount" gorm:"default:0;not null"`
-	Currency       string  `json:"currency" gorm:"not null"`
-	Provider       string  `json:"provider" gorm:"not null"`
+	Currency       string  `json:"currency" gorm:"null"`
+	Provider       string  `json:"provider" gorm:"null"`
 	PaymentStatus  string  `json:"payment_status" gorm:"not null;type:enum('PENDING','COMPLETED','CANCELLED');default:'PENDING'"`
 	GeneratedID    string  `json:"generated_id" gorm:"not null"`
 	VotedFor       string  `json:"voted_for"  gorm:"not null"`
