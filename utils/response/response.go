@@ -11,7 +11,7 @@ type ErrorResponseStruct struct {
 }
 
 type ErrorResponseStructString struct {
-	Error   bool     `json:"error"`
+	Error   bool   `json:"error"`
 	Message string `json:"message"`
 }
 
@@ -63,6 +63,13 @@ func DataListResponse(response interface{}, code int, ctx *fiber.Ctx) error {
 	return ctx.Status(code).JSON(externalServiceDataListResponseStruct{
 		Data:  response,
 		Count: modelResponse.Len(),
+	})
+}
+
+func DataListErrorResponse(response interface{}, code int, ctx *fiber.Ctx) error {
+	return ctx.Status(code).JSON(externalServiceDataListSuccessResponseStruct{
+		Data:  response,
+		Error: true,
 	})
 }
 

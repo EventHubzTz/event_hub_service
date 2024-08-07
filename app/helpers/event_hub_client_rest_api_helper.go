@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-
-	"github.com/EventHubzTz/event_hub_service/app/models"
 )
 
 var EventHubClientRESTAPIHelper = newEventHubClientRESTAPIHelper()
@@ -149,10 +147,15 @@ func GenerateAzamPayToken(url, appName, clientId, clientSecret, apiKey string) (
 }
 
 type AzamPayPushUSSDResponse struct {
-	TransactionID string `json:"transactionId"`
-	Message       string `json:"message"`
-	Success       bool   `json:"success"`
-	Results       string `json:"results"`
+	Errors        map[string][]string `json:"errors"`
+	Type          string              `json:"type"`
+	Title         string              `json:"title"`
+	Status        int                 `json:"status"`
+	TraceID       string              `json:"traceId"`
+	TransactionID string              `json:"transactionId"`
+	Message       string              `json:"message"`
+	Success       bool                `json:"success"`
+	Results       string              `json:"results"`
 }
 
 func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider, bearerToken, apiKey string) (*AzamPayPushUSSDResponse, error) {
@@ -209,16 +212,31 @@ func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider,
 	return &results, nil
 }
 
-type EventHubVotingDTO struct {
-	TotalAmount float32 `json:"total_amount"`
-	SessionFee  float32 `json:"session_fee"`
+type PushUSSDResponse struct {
+	Error         bool   `json:"error"`
+	Results       string `json:"results"`
+	Message       string `json:"message"`
+	OrderID       string `json:"order_id"`
+	TransactionID string `json:"transaction_id"`
+	Currency      string `json:"currency"`
+	Provider      string `json:"provider"`
 }
 
-func FindTotalCheckoutFromDoctorApi(url string, payment models.EventHubVotingPaymentTransactionsDTO) (*EventHubVotingDTO, error) {
+func PushUSSD(url, PhoneNumber, amount string) (*PushUSSDResponse, error) {
+
+	type Request struct {
+		PhoneNumber string `json:"phone_number"`
+		Amount      string `json:"amount"`
+	}
+
+	var request Request
+
+	request.PhoneNumber = PhoneNumber
+	request.Amount = amount
 
 	method := "POST"
 
-	requestByte, _ := json.Marshal(payment)
+	requestByte, _ := json.Marshal(request)
 
 	client := &http.Client{}
 
@@ -228,6 +246,7 @@ func FindTotalCheckoutFromDoctorApi(url string, payment models.EventHubVotingPay
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("event-hub-sign-auth", "XhoO2yoeISBAJja8AGuul0hYomoEkXKK")
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -240,10 +259,12 @@ func FindTotalCheckoutFromDoctorApi(url string, payment models.EventHubVotingPay
 		return nil, err
 	}
 
-	var results EventHubVotingDTO
+	var results PushUSSDResponse
 	if err := json.Unmarshal(body, &results); err != nil {
 		return nil, err
 	}
+
+	results.Results = string(body)
 
 	return &results, nil
 }

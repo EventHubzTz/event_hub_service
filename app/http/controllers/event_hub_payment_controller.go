@@ -475,6 +475,9 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	if !pushUSSDResponse.Success {
 		return response.ErrorResponseStr(pushUSSDResponse.Results, fiber.StatusBadRequest, ctx)
 	}
+	if len(pushUSSDResponse.Errors) != 0 {
+		return response.DataListErrorResponse(pushUSSDResponse.Errors, fiber.StatusBadRequest, ctx)
+	}
 	request.TransactionID = pushUSSDResponse.TransactionID
 	/*--------------------------------------------------------------------
 	 16. ADD PAYMENT TRANSACTION
