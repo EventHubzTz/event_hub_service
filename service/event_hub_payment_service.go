@@ -38,6 +38,16 @@ func (s eventHubPaymentService) AddVotingPaymentTransaction(paymentData models.E
 	return nil
 }
 
+func (s eventHubPaymentService) GetVotingPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, error) {
+	var newQuery = "%" + query + "%"
+	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetVotingPaymentTransactions(pagination, newQuery, status)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return models.Pagination{}, errors.New("payment transaction not found! ")
+	}
+	return paymentTransactions, nil
+}
+
 func (s eventHubPaymentService) GetPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, error) {
 	var newQuery = "%" + query + "%"
 	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetPaymentTransactions(pagination, role, newQuery, status, phoneNumber, userID)

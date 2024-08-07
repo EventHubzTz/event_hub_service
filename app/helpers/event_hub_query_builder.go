@@ -259,6 +259,29 @@ func (q eventHubQueryBuilder) QueryEventDetails() string {
 		"WHERE t1.id = ?"
 }
 
+func (q eventHubQueryBuilder) QueryVotingPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
+	var events []models.EventHubVotingPaymentTransactionsDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubVotingPaymentTransactions{}, &pagination, database.DB())).
+		Table("event_hub_voting_payment_transactions as t1").
+		Select(
+			"t1.*",
+		)
+	if status != "" {
+		clDB = clDB.Where("t1.payment_status = ?", status)
+	}
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.phone_number,' ',t1.total_amount,' ',t1.location,' ',t1.device,' ',t1.os_version,' ',t1.browser_version,' ',t1.device_type,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t1.ipaddress,' ',t1.orientation,' ',t1.voted_for,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&events)
+	pagination.Results = events
+	return pagination, clDB
+
+}
+
 func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
 	var events []models.EventHubPaymentTransactionsDTO
 

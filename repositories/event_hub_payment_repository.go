@@ -25,6 +25,13 @@ func (r eventHubPaymentRepository) AddVotingPaymentTransaction(paymentTransation
 	return paymentTransation, urDB
 }
 
+func (r eventHubPaymentRepository) GetVotingPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
+
+	events, urDB := helpers.EventHubQueryBuilder.QueryVotingPaymentTransactions(pagination, query, status)
+
+	return events, urDB
+}
+
 func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
 
 	events, urDB := helpers.EventHubQueryBuilder.QueryPaymentTransactions(pagination, role, query, status, phoneNumber, userID)

@@ -12,6 +12,7 @@ func NonAuthenticatedEventHubPaymentRoutes(route fiber.Router) {
 func EventHubPaymentRoutes(route fiber.Router) {
 	route.Post("/azampay/push/ussd", controllers.EventHubPaymentController.AzamPayPushUSSD)
 	route.Post("/make/vote", controllers.EventHubPaymentController.VotingPushUSSD)
+	route.Post("/get/voting/payment/transactions", controllers.EventHubPaymentController.GetVotingPaymentTransactions)
 }
 
 func AuthenticatedEventHubPaymentRoutes(route fiber.Router) {
