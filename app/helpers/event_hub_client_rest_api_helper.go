@@ -213,7 +213,11 @@ func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider,
 }
 
 type PushUSSDResponse struct {
-	Error         bool   `json:"error"`
+	Error bool `json:"error"`
+	Data  Data `json:"data"`
+}
+
+type Data struct {
 	Results       string `json:"results"`
 	Message       string `json:"message"`
 	OrderID       string `json:"order_id"`
@@ -264,7 +268,7 @@ func PushUSSD(url, PhoneNumber, amount string) (*PushUSSDResponse, error) {
 		return nil, err
 	}
 
-	results.Results = string(body)
+	results.Data.Results = string(body)
 
 	return &results, nil
 }
