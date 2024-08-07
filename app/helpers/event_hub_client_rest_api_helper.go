@@ -226,11 +226,11 @@ type Data struct {
 	Provider      string `json:"provider"`
 }
 
-func PushUSSD(url, PhoneNumber, amount string) (*PushUSSDResponse, error) {
+func PushUSSD(url, PhoneNumber string, amount float32) (*PushUSSDResponse, error) {
 
 	type Request struct {
-		PhoneNumber string `json:"phone_number"`
-		Amount      string `json:"amount"`
+		PhoneNumber string  `json:"phone_number"`
+		Amount      float32 `json:"amount"`
 	}
 
 	var request Request

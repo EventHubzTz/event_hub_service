@@ -455,7 +455,7 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	pushUSSDResponse, pushUSSDError := helpers.PushUSSD(
 		url,
 		request.PhoneNumber,
-		strconv.FormatFloat(float64(request.TotalAmount), 'f', -1, 32),
+		request.TotalAmount,
 	)
 	if pushUSSDError != nil {
 		return response.ErrorResponseStr(pushUSSDError.Error(), fiber.StatusBadRequest, ctx)
