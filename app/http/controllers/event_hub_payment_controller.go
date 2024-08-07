@@ -29,6 +29,7 @@ func newEventHubPaymentController() eventHubPaymentController {
 
 func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	type PaymentTransactionData struct {
+		Results       string `json:"results"`
 		Message       string `json:"message"`
 		TransactionID string `json:"transaction_id"`
 	}
@@ -183,6 +184,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	}
 
 	paymentData := PaymentTransactionData{
+		Results:       pushUSSDResponse.Results,
 		Message:       pushUSSDResponse.Message,
 		TransactionID: request.TransactionID,
 	}
@@ -192,6 +194,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 
 func (c eventHubPaymentController) AzamPayPushUSSD(ctx *fiber.Ctx) error {
 	type PaymentTransactionData struct {
+		Results       string `json:"results"`
 		Message       string `json:"message"`
 		OrderID       string `json:"order_id"`
 		TransactionID string `json:"transaction_id"`
@@ -326,7 +329,8 @@ func (c eventHubPaymentController) AzamPayPushUSSD(ctx *fiber.Ctx) error {
 	request.TransactionID = pushUSSDResponse.TransactionID
 
 	paymentData := PaymentTransactionData{
-		Message:       pushUSSDResponse.Results,
+		Results:       pushUSSDResponse.Results,
+		Message:       pushUSSDResponse.Message,
 		OrderID:       request.OrderID,
 		TransactionID: request.TransactionID,
 		Currency:      request.Currency,
@@ -338,6 +342,7 @@ func (c eventHubPaymentController) AzamPayPushUSSD(ctx *fiber.Ctx) error {
 
 func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	type PaymentTransactionData struct {
+		Results       string `json:"results"`
 		Message       string `json:"message"`
 		TransactionID string `json:"transaction_id"`
 	}
@@ -480,7 +485,8 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	}
 
 	paymentData := PaymentTransactionData{
-		Message:       pushUSSDResponse.Results,
+		Results:       pushUSSDResponse.Results,
+		Message:       pushUSSDResponse.Message,
 		TransactionID: request.TransactionID,
 	}
 
