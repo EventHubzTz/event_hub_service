@@ -13,19 +13,19 @@ type EventHubVotingPaymentTransactions struct {
 	VotedFor       string  `json:"voted_for"  gorm:"not null"`
 	VoteNumbers    int     `json:"vote_numbers" gorm:"not null"`
 	VotedForCode   string  `json:"voted_for_code" gorm:"not null"`
-	Longitude      string  `json:"longitude" gorm:"not null"`
-	Latitude       string  `json:"latitude" gorm:"not null"`
+	Longitude      string  `json:"longitude" gorm:"null"`
+	Latitude       string  `json:"latitude" gorm:"null"`
 	VotedID        string  `json:"voted_id" gorm:"not null"`
-	Browser        string  `json:"browser" gorm:"not null"`
-	OS             string  `json:"os" gorm:"not null"`
-	UserAgent      string  `json:"user_agent" gorm:"not null"`
-	Device         string  `json:"device" gorm:"not null"`
-	OsVersion      string  `json:"os_version" gorm:"not null"`
-	BrowserVersion string  `json:"browser_version" gorm:"not null"`
-	DeviceType     string  `json:"device_type" gorm:"not null"`
-	IPAddress      string  `json:"ipaddress" gorm:"not null"`
-	Orientation    string  `json:"orientation" gorm:"not null"`
-	Location       string  `json:"location" gorm:"not null"`
+	Browser        string  `json:"browser" gorm:"null"`
+	OS             string  `json:"os" gorm:"null"`
+	UserAgent      string  `json:"user_agent" gorm:"null"`
+	Device         string  `json:"device" gorm:"null"`
+	OsVersion      string  `json:"os_version" gorm:"null"`
+	BrowserVersion string  `json:"browser_version" gorm:"null"`
+	DeviceType     string  `json:"device_type" gorm:"null"`
+	IPAddress      string  `json:"ipaddress" gorm:"null"`
+	Orientation    string  `json:"orientation" gorm:"null"`
+	Location       string  `json:"location" gorm:"null"`
 	Timestamp
 }
 

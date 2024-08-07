@@ -152,6 +152,7 @@ type AzamPayPushUSSDResponse struct {
 	TransactionID string `json:"transactionId"`
 	Message       string `json:"message"`
 	Success       bool   `json:"success"`
+	Results       string `json:"results"`
 }
 
 func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider, bearerToken, apiKey string) (*AzamPayPushUSSDResponse, error) {
@@ -202,6 +203,8 @@ func AzamPayPushUSSD(url, accountNumber, amount, currency, externalId, provider,
 	if err := json.Unmarshal(body, &results); err != nil {
 		return nil, err
 	}
+
+	results.Results = string(body)
 
 	return &results, nil
 }

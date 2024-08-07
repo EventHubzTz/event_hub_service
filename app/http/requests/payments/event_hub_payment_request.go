@@ -59,19 +59,19 @@ type EventHubVotingPaymentRequest struct {
 	VotedFor       string  `json:"voted_for" validate:"required"`
 	VoteNumbers    int     `json:"vote_numbers" validate:"required"`
 	VotedForCode   string  `json:"voted_for_code" validate:"required"`
-	Longitude      string  `json:"longitude" validate:"required"`
-	Latitude       string  `json:"latitude" validate:"required"`
+	Longitude      string  `json:"longitude"`
+	Latitude       string  `json:"latitude"`
 	VotedID        string  `json:"voted_id" validate:"required"`
-	Browser        string  `json:"browser" validate:"required"`
-	OS             string  `json:"os" validate:"required"`
-	UserAgent      string  `json:"user_agent" validate:"required"`
-	Device         string  `json:"device" validate:"required"`
-	OsVersion      string  `json:"os_version" validate:"required"`
-	BrowserVersion string  `json:"browser_version" validate:"required"`
-	DeviceType     string  `json:"device_type" validate:"required"`
-	IPAddress      string  `json:"Ipaddress" validate:"required"`
-	Orientation    string  `json:"orientation" validate:"required"`
-	Location       string  `json:"location" validate:"required"`
+	Browser        string  `json:"browser"`
+	OS             string  `json:"os"`
+	UserAgent      string  `json:"user_agent"`
+	Device         string  `json:"device"`
+	OsVersion      string  `json:"os_version"`
+	BrowserVersion string  `json:"browser_version"`
+	DeviceType     string  `json:"device_type"`
+	IPAddress      string  `json:"Ipaddress"`
+	Orientation    string  `json:"orientation"`
+	Location       string  `json:"location"`
 }
 
 func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPaymentTransactions {

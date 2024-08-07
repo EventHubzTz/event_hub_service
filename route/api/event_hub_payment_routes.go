@@ -5,9 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func NonAuthenticatedEventHubPaymentRoutes(route fiber.Router) {
+	route.Post("/Checkout/Callback", controllers.EventHubPaymentController.UpdatePaymentStatus)
+}
+
 func EventHubPaymentRoutes(route fiber.Router) {
 	route.Post("/make/vote", controllers.EventHubPaymentController.VotingPushUSSD)
-	route.Post("/Checkout/Callback", controllers.EventHubPaymentController.UpdatePaymentStatus)
 }
 
 func AuthenticatedEventHubPaymentRoutes(route fiber.Router) {
