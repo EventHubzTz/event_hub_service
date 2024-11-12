@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -38,7 +37,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	 01. INITIATING VARIABLE FOR THE REQUEST OF PUSH
 	     USSD
 	---------------------------------------------------------*/
-	var request payments.EventHubPaymentRequest
+	var request payments.EventHubVotingPaymentRequest
 	/*---------------------------------------------------------
 	 02. PARSING THE BODY OF THE INCOMING REQUEST
 	----------------------------------------------------------*/
@@ -47,8 +46,6 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	if err != nil {
 		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 	}
-	userFromLocal := service.EventHubUserTokenService.GetUserFromLocal(ctx)
-	request.UserID = userFromLocal.Id
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
 	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
@@ -59,20 +56,6 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	errors := validation.Validate(request)
 	if errors != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
-	}
-	/*----------------------------------------
-	 04. CHECK IF EVENT EXIST IN THE SYSTEM
-	------------------------------------------*/
-	event, eventError := service.EventHubEventsManagementService.GetEvent(request.EventID)
-	if eventError != nil {
-		return response.ErrorResponse(eventError.Error(), fiber.StatusBadRequest, ctx)
-	}
-	for i := range event.EventPackages {
-		if request.EventPackageID == event.EventPackages[i].ID {
-			if request.Amount < event.EventPackages[i].Amount {
-				return response.ErrorResponseStr("Minimum amount is "+fmt.Sprintf("%.2f", event.EventPackages[i].Amount), fiber.StatusBadRequest, ctx)
-			}
-		}
 	}
 	/*---------------------------------------------------------
 	 04. GET CONFIGURATIONS
@@ -161,7 +144,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	pushUSSDResponse, pushUSSDError := helpers.AzamPayPushUSSD(
 		url,
 		request.PhoneNumber,
-		strconv.FormatFloat(float64(request.Amount), 'f', -1, 32),
+		strconv.FormatFloat(float64(request.TotalAmount), 'f', -1, 32),
 		request.Currency,
 		request.OrderID,
 		request.Provider,
@@ -178,7 +161,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	/*--------------------------------------------------------------------
 	 16. ADD PAYMENT TRANSACTION
 	-----------------------------------------------------------------------*/
-	err = service.EventHubPaymentService.AddPaymentTransaction(request.ToModel())
+	err = service.EventHubPaymentService.AddVotingPaymentTransaction(request.ToModel())
 	if err != nil {
 		return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
 	}
