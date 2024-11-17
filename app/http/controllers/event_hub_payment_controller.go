@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -49,6 +50,10 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
 	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
+	request.TotalAmount = 1000
+	if request.VoteNumbers > 0 {
+		request.TotalAmount = request.TotalAmount * float32(request.VoteNumbers)
+	}
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
 	     IN A REQUEST
@@ -622,16 +627,19 @@ func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
 	----------------------------------------------------------*/
 	transaction := repositories.EventHubPaymentRepository.GetTransactionByTransactionID(request.Reference)
 	if transaction == nil {
+		fmt.Println(transaction)
 		return response.ErrorResponse("Transaction does not exist in the system", fiber.StatusInternalServerError, ctx)
 	}
 	/*---------------------------------------------------------
 	 05. UPDATE PAYMENT STATUS
 	----------------------------------------------------------*/
 	if request.Transactionstatus == constants.Failure {
+		fmt.Println(request.Message)
 		return response.ErrorResponse(request.Message, fiber.StatusBadRequest, ctx)
 	}
 	dbResponse := repositories.EventHubPaymentRepository.UpdateVotingPaymentStatus(request.Reference, constants.Completed)
 	if dbResponse.RowsAffected == 0 {
+		fmt.Println("Failed to update payment status!")
 		return response.ErrorResponse("Failed to update payment status!", fiber.StatusBadRequest, ctx)
 	}
 	/*-----------------------------------------------------------------
@@ -639,6 +647,7 @@ func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
 	-------------------------------------------------------------------*/
 	err = service.EventHubUsersManagementService.SendSms(transaction.PhoneNumber, request.Message)
 	if err != nil {
+		fmt.Println(err.Error())
 		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 	}
 
