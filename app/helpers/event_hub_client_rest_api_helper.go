@@ -82,6 +82,7 @@ func MobiSMSApi(senderID string, messageUrl string, authorizationToken string, p
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
+	fmt.Println(string(body))
 	if err != nil {
 		return nil, url, err
 	}

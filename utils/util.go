@@ -54,7 +54,7 @@ func CheckMobileNetwork(mobileNumber string) string {
 	networkPrefixes := map[string][]int{
 		"Airtel":   {68, 69, 78},
 		"Tigo":     {65, 67, 71},
-		"Halopesa": {62},
+		"Halopesa": {61, 62},
 		"Azampesa": {0}, // Considering 0 as prefix for Azampesa, you may adjust as necessary
 		"Mpesa":    {74, 75, 76},
 	}
