@@ -8,8 +8,8 @@ import (
 func EventHubExternalOperationSetupTableSeeder(db *gorm.DB) error {
 	parameter1 := models.EventHubExternalOperationsSetup{Parameter: "Firebase FCM One Signal Notification URL", Value: "https://onesignal.com/api/v1/notifications"}
 	parameter2 := models.EventHubExternalOperationsSetup{Parameter: "Next SMS Sender ID", Value: "ALECOtr"}
-	parameter3 := models.EventHubExternalOperationsSetup{Parameter: "Next SMS Single Destination Message URL", Value: "https://mshastra.com/sendurl.aspx "}
-	parameter4 := models.EventHubExternalOperationsSetup{Parameter: "Next SMS Authorization token", Value: "Bm@90893$ "}
+	parameter3 := models.EventHubExternalOperationsSetup{Parameter: "Next SMS Single Destination Message URL", Value: "https://mshastra.com/sendurl.aspx"}
+	parameter4 := models.EventHubExternalOperationsSetup{Parameter: "Next SMS Authorization token", Value: "Bm@90893$"}
 	parameter5 := models.EventHubExternalOperationsSetup{Parameter: "Azampay Authenticator Base Url", Value: "https://authenticator.azampay.co.tz"}
 	parameter6 := models.EventHubExternalOperationsSetup{Parameter: "Azampay Checkout Base Url", Value: "https://checkout.azampay.co.tz"}
 	parameter7 := models.EventHubExternalOperationsSetup{Parameter: "Azampay App Name", Value: "EVENT HUB TZ"}

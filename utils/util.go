@@ -49,6 +49,7 @@ func GenerateOrderId() string {
 }
 
 func CheckMobileNetwork(mobileNumber string) string {
+	mobileNumberWithNineDigits := mobileNumber[len(mobileNumber)-9:]
 	// Define the prefixes for each network
 	networkPrefixes := map[string][]int{
 		"Airtel":   {68, 69, 78},
@@ -59,7 +60,7 @@ func CheckMobileNetwork(mobileNumber string) string {
 	}
 
 	// Extract the first few digits from the mobile number
-	prefix, err := strconv.Atoi(mobileNumber[:3])
+	prefix, err := strconv.Atoi(mobileNumberWithNineDigits[:2])
 	if err != nil {
 		return toJSONString(map[string]string{"error": "Invalid mobile number"})
 	}
@@ -72,6 +73,7 @@ func CheckMobileNetwork(mobileNumber string) string {
 		return network
 	} else {
 		return toJSONString(map[string]string{"error": "Network not recognized"})
+		// return mobileNumberWithNineDigits + " " + strconv.Itoa(int(prefix))
 	}
 }
 
