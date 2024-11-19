@@ -73,7 +73,7 @@ func (q eventHubClientRESTAPIHelper) SendOTPMessageToMobileUser(senderID string,
 
 func MobiSMSApi(senderID string, messageUrl string, authorizationToken string, phoneNo string, message string) ([]byte, string, error) {
 	encodedWord := url.QueryEscape(message)
-	url := messageUrl + "?user=ALECOtr&pwd=" + authorizationToken + "&senderid=" + senderID + "&mobileno=" + phoneNo[len(phoneNo)-9:] + "&msgtext=" + encodedWord + "&priority=High&CountryCode=+255"
+	url := messageUrl + "?user=ALECOtr&pwd=" + authorizationToken + "&senderid=" + senderID + "&mobileno=" + phoneNo[len(phoneNo)-9:] + "&msgtext=" + encodedWord + "&priority=High&CountryCode=255"
 
 	response, err := http.Get(url)
 	if err != nil {
