@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/EventHubzTz/event_hub_service/app/models"
 )
 
 var EventHubClientRESTAPIHelper = newEventHubClientRESTAPIHelper()
@@ -270,6 +272,41 @@ func PushUSSD(url, PhoneNumber string, amount float32) (*PushUSSDResponse, error
 	}
 
 	results.Data.Results = string(body)
+
+	return &results, nil
+}
+
+func Vote(url string, request models.EventHubVotingPaymentTransactions) (*models.EventHubVotingPaymentTransactions, error) {
+
+	method := "POST"
+
+	requestByte, _ := json.Marshal(request)
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(requestByte))
+
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	fmt.Println(string(body))
+	if err != nil {
+		return nil, err
+	}
+
+	var results models.EventHubVotingPaymentTransactions
+	if err := json.Unmarshal(body, &results); err != nil {
+		return nil, err
+	}
 
 	return &results, nil
 }

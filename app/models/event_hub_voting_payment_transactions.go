@@ -10,6 +10,7 @@ type EventHubVotingPaymentTransactions struct {
 	Provider       string  `json:"provider" gorm:"null"`
 	PaymentStatus  string  `json:"payment_status" gorm:"not null;type:enum('PENDING','COMPLETED','CANCELLED');default:'PENDING'"`
 	GeneratedID    string  `json:"generated_id" gorm:"not null"`
+	Category       string  `json:"category" gorm:"not null"`
 	VotedFor       string  `json:"voted_for"  gorm:"not null"`
 	VoteNumbers    int     `json:"vote_numbers" gorm:"not null"`
 	VotedForCode   string  `json:"voted_for_code" gorm:"not null"`
@@ -43,6 +44,7 @@ type EventHubVotingPaymentTransactionsDTO struct {
 	Provider       string  `json:"provider"`
 	PaymentStatus  string  `json:"payment_status"`
 	GeneratedID    string  `json:"generated_id"`
+	Category       string  `json:"category"`
 	VotedFor       string  `json:"voted_for"`
 	VoteNumbers    int     `json:"vote_numbers"`
 	VotedForCode   string  `json:"voted_for_code"`
