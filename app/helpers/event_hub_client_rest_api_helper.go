@@ -278,9 +278,53 @@ func PushUSSD(url, PhoneNumber string, amount float32) (*PushUSSDResponse, error
 
 func Vote(url string, request models.EventHubVotingPaymentTransactions) (*models.EventHubVotingPaymentTransactions, error) {
 
+	type UserVote struct {
+		PhoneNumber    string `json:"phone_number"`
+		TotalAmount    int    `json:"total_amount"`
+		GeneratedID    string `json:"generated_id"`
+		VotedFor       string `json:"voted_for"`
+		VoteNumbers    int    `json:"vote_numbers"`
+		VotedForCode   string `json:"voted_for_code"`
+		Longitude      string `json:"longitude"`
+		Latitude       string `json:"latitude"`
+		VotedID        string `json:"voted_id"`
+		Browser        string `json:"browser"`
+		OS             string `json:"os"`
+		UserAgent      string `json:"user_agent"`
+		Device         string `json:"device"`
+		OSVersion      string `json:"os_version"`
+		BrowserVersion string `json:"browser_version"`
+		DeviceType     string `json:"device_type"`
+		IPAddress      string `json:"ipaddress"`
+		Orientation    string `json:"orientation"`
+		Location       string `json:"location"`
+	}
+
+	var voteRequest UserVote
+
+	voteRequest.PhoneNumber = request.PhoneNumber
+	voteRequest.TotalAmount = int(request.TotalAmount)
+	voteRequest.GeneratedID = request.GeneratedID
+	voteRequest.VotedFor = request.VotedFor
+	voteRequest.VoteNumbers = request.VoteNumbers
+	voteRequest.VotedForCode = request.VotedForCode
+	voteRequest.Longitude = request.Longitude
+	voteRequest.Latitude = request.Latitude
+	voteRequest.VotedID = request.VotedID
+	voteRequest.Browser = request.Browser
+	voteRequest.OS = request.OS
+	voteRequest.UserAgent = request.UserAgent
+	voteRequest.Device = request.Device
+	voteRequest.OSVersion = request.OsVersion
+	voteRequest.BrowserVersion = request.BrowserVersion
+	voteRequest.DeviceType = request.DeviceType
+	voteRequest.IPAddress = request.IPAddress
+	voteRequest.Orientation = request.Orientation
+	voteRequest.Location = request.Location
+
 	method := "POST"
 
-	requestByte, _ := json.Marshal(request)
+	requestByte, _ := json.Marshal(voteRequest)
 
 	client := &http.Client{}
 
