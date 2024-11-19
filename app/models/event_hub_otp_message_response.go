@@ -2,7 +2,7 @@ package models
 
 type EventHubOTPMessageResponse struct {
 	ID
-	Value string `json:"value" gorm:"type:json"`
+	Value string `json:"value" gorm:"null"`
 	Timestamp
 }
 
