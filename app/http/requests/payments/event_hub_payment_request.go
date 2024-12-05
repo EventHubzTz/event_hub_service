@@ -69,8 +69,8 @@ type EventHubVotingPaymentRequest struct {
 	VotedFor       string  `json:"voted_for" validate:"required"`
 	VoteNumbers    int     `json:"vote_numbers" validate:"required"`
 	VotedForCode   string  `json:"voted_for_code" validate:"required"`
-	Longitude      string  `json:"longitude"`
-	Latitude       string  `json:"latitude"`
+	// Longitude      string  `json:"longitude"`
+	// Latitude       string  `json:"latitude"`
 	VotedID        string  `json:"voted_id" validate:"required"`
 	Browser        string  `json:"browser"`
 	OS             string  `json:"os"`
@@ -100,8 +100,8 @@ func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPayme
 		VotedFor:       request.VotedFor,
 		VoteNumbers:    request.VoteNumbers,
 		VotedForCode:   request.VotedForCode,
-		Longitude:      request.Longitude,
-		Latitude:       request.Latitude,
+		// Longitude:      request.Longitude,
+		// Latitude:       request.Latitude,
 		VotedID:        request.VotedID,
 		Browser:        request.Browser,
 		OS:             request.OS,
