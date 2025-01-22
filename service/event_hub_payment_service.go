@@ -22,7 +22,7 @@ func (s eventHubPaymentService) AddPaymentTransaction(paymentData models.EventHu
 	----------------------------------------------------------*/
 	_, dbResponse := repositories.EventHubPaymentRepository.AddPaymentTransaction(&paymentData)
 	if dbResponse.RowsAffected == 0 {
-		return errors.New("failed to add payment transaction! ")
+		return errors.New(dbResponse.Error.Error())
 	}
 	return nil
 }
