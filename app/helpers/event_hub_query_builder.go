@@ -234,8 +234,11 @@ func (q eventHubQueryBuilder) QueryAllEventPackages(pagination models.Pagination
 			"t1.*",
 			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
-		).
-		Where("t1.event_id = ?", eventID)
+		)
+	if eventID != 0 {
+		clDB = clDB.
+			Where("t1.event_id = ?", eventID)
+	}
 	if query != "%%" {
 		clDB = clDB.Where("t1.id LIKE ? OR "+
 			"t1.package_name LIKE ? OR "+
