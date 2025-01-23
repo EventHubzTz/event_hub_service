@@ -99,7 +99,7 @@ func (s eventHubEventsManagementService) AddEventPackage(eventPackage models.Eve
 	----------------------------------------------------------*/
 	_, dbResponse := repositories.EventHubEventsManagementRepository.AddEventPackage(&eventPackage)
 	if dbResponse.RowsAffected == 0 {
-		return errors.New("failed to add event package! ")
+		return errors.New(dbResponse.Error.Error())
 	}
 	return nil
 }
