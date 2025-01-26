@@ -352,3 +352,50 @@ func Vote(url string, request models.EventHubVotingPaymentTransactions) (*models
 
 	return &results, nil
 }
+
+type UpdateTGMAPaymentsResponse struct {
+	Error   bool   `json:"error"`
+	Message string `json:"message"`
+}
+
+func UpdateTGMAPayments(url, reference string) (*UpdateTGMAPaymentsResponse, error) {
+	type PaymentRequest struct {
+		Reference string `json:"reference"`
+	}
+
+	var updatePaymentRequest PaymentRequest
+
+	updatePaymentRequest.Reference = reference
+
+	method := "POST"
+
+	requestByte, _ := json.Marshal(updatePaymentRequest)
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(requestByte))
+
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	fmt.Println(string(body))
+	if err != nil {
+		return nil, err
+	}
+
+	var results UpdateTGMAPaymentsResponse
+	if err := json.Unmarshal(body, &results); err != nil {
+		return nil, err
+	}
+
+	return &results, nil
+}

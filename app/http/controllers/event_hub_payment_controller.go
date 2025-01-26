@@ -501,22 +501,25 @@ func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 	/*---------------------------------------------------------
-	 04. GET VOTING TRANSACTION
+	 04. CHECK IF SUBSCRIPTION NOT COMPLETED
+	----------------------------------------------------------*/
+	if request.Transactionstatus == constants.Failure {
+		return response.ErrorResponse(request.Message, fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 05. GET VOTING TRANSACTION
 	----------------------------------------------------------*/
 	votingTransaction := repositories.EventHubPaymentRepository.GetVotingTransactionByTransactionID(request.Reference)
 	if votingTransaction != nil {
 		/*---------------------------------------------------------
-		 05. UPDATE PAYMENT STATUS
+		 06. UPDATE PAYMENT STATUS
 		----------------------------------------------------------*/
-		if request.Transactionstatus == constants.Failure {
-			return response.ErrorResponse(request.Message, fiber.StatusBadRequest, ctx)
-		}
 		dbResponse := repositories.EventHubPaymentRepository.UpdateVotingPaymentStatus(request.Reference, constants.Completed)
 		if dbResponse.RowsAffected == 0 {
 			return response.ErrorResponse("Failed to update payment status!", fiber.StatusBadRequest, ctx)
 		}
 		/*-----------------------------------------------------------------
-		 06. SEND MESSAGE
+		 07. SEND MESSAGE
 		-------------------------------------------------------------------*/
 		request.Message = "Malipo yako ya TZS " + strconv.Itoa(int(votingTransaction.TotalAmount)) + " kwa kupiga kura " + strconv.Itoa(int(votingTransaction.VoteNumbers)) + " katika kipengele cha " + votingTransaction.Category + " yamekamilika. Tarehe: " + date_utils.GetNowString() + ", Asante kwa kushiriki katika kutambua vipaji vya Tamthilia zetu.Kumbukumbu Namba: " + request.Reference
 		err = service.EventHubUsersManagementService.SendSms(votingTransaction.PhoneNumber, request.Message)
@@ -524,7 +527,7 @@ func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
 			return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
 		}
 		/*-----------------------------------------------------------------
-		 07. CALL VOTE URL
+		 08. CALL VOTE URL
 		-------------------------------------------------------------------*/
 		url := os.Getenv("VOTE_URL")
 		_, err = helpers.Vote(url, *votingTransaction)
@@ -535,21 +538,27 @@ func (c eventHubPaymentController) UpdatePaymentStatus(ctx *fiber.Ctx) error {
 		return response.SuccessResponse(request.Message, fiber.StatusOK, ctx)
 	}
 	/*---------------------------------------------------------
-	 08. GET TRANSACTION
+	 09. GET TRANSACTION
 	----------------------------------------------------------*/
 	transaction := repositories.EventHubPaymentRepository.GetVotingTransactionByTransactionID(request.Reference)
-	if transaction == nil {
-		return response.ErrorResponse("Transaction does not exist in the system", fiber.StatusInternalServerError, ctx)
+	if transaction != nil {
+		/*---------------------------------------------------------
+		 10. UPDATE PAYMENT STATUS
+		----------------------------------------------------------*/
+		dbResponse := repositories.EventHubPaymentRepository.UpdatePaymentStatus(request.Reference, constants.Completed)
+		if dbResponse.RowsAffected == 0 {
+			return response.ErrorResponse("Failed to update payment status!", fiber.StatusBadRequest, ctx)
+		}
 	}
-	/*---------------------------------------------------------
-	 09. UPDATE PAYMENT STATUS
-	----------------------------------------------------------*/
-	if request.Transactionstatus == constants.Failure {
-		return response.ErrorResponse(request.Message, fiber.StatusBadRequest, ctx)
-	}
-	dbResponse := repositories.EventHubPaymentRepository.UpdatePaymentStatus(request.Reference, constants.Completed)
-	if dbResponse.RowsAffected == 0 {
-		return response.ErrorResponse("Failed to update payment status!", fiber.StatusBadRequest, ctx)
+	/*-----------------------------------------------------------------
+	 11. UPDATE TANZANIA GOSPEL MUSIC AWARDS PAYMENTS
+	-------------------------------------------------------------------*/
+	url := os.Getenv("UPDATE_TGMA_PAYMENT_URL")
+	payment, err := helpers.UpdateTGMAPayments(url, request.Reference)
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	} else if payment.Error {
+		return response.ErrorResponse(payment.Message, fiber.StatusBadRequest, ctx)
 	}
 
 	return response.SuccessResponse(request.Message, fiber.StatusOK, ctx)
