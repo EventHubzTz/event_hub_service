@@ -8,6 +8,7 @@ import (
 func EventHubUsersManagementRoutes(route fiber.Router) {
 	route.Post("/register/user", controllers.EventHubUsersManagementController.RegisterUser)
 	route.Post("/login/user", controllers.EventHubUsersManagementController.LoginUser)
+	route.Post("/send/message", controllers.EventHubUsersManagementController.SendSms)
 }
 
 func AuthenticatedEventHubUsersManagementRoutes(route fiber.Router) {
@@ -20,5 +21,4 @@ func AuthenticatedEventHubUsersManagementRoutes(route fiber.Router) {
 	route.Post("/verify/otp/reset/password", controllers.EventHubUsersManagementController.VerifyOTPResetPassword)
 	route.Post("/update/password", controllers.EventHubUsersManagementController.UpdatePassword)
 	route.Post("/delete/user", controllers.EventHubUsersManagementController.DeleteUser)
-	route.Post("/send/message", controllers.EventHubUsersManagementController.SendSms)
 }
