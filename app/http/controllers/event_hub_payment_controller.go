@@ -51,6 +51,9 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 		errorPaymentData.Message = err.Error()
 		return response.DataListErrorResponse(errorPaymentData, fiber.StatusBadRequest, ctx)
 	}
+	if request.Amount > constants.MAXAMOUNT {
+		return response.ErrorResponseStr("Invalid amount", fiber.StatusBadRequest, ctx)
+	}
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
 	request.Provider = utils.CheckMobileNetwork(request.PhoneNumber)
@@ -216,6 +219,9 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 	if err != nil {
 		errorPaymentData.Message = err.Error()
 		return response.DataListErrorResponse(errorPaymentData, fiber.StatusBadRequest, ctx)
+	}
+	if request.TotalAmount > constants.MAXAMOUNT {
+		return response.ErrorResponseStr("Invalid amount", fiber.StatusBadRequest, ctx)
 	}
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()

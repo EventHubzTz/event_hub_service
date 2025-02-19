@@ -3,17 +3,18 @@ package constants
 type UserRole string
 
 const (
-	Yes           string = "YES"
-	No            string = "NO"
-	LocalStorage  string = "LOCAL"
-	RemoteStorage string = "REMOTE"
-	Completed     string = "COMPLETED"
-	Success       string = "success"
-	Failure       string = "failure"
-	Currency      string = "TZS"
-	NormalUser    string = "NORMAL_USER"
-	EventPlanner  string = "EVENT_PLANNER"
-	SuperAdmin    string = "SUPER_ADMIN"
+	Yes           string  = "YES"
+	No            string  = "NO"
+	LocalStorage  string  = "LOCAL"
+	RemoteStorage string  = "REMOTE"
+	Completed     string  = "COMPLETED"
+	Success       string  = "success"
+	Failure       string  = "failure"
+	Currency      string  = "TZS"
+	NormalUser    string  = "NORMAL_USER"
+	EventPlanner  string  = "EVENT_PLANNER"
+	SuperAdmin    string  = "SUPER_ADMIN"
+	MAXAMOUNT     float32 = 500000
 )
 
 type Color string
