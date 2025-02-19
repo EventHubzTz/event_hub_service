@@ -52,7 +52,7 @@ func (c eventHubPaymentController) PushUSSD(ctx *fiber.Ctx) error {
 		return response.DataListErrorResponse(errorPaymentData, fiber.StatusBadRequest, ctx)
 	}
 	if request.Amount > constants.MAXAMOUNT {
-		return response.ErrorResponseStr("Invalid amount", fiber.StatusBadRequest, ctx)
+		return response.ErrorResponseStr("The amount is too large. Maximum is TZS 500,000/=", fiber.StatusBadRequest, ctx)
 	}
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
@@ -221,7 +221,7 @@ func (c eventHubPaymentController) VotingPushUSSD(ctx *fiber.Ctx) error {
 		return response.DataListErrorResponse(errorPaymentData, fiber.StatusBadRequest, ctx)
 	}
 	if request.TotalAmount > constants.MAXAMOUNT {
-		return response.ErrorResponseStr("Invalid amount", fiber.StatusBadRequest, ctx)
+		return response.ErrorResponseStr("The amount is too large. Maximum is TZS 500,000/=", fiber.StatusBadRequest, ctx)
 	}
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
