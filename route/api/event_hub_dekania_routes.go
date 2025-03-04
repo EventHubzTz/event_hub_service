@@ -5,6 +5,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func NonAuthenticatedEventHubDekaniaRoutes(route fiber.Router) {
+	route.Get("/get/all/dekania", controllers.EventHubDekaniaController.GetAllDekania)
+}
+
 func EventHubDekaniaRoutes(route fiber.Router) {
 	route.Post("/add/dekania", controllers.EventHubDekaniaController.AddDekania)
 	route.Get("/get/all/dekania", controllers.EventHubDekaniaController.GetAllDekania)

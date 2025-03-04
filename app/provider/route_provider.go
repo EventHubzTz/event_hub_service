@@ -15,6 +15,7 @@ func RouteProvider(app *fiber.App) {
 	apiExternalOperationRoute := app.Group("/api/v1", middlewares.ApiRequestID)
 	api.EventHubUsersManagementRoutes(apiExternalOperationRoute)
 	api.EventHubPaymentRoutes(apiExternalOperationRoute)
+	api.NonAuthenticatedEventHubDekaniaRoutes(apiExternalOperationRoute)
 	apiAuthenticatedRoute := app.Group("/api/v1", middlewares.ApiAuth)
 	api.AuthenticatedEventHubUsersManagementRoutes(apiAuthenticatedRoute)
 	api.EventHubEventsManagementRoutes(apiAuthenticatedRoute)
