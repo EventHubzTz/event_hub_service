@@ -153,7 +153,7 @@ type AzamPayPushUSSDResponse struct {
 	Errors        map[string][]string `json:"errors"`
 	Type          string              `json:"type"`
 	Title         string              `json:"title"`
-	Status        int                 `json:"status"`
+	Status        string                 `json:"status"`
 	TraceID       string              `json:"traceId"`
 	TransactionID string              `json:"transactionId"`
 	Message       string              `json:"message"`
