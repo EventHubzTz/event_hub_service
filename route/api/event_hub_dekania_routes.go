@@ -6,12 +6,12 @@ import (
 )
 
 func NonAuthenticatedEventHubDekaniaRoutes(route fiber.Router) {
+	route.Get("/get/all/regions", controllers.EventHubDekaniaController.GetAllRegions)
 	route.Get("/get/all/dekania", controllers.EventHubDekaniaController.GetAllDekania)
 }
 
 func EventHubDekaniaRoutes(route fiber.Router) {
 	route.Post("/add/region", controllers.EventHubDekaniaController.AddRegion)
-	route.Get("/get/all/regions", controllers.EventHubDekaniaController.GetAllRegions)
 	route.Post("/get/all/regions/by/pagination", controllers.EventHubDekaniaController.GetAllRegionsByPagination)
 	route.Post("/update/region", controllers.EventHubDekaniaController.UpdateRegion)
 	route.Post("/delete/region", controllers.EventHubDekaniaController.DeleteRegion)
