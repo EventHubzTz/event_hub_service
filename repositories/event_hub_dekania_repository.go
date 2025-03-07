@@ -23,8 +23,8 @@ func (r eventHubDekaniaRepository) AddRegion(region models.EventHubRegion) (mode
 func (r eventHubDekaniaRepository) GetAllRegions() ([]models.EventHubRegionDTO, *gorm.DB) {
 
 	var region []models.EventHubRegionDTO
-	cmDB := db.Raw("select id,dekania_name,created_at,updated_at " +
-		"FROM event_hub_dekania").Find(&region)
+	cmDB := db.Raw("select id,region_name,created_at,updated_at " +
+		"FROM event_hub_regions").Find(&region)
 	return region, cmDB
 }
 
