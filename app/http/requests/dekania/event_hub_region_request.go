@@ -3,12 +3,12 @@ package dekania
 import "github.com/EventHubzTz/event_hub_service/app/models"
 
 type EventHubRegionRequest struct {
-	RegionName string `json:"dekania_name" validate:"required"`
+	RegionName string `json:"region_name" validate:"required"`
 }
 
 type EventHubRegionUpdateRequest struct {
 	models.IDRequest
-	RegionName string `json:"dekania_name" validate:"required"`
+	RegionName string `json:"region_name" validate:"required"`
 }
 
 type EventHubRegionGetRequest struct {
