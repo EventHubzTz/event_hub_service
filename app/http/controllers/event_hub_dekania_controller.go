@@ -21,6 +21,162 @@ func newEventHubDekaniaController() eventHubDekaniaController {
 	return eventHubDekaniaController{}
 }
 
+func (c eventHubDekaniaController) AddRegion(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request dekania.EventHubRegionRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*--------------------------------------------------------------------
+	 04. ADD DEKANIA
+	-----------------------------------------------------------------------*/
+	err = service.EventHubDekaniaService.AddRegion(request.ToModel())
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
+	}
+
+	return response.SuccessResponse("Region added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
+}
+
+func (c eventHubDekaniaController) GetAllRegions(ctx *fiber.Ctx) error {
+
+	dekania, dbErr := repositories.EventHubDekaniaRepository.GetAllRegions()
+
+	if dbErr.RowsAffected == 0 {
+		return response.ErrorResponse("No records found in region database", fiber.StatusOK, ctx)
+	}
+
+	return response.InternalServiceDataResponse(dekania, fiber.StatusOK, ctx)
+}
+
+func (c eventHubDekaniaController) GetAllRegionsByPagination(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request events.EventHubEventsGetsRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	var pagination models.Pagination
+	pagination.Limit = request.Limit
+	pagination.Sort = request.Sort
+	pagination.Page = request.Page
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	----------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. GET REGION AND GET ERROR IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	dekania, err := service.EventHubDekaniaService.GetAllRegionsByPagination(pagination, request.Query)
+	/*---------------------------------------------------------
+	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
+	----------------------------------------------------------*/
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
+	}
+	return response.InternalServiceDataResponse(dekania, fiber.StatusOK, ctx)
+}
+
+func (c eventHubDekaniaController) UpdateRegion(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request dekania.EventHubRegionUpdateRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. UPDATE REGION NAME AND GET ERROR IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	err = service.EventHubDekaniaService.UpdateRegion(request.ToModel(), request.Id)
+	/*---------------------------------------------------------
+	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
+	----------------------------------------------------------*/
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusBadRequest, ctx)
+	}
+
+	return response.SuccessResponse("Region updated successfully!", fiber.StatusOK, ctx)
+}
+
+func (c eventHubDekaniaController) DeleteRegion(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request dekania.EventHubDekaniaGetRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. DELETE REGION AND GET RESPONSE IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	dbResponse := repositories.EventHubDekaniaRepository.DeleteRegion(request.DekaniaID)
+	/*---------------------------------------------------------
+	 05. CHECK IF ROW IS AFFECTED AND RETURN RESPONSE
+	----------------------------------------------------------*/
+	if dbResponse.RowsAffected == 0 {
+		return response.ErrorResponse("Failed to delete region", fiber.StatusBadRequest, ctx)
+	}
+
+	return response.SuccessResponse("Region deleted successfully!", fiber.StatusOK, ctx)
+}
+
 func (c eventHubDekaniaController) AddDekania(ctx *fiber.Ctx) error {
 	/*-------------------------------------------------------
 	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
