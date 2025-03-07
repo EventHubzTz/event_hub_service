@@ -26,7 +26,8 @@ type EventHubPaymentRequest struct {
 	TicketOwnerFirstName string  `json:"ticket_owner_first_name" validate:"required"`
 	TicketOwnerLastName  string  `json:"ticket_owner_last_name" validate:"required"`
 	TShirtSize           string  `json:"t_shirt_size"`
-	Location             string  `json:"location" validate:"required"`
+	Region               string  `json:"region" validate:"required"`
+	Location             string  `json:"location"`
 	Distance             string  `json:"distance"`
 	DateOfBirth          string  `json:"date_of_birth"`
 	PhoneNumber          string  `json:"phone_number" validate:"required"`
@@ -58,30 +59,30 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 }
 
 type EventHubVotingPaymentRequest struct {
-	OrderID        string  `json:"order_id"`
-	TransactionID  string  `json:"transaction_id"`
-	PhoneNumber    string  `json:"phone_number" validate:"required"`
-	TotalAmount    float32 `json:"amount"`
-	Currency       string  `json:"currency"`
-	Provider       string  `json:"provider"`
-	GeneratedID    string  `json:"generated_id" validate:"required"`
-	Category       string  `json:"category"`
-	VotedFor       string  `json:"voted_for" validate:"required"`
-	VoteNumbers    int     `json:"vote_numbers" validate:"required"`
-	VotedForCode   string  `json:"voted_for_code" validate:"required"`
+	OrderID       string  `json:"order_id"`
+	TransactionID string  `json:"transaction_id"`
+	PhoneNumber   string  `json:"phone_number" validate:"required"`
+	TotalAmount   float32 `json:"amount"`
+	Currency      string  `json:"currency"`
+	Provider      string  `json:"provider"`
+	GeneratedID   string  `json:"generated_id" validate:"required"`
+	Category      string  `json:"category"`
+	VotedFor      string  `json:"voted_for" validate:"required"`
+	VoteNumbers   int     `json:"vote_numbers" validate:"required"`
+	VotedForCode  string  `json:"voted_for_code" validate:"required"`
 	// Longitude      string  `json:"longitude"`
 	// Latitude       string  `json:"latitude"`
-	VotedID        string  `json:"voted_id" validate:"required"`
-	Browser        string  `json:"browser"`
-	OS             string  `json:"os"`
-	UserAgent      string  `json:"user_agent"`
-	Device         string  `json:"device"`
-	OsVersion      string  `json:"os_version"`
-	BrowserVersion string  `json:"browser_version"`
-	DeviceType     string  `json:"device_type"`
-	IPAddress      string  `json:"Ipaddress"`
-	Orientation    string  `json:"orientation"`
-	Location       string  `json:"location"`
+	VotedID        string `json:"voted_id" validate:"required"`
+	Browser        string `json:"browser"`
+	OS             string `json:"os"`
+	UserAgent      string `json:"user_agent"`
+	Device         string `json:"device"`
+	OsVersion      string `json:"os_version"`
+	BrowserVersion string `json:"browser_version"`
+	DeviceType     string `json:"device_type"`
+	IPAddress      string `json:"Ipaddress"`
+	Orientation    string `json:"orientation"`
+	Location       string `json:"location"`
 }
 
 func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPaymentTransactions {
@@ -89,17 +90,17 @@ func (request EventHubVotingPaymentRequest) ToModel() models.EventHubVotingPayme
 	 01. ASSIGN REQUEST TO EVENT MODEL
 	----------------------------------------------------------*/
 	return models.EventHubVotingPaymentTransactions{
-		OrderID:        request.OrderID,
-		TransactionID:  request.TransactionID,
-		PhoneNumber:    request.PhoneNumber,
-		TotalAmount:    request.TotalAmount,
-		Currency:       request.Currency,
-		Provider:       request.Provider,
-		GeneratedID:    request.GeneratedID,
-		Category:       request.Category,
-		VotedFor:       request.VotedFor,
-		VoteNumbers:    request.VoteNumbers,
-		VotedForCode:   request.VotedForCode,
+		OrderID:       request.OrderID,
+		TransactionID: request.TransactionID,
+		PhoneNumber:   request.PhoneNumber,
+		TotalAmount:   request.TotalAmount,
+		Currency:      request.Currency,
+		Provider:      request.Provider,
+		GeneratedID:   request.GeneratedID,
+		Category:      request.Category,
+		VotedFor:      request.VotedFor,
+		VoteNumbers:   request.VoteNumbers,
+		VotedForCode:  request.VotedForCode,
 		// Longitude:      request.Longitude,
 		// Latitude:       request.Latitude,
 		VotedID:        request.VotedID,
