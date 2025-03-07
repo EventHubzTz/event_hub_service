@@ -30,7 +30,7 @@ func (r eventHubDekaniaRepository) GetAllRegions() ([]models.EventHubRegionDTO, 
 
 func (r eventHubDekaniaRepository) GetAllRegionsByPagination(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
 
-	region, urDB := helpers.EventHubQueryBuilder.QueryAllDekania(pagination, query)
+	region, urDB := helpers.EventHubQueryBuilder.QueryAllRegions(pagination, query)
 
 	return region, urDB
 }
