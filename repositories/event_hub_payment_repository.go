@@ -20,6 +20,11 @@ func (r eventHubPaymentRepository) AddPaymentTransaction(paymentTransation *mode
 	return paymentTransation, urDB
 }
 
+func (r eventHubPaymentRepository) AddContributionTransaction(paymentTransation *models.EventHubContributionTransactions) (*models.EventHubContributionTransactions, *gorm.DB) {
+	urDB := db.Create(&paymentTransation)
+	return paymentTransation, urDB
+}
+
 func (r eventHubPaymentRepository) AddVotingPaymentTransaction(paymentTransation *models.EventHubVotingPaymentTransactions) (*models.EventHubVotingPaymentTransactions, *gorm.DB) {
 	urDB := db.Create(&paymentTransation)
 	return paymentTransation, urDB
@@ -39,8 +44,24 @@ func (r eventHubPaymentRepository) GetPaymentTransactions(pagination models.Pagi
 	return events, urDB
 }
 
+func (r eventHubPaymentRepository) GetContributionTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
+
+	events, urDB := helpers.EventHubQueryBuilder.QueryContributionTransactions(pagination, role, query, status, phoneNumber, userID)
+
+	return events, urDB
+}
+
 func (r eventHubPaymentRepository) GetTransactionByTransactionID(transactionID string) *models.EventHubPaymentTransactions {
 	var transaction *models.EventHubPaymentTransactions
+	dbErr := db.Where("transaction_id = ?", transactionID).Find(&transaction)
+	if dbErr.RowsAffected == 0 {
+		return nil
+	}
+	return transaction
+}
+
+func (r eventHubPaymentRepository) GetContributionByTransactionID(transactionID string) *models.EventHubContributionTransactions {
+	var transaction *models.EventHubContributionTransactions
 	dbErr := db.Where("transaction_id = ?", transactionID).Find(&transaction)
 	if dbErr.RowsAffected == 0 {
 		return nil
@@ -60,6 +81,12 @@ func (r eventHubPaymentRepository) GetVotingTransactionByTransactionID(transacti
 func (r eventHubPaymentRepository) UpdatePaymentStatus(transactionID string, status string) *gorm.DB {
 
 	urDB := db.Model(models.EventHubPaymentTransactions{}).Where("transaction_id = ? ", transactionID).Update("payment_status", status)
+	return urDB
+}
+
+func (r eventHubPaymentRepository) UpdateContributionPaymentStatus(transactionID string, status string) *gorm.DB {
+
+	urDB := db.Model(models.EventHubContributionTransactions{}).Where("transaction_id = ? ", transactionID).Update("payment_status", status)
 	return urDB
 }
 

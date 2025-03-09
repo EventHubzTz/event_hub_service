@@ -346,6 +346,33 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 
 }
 
+func (q eventHubQueryBuilder) QueryContributionTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
+	var events []models.EventHubContributionTransactionsDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubContributionTransactions{}, &pagination, database.DB())).
+		Table("event_hub_contribution_transactions as t1").
+		Select(
+			"t1.*",
+		)
+	if status != "" {
+		clDB = clDB.Where("t1.payment_status = ?", status)
+	}
+	if phoneNumber != "" {
+		clDB = clDB.Where("t1.phone_number = ?", phoneNumber).
+			Where("t1.payment_status = ?", constants.Completed)
+	}
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.first_name,' ',t1.region,' ',t1.location,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t1.first_name,' ',t1.last_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&events)
+	pagination.Results = events
+	return pagination, clDB
+
+}
+
 func (q eventHubQueryBuilder) QueryGetDashboardStatistics() string {
 	return "SELECT " +
 		"(SELECT COUNT(*) FROM event_hub_users) AS total_users," +

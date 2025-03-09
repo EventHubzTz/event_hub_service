@@ -18,9 +18,20 @@ func newEventHubPaymentService() eventHubPaymentService {
 
 func (s eventHubPaymentService) AddPaymentTransaction(paymentData models.EventHubPaymentTransactions) error {
 	/*---------------------------------------------------------
-	 01. ADD CONFIGURATION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	 01. ADD TRANSACTION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
 	----------------------------------------------------------*/
 	_, dbResponse := repositories.EventHubPaymentRepository.AddPaymentTransaction(&paymentData)
+	if dbResponse.RowsAffected == 0 {
+		return errors.New(dbResponse.Error.Error())
+	}
+	return nil
+}
+
+func (s eventHubPaymentService) AddContributionTransaction(paymentData models.EventHubContributionTransactions) error {
+	/*---------------------------------------------------------
+	 01. ADD TRANSACTION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	----------------------------------------------------------*/
+	_, dbResponse := repositories.EventHubPaymentRepository.AddContributionTransaction(&paymentData)
 	if dbResponse.RowsAffected == 0 {
 		return errors.New(dbResponse.Error.Error())
 	}
@@ -51,6 +62,16 @@ func (s eventHubPaymentService) GetVotingPaymentTransactions(pagination models.P
 func (s eventHubPaymentService) GetPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, error) {
 	var newQuery = "%" + query + "%"
 	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetPaymentTransactions(pagination, role, newQuery, status, phoneNumber, userID)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return models.Pagination{}, errors.New("payment transaction not found! ")
+	}
+	return paymentTransactions, nil
+}
+
+func (s eventHubPaymentService) GetContributionTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, error) {
+	var newQuery = "%" + query + "%"
+	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetContributionTransactions(pagination, role, newQuery, status, phoneNumber, userID)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
 		return models.Pagination{}, errors.New("payment transaction not found! ")

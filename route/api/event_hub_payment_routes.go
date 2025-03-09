@@ -16,6 +16,9 @@ func EventHubPaymentRoutes(route fiber.Router) {
 
 func AuthenticatedEventHubPaymentRoutes(route fiber.Router) {
 	route.Post("/pugu/marathon/push/ussd", controllers.EventHubPaymentController.PushUSSD)
+	route.Post("/pugu/marathon/contribution/push/ussd", controllers.EventHubPaymentController.ContributionPushUSSD)
 	route.Post("/get/payment/transaction", controllers.EventHubPaymentController.GetPaymentTransactions)
+	route.Post("/get/contribution/transactions", controllers.EventHubPaymentController.GetContributionTransactions)
 	route.Post("/get/transaction/by/transaction/id", controllers.EventHubPaymentController.GetTransactionByTransactionID)
+	route.Post("/get/contribution/by/transaction/id", controllers.EventHubPaymentController.GetContributionByTransactionID)
 }
