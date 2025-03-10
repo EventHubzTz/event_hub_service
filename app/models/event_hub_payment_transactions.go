@@ -41,7 +41,7 @@ type EventHubPaymentTransactionsDTO struct {
 	Region        string  `json:"region"`
 	Location      string  `json:"location"`
 	Distance      string  `json:"distance"`
-	Age           string  `json:"age"`
+	DateOfBirth   string  `json:"date_of_birth"`
 	PhoneNumber   string  `json:"phone_number"`
 	Amount        float32 `json:"amount"`
 	Currency      string  `json:"currency"`
