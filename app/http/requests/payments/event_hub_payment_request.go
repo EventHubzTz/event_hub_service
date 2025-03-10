@@ -59,17 +59,16 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 }
 
 type EventHubContributionPaymentRequest struct {
-	OrderID        string  `json:"order_id"`
-	TransactionID  string  `json:"transaction_id"`
-	EventPackageID uint64  `json:"event_package_id" validate:"required"`
-	FirstName      string  `json:"first_name" validate:"required"`
-	LastName       string  `json:"last_name" validate:"required"`
-	Region         string  `json:"region" validate:"required"`
-	Location       string  `json:"location"`
-	PhoneNumber    string  `json:"phone_number" validate:"required"`
-	Amount         float32 `json:"amount"`
-	Currency       string  `json:"currency"`
-	Provider       string  `json:"provider" validate:"required"`
+	OrderID       string  `json:"order_id"`
+	TransactionID string  `json:"transaction_id"`
+	FirstName     string  `json:"first_name" validate:"required"`
+	LastName      string  `json:"last_name" validate:"required"`
+	Region        string  `json:"region" validate:"required"`
+	Location      string  `json:"location"`
+	PhoneNumber   string  `json:"phone_number" validate:"required"`
+	Amount        float32 `json:"amount"`
+	Currency      string  `json:"currency"`
+	Provider      string  `json:"provider" validate:"required"`
 }
 
 func (request EventHubContributionPaymentRequest) ToModel() models.EventHubContributionTransactions {
@@ -81,6 +80,7 @@ func (request EventHubContributionPaymentRequest) ToModel() models.EventHubContr
 		TransactionID: request.TransactionID,
 		FirstName:     request.FirstName,
 		LastName:      request.LastName,
+		Region:        request.Region,
 		Location:      request.Location,
 		PhoneNumber:   request.PhoneNumber,
 		Amount:        request.Amount,
