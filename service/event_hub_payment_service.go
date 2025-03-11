@@ -55,7 +55,7 @@ func (s eventHubPaymentService) GetAllAccountingTransactions() ([]models.EventHu
 	----------------------------------------------------------*/
 	transactions, dbResponse := repositories.EventHubPaymentRepository.GetAllAccountingTransactions()
 	if dbResponse.RowsAffected == 0 {
-		return transactions, errors.New(dbResponse.Error.Error())
+		return transactions, errors.New("no data data found! ")
 	}
 	return transactions, nil
 }
