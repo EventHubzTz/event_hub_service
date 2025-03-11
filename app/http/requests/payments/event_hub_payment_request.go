@@ -100,6 +100,7 @@ type EventHubDebitRequest struct {
 	Amount        float32 `json:"amount"`
 	Currency      string  `json:"currency"`
 	Provider      string  `json:"provider" validate:"required"`
+	PaymentStatus string  `json:"payment_status"`
 }
 
 func (request EventHubDebitRequest) ToModel() models.EventHubDebits {
@@ -117,6 +118,7 @@ func (request EventHubDebitRequest) ToModel() models.EventHubDebits {
 		Amount:        request.Amount,
 		Currency:      request.Currency,
 		Provider:      request.Provider,
+		PaymentStatus: request.PaymentStatus,
 	}
 }
 

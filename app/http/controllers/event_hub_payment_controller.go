@@ -843,6 +843,7 @@ func (c eventHubPaymentController) AddDebit(ctx *fiber.Ctx) error {
 	request.Currency = constants.Currency
 	request.OrderID = utils.GenerateOrderId()
 	request.TransactionID = utils.GenerateOrderId()
+	request.PaymentStatus = constants.Completed
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
 	     IN A REQUEST
