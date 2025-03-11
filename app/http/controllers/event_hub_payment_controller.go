@@ -840,6 +840,9 @@ func (c eventHubPaymentController) AddDebit(ctx *fiber.Ctx) error {
 	if err != nil {
 		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
 	}
+	request.Currency = constants.Currency
+	request.OrderID = utils.GenerateOrderId()
+	request.TransactionID = utils.GenerateOrderId()
 	/*----------------------------------------------------------
 	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
 	     IN A REQUEST
