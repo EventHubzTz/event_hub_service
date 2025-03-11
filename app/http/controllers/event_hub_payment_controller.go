@@ -867,7 +867,7 @@ func (c eventHubPaymentController) GetAllAccountingTransactions(ctx *fiber.Ctx) 
 	dekania, dbErr := service.EventHubPaymentService.GetAllAccountingTransactions()
 
 	if dbErr != nil {
-		return response.ErrorResponse("No records found in region database", fiber.StatusOK, ctx)
+		return response.ErrorResponse(dbErr.Error(), fiber.StatusOK, ctx)
 	}
 
 	return response.InternalServiceDataResponse(dekania, fiber.StatusOK, ctx)
