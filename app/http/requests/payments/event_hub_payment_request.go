@@ -89,6 +89,37 @@ func (request EventHubContributionPaymentRequest) ToModel() models.EventHubContr
 	}
 }
 
+type EventHubDebitRequest struct {
+	OrderID       string  `json:"order_id"`
+	TransactionID string  `json:"transaction_id"`
+	FirstName     string  `json:"first_name" validate:"required"`
+	LastName      string  `json:"last_name" validate:"required"`
+	Region        string  `json:"region" validate:"required"`
+	Location      string  `json:"location"`
+	PhoneNumber   string  `json:"phone_number" validate:"required"`
+	Amount        float32 `json:"amount"`
+	Currency      string  `json:"currency"`
+	Provider      string  `json:"provider" validate:"required"`
+}
+
+func (request EventHubDebitRequest) ToModel() models.EventHubDebits {
+	/*---------------------------------------------------------
+	 01. ASSIGN REQUEST TO EVENT MODEL
+	----------------------------------------------------------*/
+	return models.EventHubDebits{
+		OrderID:       request.OrderID,
+		TransactionID: request.TransactionID,
+		FirstName:     request.FirstName,
+		LastName:      request.LastName,
+		Region:        request.Region,
+		Location:      request.Location,
+		PhoneNumber:   request.PhoneNumber,
+		Amount:        request.Amount,
+		Currency:      request.Currency,
+		Provider:      request.Provider,
+	}
+}
+
 type EventHubVotingPaymentRequest struct {
 	OrderID       string  `json:"order_id"`
 	TransactionID string  `json:"transaction_id"`

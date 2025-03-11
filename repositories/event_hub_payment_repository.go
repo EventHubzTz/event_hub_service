@@ -25,6 +25,11 @@ func (r eventHubPaymentRepository) AddContributionTransaction(paymentTransation 
 	return paymentTransation, urDB
 }
 
+func (r eventHubPaymentRepository) AddDebit(paymentTransation *models.EventHubDebits) (*models.EventHubDebits, *gorm.DB) {
+	urDB := db.Create(&paymentTransation)
+	return paymentTransation, urDB
+}
+
 func (r eventHubPaymentRepository) AddVotingPaymentTransaction(paymentTransation *models.EventHubVotingPaymentTransactions) (*models.EventHubVotingPaymentTransactions, *gorm.DB) {
 	urDB := db.Create(&paymentTransation)
 	return paymentTransation, urDB

@@ -38,6 +38,17 @@ func (s eventHubPaymentService) AddContributionTransaction(paymentData models.Ev
 	return nil
 }
 
+func (s eventHubPaymentService) AddDebit(paymentData models.EventHubDebits) error {
+	/*---------------------------------------------------------
+	 01. ADD TRANSACTION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	----------------------------------------------------------*/
+	_, dbResponse := repositories.EventHubPaymentRepository.AddDebit(&paymentData)
+	if dbResponse.RowsAffected == 0 {
+		return errors.New(dbResponse.Error.Error())
+	}
+	return nil
+}
+
 func (s eventHubPaymentService) AddVotingPaymentTransaction(paymentData models.EventHubVotingPaymentTransactions) error {
 	/*---------------------------------------------------------
 	 01. ADD CONFIGURATION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
