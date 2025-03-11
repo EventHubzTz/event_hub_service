@@ -49,7 +49,7 @@ func (s eventHubPaymentService) AddDebit(paymentData models.EventHubDebits) erro
 	return nil
 }
 
-func (s eventHubPaymentService) GetAllAccountingTransactions() ([]models.EventHubDebits, error) {
+func (s eventHubPaymentService) GetAllAccountingTransactions() ([]models.EventHubAccountingTransaction, error) {
 	/*---------------------------------------------------------
 	 01. GET TRANSACTIONS AND GET DB RESPONSE AND CHECK AFFECTED ROWS
 	----------------------------------------------------------*/
