@@ -15,7 +15,7 @@ func EventHubPaymentRoutes(route fiber.Router) {
 }
 
 func AuthenticatedEventHubPaymentRoutes(route fiber.Router) {
-	route.Post("/get/all/accounting/transactions", controllers.EventHubPaymentController.GetAllAccountingTransactions)
+	route.Get("/get/all/accounting/transactions", controllers.EventHubPaymentController.GetAllAccountingTransactions)
 	route.Post("/add/debit", controllers.EventHubPaymentController.AddDebit)
 	route.Post("/pugu/marathon/push/ussd", controllers.EventHubPaymentController.PushUSSD)
 	route.Post("/pugu/marathon/contribution/push/ussd", controllers.EventHubPaymentController.ContributionPushUSSD)
