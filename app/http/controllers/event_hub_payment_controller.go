@@ -859,7 +859,7 @@ func (c eventHubPaymentController) AddDebit(ctx *fiber.Ctx) error {
 		return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
 	}
 
-	return response.SuccessResponse("Region added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
+	return response.SuccessResponse("Debit added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
 }
 
 func (c eventHubPaymentController) GetAllAccountingTransactions(ctx *fiber.Ctx) error {
