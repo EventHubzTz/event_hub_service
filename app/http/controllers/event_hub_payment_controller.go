@@ -861,3 +861,14 @@ func (c eventHubPaymentController) AddDebit(ctx *fiber.Ctx) error {
 
 	return response.SuccessResponse("Region added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
 }
+
+func (c eventHubPaymentController) GetAllAccountingTransactions(ctx *fiber.Ctx) error {
+
+	dekania, dbErr := service.EventHubPaymentService.GetAllAccountingTransactions()
+
+	if dbErr != nil {
+		return response.ErrorResponse("No records found in region database", fiber.StatusOK, ctx)
+	}
+
+	return response.InternalServiceDataResponse(dekania, fiber.StatusOK, ctx)
+}

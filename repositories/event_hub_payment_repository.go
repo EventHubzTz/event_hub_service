@@ -30,6 +30,12 @@ func (r eventHubPaymentRepository) AddDebit(paymentTransation *models.EventHubDe
 	return paymentTransation, urDB
 }
 
+func (r eventHubPaymentRepository) GetAllAccountingTransactions() ([]models.EventHubDebits, *gorm.DB) {
+	var transactions []models.EventHubDebits
+	urDB := db.Raw("CALL sp_get_accounting_transactions()").Scan(&transactions)
+	return transactions, urDB
+}
+
 func (r eventHubPaymentRepository) AddVotingPaymentTransaction(paymentTransation *models.EventHubVotingPaymentTransactions) (*models.EventHubVotingPaymentTransactions, *gorm.DB) {
 	urDB := db.Create(&paymentTransation)
 	return paymentTransation, urDB
