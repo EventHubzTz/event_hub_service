@@ -317,7 +317,7 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 		Joins("LEFT JOIN event_hub_events t3 on t1.event_id = t3.id").
 		Select(
 			"t1.*",
-			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
+			"CONCAT(t1.ticket_owner_first_name, ' ', t1.ticket_owner_last_name) as full_name",
 			"t3.event_name",
 			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
