@@ -96,7 +96,7 @@ func (s eventHubPaymentService) GetContributionTransactions(pagination models.Pa
 	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetContributionTransactions(pagination, role, newQuery, status, phoneNumber, userID)
 	if dbResponse.RowsAffected == 0 {
 		// RETURN RESPONSE IF NO ROWS RETURNED
-		return models.Pagination{}, errors.New("payment transaction not found! ")
+		return models.Pagination{}, errors.New(dbResponse.Error.Error())
 	}
 	return paymentTransactions, nil
 }
