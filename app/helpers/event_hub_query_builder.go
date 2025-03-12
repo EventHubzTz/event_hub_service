@@ -354,7 +354,7 @@ func (q eventHubQueryBuilder) QueryContributionTransactions(pagination models.Pa
 		Table("event_hub_contribution_transactions as t1").
 		Select(
 			"t1.*",
-			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
+			"CONCAT(t1.first_name, ' ', t1.last_name) as full_name",
 			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
