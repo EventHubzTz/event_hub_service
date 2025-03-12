@@ -61,8 +61,8 @@ func (q eventHubQueryBuilder) QueryGetUsers(pagination models.Pagination, role, 
 		Select(
 			"t1.*",
 			"CASE t1.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',t1.profile_image) ELSE t1.profile_image END as profile_image,"+
-				"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+				"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if role != "" {
 		clDB = clDB.Where("t1.role = ?", role)
@@ -105,8 +105,8 @@ func (q eventHubQueryBuilder) QueryAllRegions(pagination models.Pagination, quer
 		Table("event_hub_regions as t1").
 		Select(
 			"t1.*",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if query != "%%" {
 		clDB = clDB.Where("t1.id LIKE ? OR "+
@@ -128,8 +128,8 @@ func (q eventHubQueryBuilder) QueryAllDekania(pagination models.Pagination, quer
 		Table("event_hub_dekania as t1").
 		Select(
 			"t1.*",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if query != "%%" {
 		clDB = clDB.Where("t1.id LIKE ? OR "+
@@ -153,8 +153,8 @@ func (q eventHubQueryBuilder) QueryAllEventCategories(pagination models.Paginati
 		Select(
 			"t1.*",
 			"CONCAT(CASE t1.image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, t1.icon_url) as icon_url",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if query != "%%" {
 		clDB = clDB.Where("t1.id LIKE ? OR "+
@@ -178,8 +178,8 @@ func (q eventHubQueryBuilder) QueryAllEventSubCategories(pagination models.Pagin
 		Select(
 			"t1.*",
 			"CONCAT(CASE t1.image_storage WHEN 'LOCAL' THEN '"+baseUrl+"' ELSE '' END, t1.icon_url) as icon_url",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		).Where("t1.event_category_id = ?", eventCategoryId)
 	if query != "%%" {
 		clDB = clDB.Where("t1.id LIKE ? OR "+
@@ -209,8 +209,8 @@ func (q eventHubQueryBuilder) QueryGetEvents(pagination models.Pagination, role,
 			"t3.event_sub_category_name",
 			"CONCAT(t4.first_name, ' ', t4.last_name) as event_owner",
 			"CASE t4.image_storage WHEN 'LOCAL' THEN CONCAT('"+baseUrl+"',t4.profile_image) ELSE t4.profile_image END as event_owner_profile,"+
-				"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+				"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		).
 		Preload("EventFiles", func(db *gorm.DB) *gorm.DB {
 			return db.Table("event_hub_event_images").
@@ -255,8 +255,8 @@ func (q eventHubQueryBuilder) QueryAllEventPackages(pagination models.Pagination
 		Table("event_hub_event_packages as t1").
 		Select(
 			"t1.*",
-			"DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p') as created_at",
-			"DATE_FORMAT(t1.updated_at, '%W, %D %M %Y %h:%i:%S%p') as updated_at",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if eventID != 0 {
 		clDB = clDB.
@@ -319,6 +319,8 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			"t1.*",
 			"CONCAT(t2.first_name, ' ', t2.last_name) as full_name",
 			"t3.event_name",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if role == constants.EventPlanner {
 		clDB = clDB.Where("t3.user_id = ?", userID)
@@ -352,6 +354,8 @@ func (q eventHubQueryBuilder) QueryContributionTransactions(pagination models.Pa
 		Table("event_hub_contribution_transactions as t1").
 		Select(
 			"t1.*",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
 	if status != "" {
 		clDB = clDB.Where("t1.payment_status = ?", status)
