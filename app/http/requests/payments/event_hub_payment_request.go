@@ -48,6 +48,7 @@ func (request EventHubPaymentRequest) ToModel() models.EventHubPaymentTransactio
 		TicketOwnerFirstName: request.TicketOwnerFirstName,
 		TicketOwnerLastName:  request.TicketOwnerLastName,
 		TShirtSize:           request.TShirtSize,
+		Region:               request.Region,
 		Location:             request.Location,
 		Distance:             request.Distance,
 		DateOfBirth:          request.DateOfBirth,
