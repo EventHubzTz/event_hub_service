@@ -106,3 +106,27 @@ func (r eventHubPaymentRepository) UpdateVotingPaymentStatus(transactionID strin
 	urDB := db.Model(models.EventHubVotingPaymentTransactions{}).Where("transaction_id = ? ", transactionID).Update("payment_status", status)
 	return urDB
 }
+
+func (r eventHubPaymentRepository) AddPaymentRequest(paymentRequest *models.EventHubPaymentRequests) (*models.EventHubPaymentRequests, *gorm.DB) {
+	urDB := db.Create(&paymentRequest)
+	return paymentRequest, urDB
+}
+
+func (r eventHubPaymentRepository) GetPaymentRequestsByPagination(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+
+	events, urDB := helpers.EventHubQueryBuilder.QueryPaymentRequests(pagination, query)
+
+	return events, urDB
+}
+
+func (r eventHubPaymentRepository) AddOtherPayment(paymentRequest *models.EventHubOtherPayments) (*models.EventHubOtherPayments, *gorm.DB) {
+	urDB := db.Create(&paymentRequest)
+	return paymentRequest, urDB
+}
+
+func (r eventHubPaymentRepository) GetOtherPaymentsByPagination(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+
+	payments, urDB := helpers.EventHubQueryBuilder.QueryOtherPayments(pagination, query)
+
+	return payments, urDB
+}

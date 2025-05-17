@@ -853,7 +853,7 @@ func (c eventHubPaymentController) AddDebit(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 	/*--------------------------------------------------------------------
-	 04. ADD DEKANIA
+	 04. ADD DEBIT
 	-----------------------------------------------------------------------*/
 	err = service.EventHubPaymentService.AddDebit(request.ToModel())
 	if err != nil {
@@ -872,4 +872,148 @@ func (c eventHubPaymentController) GetAllAccountingTransactions(ctx *fiber.Ctx) 
 	}
 
 	return response.InternalServiceDataResponse(dekania, fiber.StatusOK, ctx)
+}
+
+func (c eventHubPaymentController) AddPaymentRequest(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request payments.EventHubRequestPaymentRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*--------------------------------------------------------------------
+	 04. ADD PAYMENT REQUEST
+	-----------------------------------------------------------------------*/
+	err = service.EventHubPaymentService.AddPaymentRequest(request.ToModel())
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
+	}
+
+	return response.SuccessResponse("Payment request added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
+}
+
+func (c eventHubPaymentController) GetPaymentRequestsByPagination(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST
+	---------------------------------------------------------*/
+	var request events.EventHubEventsGetsRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	var pagination models.Pagination
+	pagination.Limit = request.Limit
+	pagination.Sort = request.Sort
+	pagination.Page = request.Page
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	----------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. GET PAYMENT REQUESTS AND GET ERROR IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	paymentTransactions, err := service.EventHubPaymentService.GetPaymentRequestsByPagination(pagination, request.Query)
+	/*---------------------------------------------------------
+	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
+	----------------------------------------------------------*/
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
+	}
+	return response.InternalServiceDataResponse(paymentTransactions, fiber.StatusOK, ctx)
+}
+
+func (c eventHubPaymentController) AddOtherPayment(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST OF GETTING
+	     CONTENTS
+	---------------------------------------------------------*/
+	var request payments.EventHubOtherPaymentRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*----------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	------------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*--------------------------------------------------------------------
+	 04. ADD OTHER PAYMENT
+	-----------------------------------------------------------------------*/
+	err = service.EventHubPaymentService.AddOtherPayment(request.ToModel())
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusInternalServerError, ctx)
+	}
+
+	return response.SuccessResponse("Payment request added successful on "+date_utils.GetNowString(), fiber.StatusOK, ctx)
+}
+
+func (c eventHubPaymentController) GetOtherPaymentsByPagination(ctx *fiber.Ctx) error {
+	/*-------------------------------------------------------
+	 01. INITIATING VARIABLE FOR THE REQUEST
+	---------------------------------------------------------*/
+	var request events.EventHubEventsGetsRequest
+	/*---------------------------------------------------------
+	 02. PARSING THE BODY OF THE INCOMING REQUEST
+	----------------------------------------------------------*/
+	err := ctx.BodyParser(&request)
+
+	var pagination models.Pagination
+	pagination.Limit = request.Limit
+	pagination.Sort = request.Sort
+	pagination.Page = request.Page
+
+	if err != nil {
+		return response.ErrorResponse("Bad request", fiber.StatusBadRequest, ctx)
+	}
+	/*---------------------------------------------------------
+	 03. VALIDATING THE INPUT FIELDS OF THE PASSED PARAMETERS
+	     IN A REQUEST
+	----------------------------------------------------------*/
+	errors := validation.Validate(request)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+	/*-----------------------------------------------------------------
+	 04. GET PAYMENT REQUESTS AND GET ERROR IF IS AVAILABLE
+	-------------------------------------------------------------------*/
+	paymentTransactions, err := service.EventHubPaymentService.GetOtherPaymentsByPagination(pagination, request.Query)
+	/*---------------------------------------------------------
+	 05. CHECK IF ERROR IS AVAILABLE AND RETURN ERROR RESPONSE
+	----------------------------------------------------------*/
+	if err != nil {
+		return response.ErrorResponse(err.Error(), fiber.StatusNotFound, ctx)
+	}
+	return response.InternalServiceDataResponse(paymentTransactions, fiber.StatusOK, ctx)
 }

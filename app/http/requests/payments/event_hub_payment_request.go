@@ -197,3 +197,55 @@ type EventHubUpdatePaymentStatusRequest struct {
 	SubmerchantAcc    string `json:"submerchantAcc"`
 	FspReferenceId    string `json:"fspReferenceId"`
 }
+
+type EventHubRequestPaymentRequest struct {
+	FirstName     string  `json:"first_name" validate:"required"`
+	LastName      string  `json:"last_name" validate:"required"`
+	AccountNumber string  `json:"account_number" validate:"required"`
+	BankName      string  `json:"bank_name"`
+	Amount        float32 `json:"amount"`
+	PaymentStatus string  `json:"payment_status"`
+}
+
+func (request EventHubRequestPaymentRequest) ToModel() models.EventHubPaymentRequests {
+	/*---------------------------------------------------------
+	 01. ASSIGN REQUEST TO EVENT MODEL
+	----------------------------------------------------------*/
+	return models.EventHubPaymentRequests{
+		FirstName:     request.FirstName,
+		LastName:      request.LastName,
+		AccountNumber: request.AccountNumber,
+		BankName:      request.BankName,
+		Amount:        request.Amount,
+		PaymentStatus: request.PaymentStatus,
+	}
+}
+
+type EventHubOtherPaymentRequest struct {
+	TransactionID string  `json:"transaction_id"`
+	FullName      string  `json:"full_name" alidate:"required"`
+	TShirtSize    string  `json:"t_shirt_size"`
+	Region        string  `json:"region" validate:"required"`
+	Location      string  `json:"location"`
+	Distance      string  `json:"distance"`
+	Age           string  `json:"age"`
+	PhoneNumber   string  `json:"phone_number" validate:"required"`
+	Amount        float32 `json:"amount"`
+}
+
+func (request EventHubOtherPaymentRequest) ToModel() models.EventHubOtherPayments {
+	/*---------------------------------------------------------
+	 01. ASSIGN REQUEST TO MODEL
+	----------------------------------------------------------*/
+	return models.EventHubOtherPayments{
+		TransactionID: request.TransactionID,
+		FullName:      request.FullName,
+		TShirtSize:    request.TShirtSize,
+		Region:        request.Region,
+		Location:      request.Location,
+		Distance:      request.Distance,
+		Age:           request.Age,
+		PhoneNumber:   request.PhoneNumber,
+		Amount:        request.Amount,
+	}
+}

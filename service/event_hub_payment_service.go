@@ -100,3 +100,45 @@ func (s eventHubPaymentService) GetContributionTransactions(pagination models.Pa
 	}
 	return paymentTransactions, nil
 }
+
+func (s eventHubPaymentService) AddPaymentRequest(paymentRequest models.EventHubPaymentRequests) error {
+	/*---------------------------------------------------------
+	 01. ADD TRANSACTION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	----------------------------------------------------------*/
+	_, dbResponse := repositories.EventHubPaymentRepository.AddPaymentRequest(&paymentRequest)
+	if dbResponse.RowsAffected == 0 {
+		return errors.New(dbResponse.Error.Error())
+	}
+	return nil
+}
+
+func (s eventHubPaymentService) GetPaymentRequestsByPagination(pagination models.Pagination, query string) (models.Pagination, error) {
+	var newQuery = "%" + query + "%"
+	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetPaymentRequestsByPagination(pagination, newQuery)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return models.Pagination{}, errors.New("payment transaction not found! ")
+	}
+	return paymentTransactions, nil
+}
+
+func (s eventHubPaymentService) AddOtherPayment(paymentRequest models.EventHubOtherPayments) error {
+	/*---------------------------------------------------------
+	 01. ADD TRANSACTION AND GET DB RESPONSE AND CHECK AFFECTED ROWS
+	----------------------------------------------------------*/
+	_, dbResponse := repositories.EventHubPaymentRepository.AddOtherPayment(&paymentRequest)
+	if dbResponse.RowsAffected == 0 {
+		return errors.New(dbResponse.Error.Error())
+	}
+	return nil
+}
+
+func (s eventHubPaymentService) GetOtherPaymentsByPagination(pagination models.Pagination, query string) (models.Pagination, error) {
+	var newQuery = "%" + query + "%"
+	paymentTransactions, dbResponse := repositories.EventHubPaymentRepository.GetOtherPaymentsByPagination(pagination, newQuery)
+	if dbResponse.RowsAffected == 0 {
+		// RETURN RESPONSE IF NO ROWS RETURNED
+		return models.Pagination{}, errors.New("payment transaction not found! ")
+	}
+	return paymentTransactions, nil
+}

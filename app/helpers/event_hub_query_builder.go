@@ -286,7 +286,7 @@ func (q eventHubQueryBuilder) QueryEventDetails() string {
 }
 
 func (q eventHubQueryBuilder) QueryVotingPaymentTransactions(pagination models.Pagination, query, status string) (models.Pagination, *gorm.DB) {
-	var events []models.EventHubVotingPaymentTransactionsDTO
+	var payments []models.EventHubVotingPaymentTransactionsDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubVotingPaymentTransactions{}, &pagination, database.DB())).
 		Table("event_hub_voting_payment_transactions as t1").
@@ -302,14 +302,14 @@ func (q eventHubQueryBuilder) QueryVotingPaymentTransactions(pagination models.P
 			query,
 		)
 	}
-	clDB = clDB.Find(&events)
-	pagination.Results = events
+	clDB = clDB.Find(&payments)
+	pagination.Results = payments
 	return pagination, clDB
 
 }
 
 func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
-	var events []models.EventHubPaymentTransactionsDTO
+	var payments []models.EventHubPaymentTransactionsDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentTransactions{}, &pagination, database.DB())).
 		Table("event_hub_payment_transactions as t1").
@@ -341,14 +341,14 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			query,
 		)
 	}
-	clDB = clDB.Find(&events)
-	pagination.Results = events
+	clDB = clDB.Find(&payments)
+	pagination.Results = payments
 	return pagination, clDB
 
 }
 
 func (q eventHubQueryBuilder) QueryContributionTransactions(pagination models.Pagination, role, query, status, phoneNumber string, userID uint64) (models.Pagination, *gorm.DB) {
-	var events []models.EventHubContributionTransactionsDTO
+	var payments []models.EventHubContributionTransactionsDTO
 
 	clDB := database.DB().Scopes(paginate([]models.EventHubContributionTransactions{}, &pagination, database.DB())).
 		Table("event_hub_contribution_transactions as t1").
@@ -371,8 +371,53 @@ func (q eventHubQueryBuilder) QueryContributionTransactions(pagination models.Pa
 			query,
 		)
 	}
-	clDB = clDB.Find(&events)
-	pagination.Results = events
+	clDB = clDB.Find(&payments)
+	pagination.Results = payments
+	return pagination, clDB
+
+}
+
+func (q eventHubQueryBuilder) QueryPaymentRequests(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+	var paymentRequests []models.EventHubPaymentRequestsDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubPaymentRequests{}, &pagination, database.DB())).
+		Table("event_hub_payment_requests as t1").
+		Select(
+			"t1.*",
+			"CONCAT(t1.first_name, ' ', t1.last_name) as full_name",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
+		)
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.first_name,' ',t1.region,' ',t1.location,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t1.first_name,' ',t1.last_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&paymentRequests)
+	pagination.Results = paymentRequests
+	return pagination, clDB
+
+}
+
+func (q eventHubQueryBuilder) QueryOtherPayments(pagination models.Pagination, query string) (models.Pagination, *gorm.DB) {
+	var payments []models.EventHubOtherPaymentsDTO
+
+	clDB := database.DB().Scopes(paginate([]models.EventHubOtherPayments{}, &pagination, database.DB())).
+		Table("event_hub_other_payments as t1").
+		Select(
+			"t1.*",
+			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
+			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
+		)
+	if query != "%%" {
+		clDB = clDB.Where(
+			"concat(t1.order_id,' ',t1.transaction_id,' ',t1.first_name,' ',t1.region,' ',t1.location,' ',t1.phone_number,' ',t1.amount,' ',t1.currency,' ',t1.provider,' ',t1.payment_status,' ',t1.first_name,' ',t1.last_name,' ',DATE_FORMAT(t1.created_at, '%W, %D %M %Y %h:%i:%S%p')) like ? ",
+			query,
+		)
+	}
+	clDB = clDB.Find(&payments)
+	pagination.Results = payments
 	return pagination, clDB
 
 }
