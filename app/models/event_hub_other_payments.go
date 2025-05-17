@@ -5,7 +5,7 @@ type EventHubOtherPayments struct {
 	TransactionID string  `json:"transaction_id" gorm:"not null"`
 	FullName      string  `json:"full_name" gorm:"not null"`
 	TShirtSize    string  `json:"t_shirt_size" gorm:"null"`
-	Region        string  `json:"region" gorm:"not null"`
+	RegionName    string  `json:"region_name" gorm:"not null"`
 	Location      string  `json:"location" gorm:"null"`
 	Distance      string  `json:"distance" gorm:"null"`
 	Age           string  `json:"age" gorm:"null;size:50"`
@@ -23,7 +23,7 @@ type EventHubOtherPaymentsDTO struct {
 	TransactionID string  `json:"transaction_id"`
 	FullName      string  `json:"full_name"`
 	TShirtSize    string  `json:"t_shirt_size"`
-	Region        string  `json:"region"`
+	RegionName    string  `json:"region_name"`
 	Location      string  `json:"location"`
 	Distance      string  `json:"distance"`
 	Age           string  `json:"age"`

@@ -225,7 +225,7 @@ type EventHubOtherPaymentRequest struct {
 	TransactionID string  `json:"transaction_id"`
 	FullName      string  `json:"full_name" alidate:"required"`
 	TShirtSize    string  `json:"t_shirt_size"`
-	Region        string  `json:"region" validate:"required"`
+	RegionName    string  `json:"region_name" validate:"required"`
 	Location      string  `json:"location"`
 	Distance      string  `json:"distance"`
 	Age           string  `json:"age"`
@@ -241,7 +241,7 @@ func (request EventHubOtherPaymentRequest) ToModel() models.EventHubOtherPayment
 		TransactionID: request.TransactionID,
 		FullName:      request.FullName,
 		TShirtSize:    request.TShirtSize,
-		Region:        request.Region,
+		RegionName:    request.RegionName,
 		Location:      request.Location,
 		Distance:      request.Distance,
 		Age:           request.Age,
