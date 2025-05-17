@@ -199,8 +199,7 @@ type EventHubUpdatePaymentStatusRequest struct {
 }
 
 type EventHubRequestPaymentRequest struct {
-	FirstName     string  `json:"first_name" validate:"required"`
-	LastName      string  `json:"last_name" validate:"required"`
+	FullName      string  `json:"full_name" validate:"required"`
 	AccountNumber string  `json:"account_number" validate:"required"`
 	BankName      string  `json:"bank_name"`
 	Amount        float32 `json:"amount"`
@@ -212,8 +211,7 @@ func (request EventHubRequestPaymentRequest) ToModel() models.EventHubPaymentReq
 	 01. ASSIGN REQUEST TO EVENT MODEL
 	----------------------------------------------------------*/
 	return models.EventHubPaymentRequests{
-		FirstName:     request.FirstName,
-		LastName:      request.LastName,
+		FullName:      request.FullName,
 		AccountNumber: request.AccountNumber,
 		BankName:      request.BankName,
 		Amount:        request.Amount,

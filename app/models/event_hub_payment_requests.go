@@ -2,8 +2,7 @@ package models
 
 type EventHubPaymentRequests struct {
 	ID
-	FirstName     string  `json:"first_name" gorm:"not null"`
-	LastName      string  `json:"last_name" gorm:"not null"`
+	FullName      string  `json:"full_name" gorm:"not null"`
 	AccountNumber string  `json:"account_number" gorm:"not null"`
 	BankName      string  `json:"bank_name" gorm:"null"`
 	Amount        float32 `json:"amount" gorm:"default:0;not null"`
@@ -13,8 +12,7 @@ type EventHubPaymentRequests struct {
 
 type EventHubPaymentRequestsDTO struct {
 	ID            uint64  `json:"id"`
-	FirstName     string  `json:"first_name"`
-	LastName      string  `json:"last_name"`
+	FullName      string  `json:"full_name"`
 	AccountNumber string  `json:"account_number"`
 	BankName      string  `json:"bank_name"`
 	Amount        float32 `json:"amount"`
