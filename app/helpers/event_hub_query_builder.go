@@ -322,9 +322,9 @@ func (q eventHubQueryBuilder) QueryPaymentTransactions(pagination models.Paginat
 			"DATE_FORMAT(t1.created_at, '%d-%m-%Y, %r') as created_at",
 			"DATE_FORMAT(t1.updated_at, '%d-%m-%Y, %r') as updated_at",
 		)
-	if role == constants.EventPlanner {
-		clDB = clDB.Where("t3.user_id = ?", userID)
-	}
+	// if role == constants.EventPlanner {
+	// 	clDB = clDB.Where("t3.user_id = ?", userID)
+	// }
 	if role == constants.NormalUser {
 		clDB = clDB.Where("t1.user_id = ?", userID)
 	}
