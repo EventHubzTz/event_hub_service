@@ -5,7 +5,6 @@ import (
 
 	"github.com/EventHubzTz/event_hub_service/app/helpers"
 	"github.com/EventHubzTz/event_hub_service/app/models"
-	"github.com/EventHubzTz/event_hub_service/utils/constants"
 	"gorm.io/gorm"
 )
 
@@ -130,10 +129,10 @@ func (r eventHubEventsManagementRepository) DeleteEventPackage(eventPackageId ui
 
 func (r eventHubEventsManagementRepository) GetDashboardStatistics(role, from, to string, userID uint64) (*models.EventHubDashboardStatisticsDTO, *gorm.DB) {
 	var statistics *models.EventHubDashboardStatisticsDTO
-	if role == constants.EventPlanner {
-		urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatisticsForEventPlanner(), userID, userID).Find(&statistics)
-		return statistics, urDB
-	}
+	// if role == constants.EventPlanner {
+	// 	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatisticsForEventPlanner(), userID, userID).Find(&statistics)
+	// 	return statistics, urDB
+	// }
 	urDB := db.Raw(helpers.EventHubQueryBuilder.QueryGetDashboardStatistics(), from, to, from, to, from, to, from, to).Find(&statistics)
 	return statistics, urDB
 }
